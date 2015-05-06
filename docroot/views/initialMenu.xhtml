@@ -1,0 +1,44 @@
+<?xml version="1.0"?>
+
+<f:view xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:c="http://java.sun.com/jsp/jstl/core"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:ui="http://java.sun.com/jsf/facelets">
+	<h:head />
+	<h:body>
+		<h:form id="form">
+			<h:outputLabel for="name" value="Please select an option"
+				style="font-size: 18px; font-weight:bold" />
+			<br />
+			<br />
+			<p:commandButton id="ConflictResolution"
+				action="/views/addConflictResolRule.xhtml?javax.portlet.faces.PortletMode=view&amp;javax.portlet.faces.WindowState=normal"
+				actionListener="#{addConflictRuleBean.init}"
+				ajax="false" value="Add a new conflict/resolution rule"
+				title="Create a new conflict or resolution rule for the RBMM">
+			</p:commandButton>
+			<br />
+			<br />
+			<p:commandButton id="feddback"
+				action="/views/profileView.xhtml?javax.portlet.faces.PortletMode=view&amp;javax.portlet.faces.WindowState=normal"
+				ajax="false" value="Add a new feddback rule"
+				title="Create a new feedback rule for the RBMM">
+			</p:commandButton>
+			<br />
+			<br />
+			<p:commandButton id="edit"
+				action="/views/profileView.xhtml?javax.portlet.faces.PortletMode=view&amp;javax.portlet.faces.WindowState=normal"
+				ajax="false" value="Edit an existing rule"
+				title="Edit an already existing rule">
+			</p:commandButton>
+			<br />
+			<br />
+			<p:commandButton id="configuration" value="Configuration of rules"
+				title="Configure the order of rules">
+			</p:commandButton>
+
+		</h:form>
+	</h:body>
+</f:view>
