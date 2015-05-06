@@ -1,5 +1,5 @@
 # rule-editor-portlet
-current version of rule editor
+This is the current version of Rule Editor of Cloud4All.
 
 Rule Editor is a portlet using the [Liferay Platform] (http://www.liferay.com/). In order to build and run the portlet use the following instructions.
 
