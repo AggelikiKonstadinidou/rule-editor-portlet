@@ -7,7 +7,7 @@ Rule Editor is a portlet using the [Liferay Platform] (http://www.liferay.com/).
 
 2)	Download and extract the [Liferay Portal 6.1.1] (http://sourceforge.net/projects/lportal/files/Liferay%20Portal/6.1.1%20GA2/liferay-portal-tomcat-6.1.1-ce-ga2-20120731132656558.zip/download) and [Liferay Plugins SDK] (http://sourceforge.net/projects/lportal/files/Liferay%20Portal/6.1.1%20GA2/liferay-portal-doc-6.1.1-ce-ga2-20120806125709432.zip/download). Use the suggested versions to avoid incompatibility problems. 
 
-3)	Install the Liferay Portal and Liferay Plugins SDK in Eclipse using the following instructions. By the end of this step you should have created a new Liferay portal (Tomcat) server in Eclipse.
+3)	Install the Liferay Portal and Liferay Plugins SDK in Eclipse using the following [instructions] (http://www.liferay.com/community/wiki/-/wiki/Main/Liferay+IDE+Getting+Started+Tutorial). By the end of this step you should have created a new Liferay portal (Tomcat) server in Eclipse.
 
 4)	Download the Rule Editor Portlet and import it in Eclipse. 
 
