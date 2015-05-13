@@ -3,18 +3,23 @@ package org.ruleEditor.ontology;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.ruleEditor.ontology.OntologyProperty.DataProperty;
+import org.ruleEditor.ontology.OntologyProperty.ObjectProperty;
+
 public class OntologyClass {
 	private String className;
 	private List<OntologyClass> children;
-	private List<String> dataProperties;
-	private List<String> objectProperties;
+	private List<DataProperty> dataProperties;
+	private List<ObjectProperty> objectProperties;
+	private List<String> instances;
 	
 	public OntologyClass() {
 		super();
 		this.className = "";
 		this.children = new ArrayList<OntologyClass>();
-		this.dataProperties = new ArrayList<String>();
-		this.objectProperties = new ArrayList<String>();
+		this.dataProperties = new ArrayList<DataProperty>();
+		this.objectProperties = new ArrayList<ObjectProperty>();
+		this.instances = new ArrayList<String>();
 	}
 
 	public List<OntologyClass> getChildren() {
@@ -33,22 +38,28 @@ public class OntologyClass {
 		this.className = className;
 	}
 
-	public List<String> getDataProperties() {
+	public List<DataProperty> getDataProperties() {
 		return dataProperties;
 	}
 
-	public void setDataProperties(List<String> dataProperties) {
+	public void setDataProperties(List<DataProperty> dataProperties) {
 		this.dataProperties = dataProperties;
 	}
 
-	public List<String> getObjectProperties() {
+	public List<ObjectProperty> getObjectProperties() {
 		return objectProperties;
 	}
 
-	public void setObjectProperties(List<String> objectProperties) {
+	public void setObjectProperties(List<ObjectProperty> objectProperties) {
 		this.objectProperties = objectProperties;
 	}
-	
-	
-	
+
+	public List<String> getInstances() {
+		return instances;
+	}
+
+	public void setInstances(List<String> instances) {
+		this.instances = instances;
+	}
+
 }

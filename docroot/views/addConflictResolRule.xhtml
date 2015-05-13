@@ -20,7 +20,6 @@
 				<f:facet name="header">
 					<h:outputText value="New Conflict/Resolution Rule" />
 				</f:facet>
-				<p:messages id="msgs" autoUpdate="true" closable="true" />
 
 					<h:panelGrid columns="2" id="grid1">
 						<p:tree id="tree" value="#{addConflictRuleBean.root}" var="node"
@@ -37,51 +36,61 @@
 
 
 						</p:tree>
-						<h:panelGrid rows="3" id="grid2" style="width:535px;">
+						<h:panelGrid rows="4" id="grid2" style="width:535px;">
 
-							<p:dataTable id="dataProperties" var="data"
-								value="#{addConflictRuleBean.datatypes}" rowKey="#{data}"
-								selectionMode="single"
-								selection="#{addConflictRuleBean.selectedRow}">
-								<p:ajax event="rowSelect"
-									listener="#{addConflictRuleBean.onRowSelect}" />
-							
-								<p:column headerText="Data Properties">
-									<h:outputText value="#{data}" />
-								</p:column>
+						<p:dataTable id="dataProperties" var="data"
+							value="#{addConflictRuleBean.datatypes}"
+							rowKey="#{data.ontologyURI}" selectionMode="single"
+							selection="#{addConflictRuleBean.selectedDataProperty}">
+							<f:facet name="header">
+								<h:outputText value="Data Properties" />
+							</f:facet>
 
-							</p:dataTable>
+							<p:column headerText="Name">
+								<h:outputText value="#{data.propertyName}" />
+							</p:column>
+							<p:column headerText="Value Range">
+								<h:outputText value="#{data.dataRange}" />
+							</p:column>
 
-							<p:dataTable id="objectProperties" var="data"
-								value="#{addConflictRuleBean.objects}" rowKey="#{data}"
-								selectionMode="single"
-								selection="#{addConflictRuleBean.selectedRow}">
-								<p:ajax event="rowSelect"
-									listener="#{addConflictRuleBean.onRowSelect}" />
+						</p:dataTable>
 
-								<p:column headerText="Object Properties">
-									<h:outputText value="#{data}" />
-								</p:column>
+						<p:dataTable id="objectProperties" var="data"
+							value="#{addConflictRuleBean.objects}"
+							rowKey="#{data.ontologyURI}" selectionMode="single"
+							selection="#{addConflictRuleBean.selectedObjectProperty}">
+							<f:facet name="header">
+								<h:outputText value="Object Properties" />
+							</f:facet>
 
+							<p:column headerText="Name">
+								<h:outputText value="#{data.propertyName}" />
+							</p:column>
+							<p:column headerText="Range">
+								<h:outputText value="#{data.propertyName}" />
+							</p:column>
 
-							</p:dataTable>
+						</p:dataTable>
 
-							<p:dataTable id="instances" var="data"
-								value="#{addConflictRuleBean.instances}" rowKey="#{data}"
-								selectionMode="single"
-								selection="#{addConflictRuleBean.selectedRow}">
-								<p:ajax event="rowSelect"
-									listener="#{addConflictRuleBean.onRowSelect}" />
+						<p:dataTable id="instances" var="data"
+							value="#{addConflictRuleBean.instances}" rowKey="#{data}"
+							selectionMode="single">
 
-								<p:column headerText="Instances">
-									<h:outputText value="#{data}" />
-								</p:column>
+							<p:column headerText="Instances">
+								<h:outputText value="#{data}" />
+							</p:column>
 
+						</p:dataTable>
 
+						<p:dataTable id="methods" var="method" value="#{main.methods}"
+							rowKey="#{method.originalName}" selectionMode="single"
+							selection="#{addConflictRuleBean.selectedMethod}">
+							<p:column headerText="Primitive Methods">
+								<h:outputText value="#{method.usingName}" />
+							</p:column>
+						</p:dataTable>
 
-							</p:dataTable>
-
-						</h:panelGrid>
+					</h:panelGrid>
 						<p:contextMenu for="tree">
 							<p:menuitem value="Move to conditions"
 								update=":#{p:component('pan1')}"
@@ -90,22 +99,31 @@
 								update=":#{p:component('pan2')}"
 								actionListener="#{addConflictRuleBean.moveToPanel('pan2')}" />
 						</p:contextMenu>
+						
+						<p:contextMenu for="methods">
+							<p:menuitem value="Move to conditions"
+								update=":#{p:component('pan1')}"
+								actionListener="#{addConflictRuleBean.moveMethodToPanel('pan1')}" />
+							<p:menuitem value="Move to conclusions"
+								update=":#{p:component('pan2')}"
+								actionListener="#{addConflictRuleBean.moveMethodToPanel('pan2')}" />
+						</p:contextMenu>
 
 						<p:contextMenu for="dataProperties">
 							<p:menuitem value="Move to conditions"
-								update=":#{p:component('pan1')}"
+								update=":#{p:component('pan1')},:#{p:component('dataProperties')}"
 								actionListener="#{addConflictRuleBean.moveToPanel2('pan1')}" />
 							<p:menuitem value="Move to conclusions"
-								update=":#{p:component('pan2')}"
+								update=":#{p:component('pan2')},:#{p:component('dataProperties')}"
 								actionListener="#{addConflictRuleBean.moveToPanel2('pan2')}" />
 						</p:contextMenu>
 
 						<p:contextMenu for="objectProperties">
 							<p:menuitem value="Move to conditions"
-								update=":#{p:component('pan1')}"
+								update=":#{p:component('pan1')},:#{p:component('objectProperties')}"
 								actionListener="#{addConflictRuleBean.moveToPanel2('pan1')}" />
 							<p:menuitem value="Move to conclusions"
-								update=":#{p:component('pan2')}"
+								update=":#{p:component('pan2')},:#{p:component('objectProperties')}"
 								actionListener="#{addConflictRuleBean.moveToPanel2('pan2')}" />
 						</p:contextMenu>
 
@@ -133,20 +151,19 @@
 							styleClass="ui-widget-content" var="item">
 
 							<f:facet name="element">
-								<p:panel id="pnl1" header="#{item.elementName}">
-									<h:panelGrid columns="3" id="elementGrid1">
-										<h:outputText value="#{item.varName}"
+								<p:panel id="pnl1" header="#{item.type}: #{item.elementName}">
+									<h:panelGrid columns="4" id="elementGrid1">
+										<h:outputText value="Variable: #{item.varName}"
 											rendered="#{!item.renderEditText}" />
-										<p:inputText label="value" rendered="#{item.renderEditText}"
-											id="value" style="width: 80px;"
-											value="#{item.valueOfProperty}">
-										</p:inputText>
-										<p:commandButton
-											action="#{addConflictRuleBean.removeNode}"
-											icon="ui-icon-close" title="Remove node"
-											update=":#{p:component('pan1')}">
-										<f:param name="id" value="#{item.varName}" />
-										<f:param name="panel" value="conditions" />
+										<h:outputText label="value" rendered="#{item.renderEditText}"
+											id="value" style="width: 80px;" autocomplete="off"
+											value="Value: #{item.property.value}"/>
+										
+										<p:commandButton oncomplete = "PF('editDialog').show()"
+											actionListener="#{addConflictRuleBean.editNode}" title="View"
+											icon="ui-icon-search" update=":#{p:component('editDialog')}">
+											<f:param name="id" value="#{item.varName}" />
+											<f:param name="panel" value="conditions" />
 										</p:commandButton>
 									</h:panelGrid>
 								</p:panel>
@@ -167,20 +184,18 @@
 								style="height:750px;width:500px;" styleClass="ui-widget-content"
 								var="item">
 								<f:facet name="element">
-									<p:panel id="pnl2" header="#{item.elementName}">
+									<p:panel id="pnl2" header="#{item.type}: #{item.elementName}">
 									<h:panelGrid columns="3" id="elementGrid2">
-										<h:outputText value="#{item.varName}"
+										<h:outputText value="Variable: #{item.varName}"
 											rendered="#{!item.renderEditText}" />
-										<p:inputText label="value" rendered="#{item.renderEditText}"
+										<h:outputText label="value" rendered="#{item.renderEditText}"
 											id="value2" style="width: 80px;"
-											value="#{item.valueOfProperty}">
-										</p:inputText>
-										<p:commandButton
-											action="#{addConflictRuleBean.removeNode}"
-											icon="ui-icon-close" title="Remove node"
-											update=":#{p:component('pan2')}">
-										<f:param name="id" value="#{item.varName}" />
-										<f:param name="panel" value="conclusions" />
+											value="Value: #{item.property.value}"/>
+										<p:commandButton oncomplete = "PF('editDialog').show()"
+											actionListener="#{addConflictRuleBean.editNode}" title="View"
+											icon="ui-icon-search" update=":#{p:component('editDialog')}">
+											<f:param name="id" value="#{item.varName}" />
+											<f:param name="panel" value="conclusions" />
 										</p:commandButton>
 									</h:panelGrid>
 								</p:panel>
@@ -199,8 +214,7 @@
 					</h:panelGrid>
 
 
-				<p:commandButton ajax="false"
-				    actionListener="#{addConflictRuleBean.saveRule}"
+				<p:commandButton oncomplete="PF('newRuleDialog').show()"
 					value="Save Rule" title="Save the rule">
 				</p:commandButton>
 				<p:commandButton id="clearConditions"
@@ -218,32 +232,74 @@
 
 				
 			</p:panel>
-			
-			
 
-		</h:form>
-
-		<p:dialog widgetVar="newRuleDialog" id="newRuleDialog" modal="true"
-			header="Save rule" resizable="false" showEffect="clip" dynamic="true"
-			hideEffect="fold" position="center,center" appendToBody="true">
-			<h:form>
+			<p:dialog widgetVar="newRuleDialog" id="newRuleDialog" modal="true"
+				header="Save rule configuration" resizable="false" showEffect="clip"
+				dynamic="true" hideEffect="fold" position="center,center">
+				<p:messages for="msgs" showDetail="true" autoUpdate="true"
+					closable="true" />
 				<h:panelGrid columns="2" columnClasses="label,value"
 					styleClass="grid">
 					<h:outputText value="Rule name: " id="ruleName" />
 					<p:inputText label="Rule name" style="width: 300px;"
 						id="newRuleName" autocomplete="off"
-						value="#{addConflictRuleBean.ruleName}">
+						value="#{addConflictRuleBean.ruleName}"
+						required="true">
 					</p:inputText>
 
-					<h:outputText value="Insert a new file name: " id="FileName"
+					<h:outputText value="File name: " id="FileName"
 						required="false" />
-					<p:inputText label="File Name" required="false"
+					<p:inputText label="File Name" required="true"
 						style="width: 300px;" id="newFileName" autocomplete="off"
 						value="#{addConflictRuleBean.newFileName}">
 					</p:inputText>
+					<p:commandButton value="OK" id="okBut" ajax="false"
+						oncomplete="PF('newRuleDialog').hide()"
+						actionListener="#{addConflictRuleBean.saveRule}" />
+					<p:commandButton value="Cancel" id="cancelBut"
+						oncomplete="PF('newRuleDialog').hide()" />
 
 				</h:panelGrid>
-			</h:form>
-		</p:dialog>
+			</p:dialog>
+
+			<p:dialog widgetVar="editDialog" id="editDialog" modal="true"
+				header="Edit node" resizable="false" showEffect="clip"
+				dynamic="true" hideEffect="fold" position="center,center">
+				<h:panelGrid columns="2" columnClasses="label,value"
+					styleClass="grid">
+					<h:outputText value="Variable name: " id="clonedVar"
+						rendered="#{!addConflictRuleBean.cloneSelectedNode.renderEditText}" />
+					<p:inputText label="Rule name" style="width: 300px;"
+						id="clonedVar1" autocomplete="off"
+						rendered="#{!addConflictRuleBean.cloneSelectedNode.renderEditText}"
+						value="#{addConflictRuleBean.cloneSelectedNode.varName}"
+						required="true">
+					</p:inputText>
+
+					<h:outputText value="Value: " id="clonedValue" required="false"
+						rendered="#{addConflictRuleBean.cloneSelectedNode.renderEditText}" />
+					<p:inputText
+						rendered="#{addConflictRuleBean.cloneSelectedNode.renderEditText}"
+						style="width: 300px;" id="clonedValue1" autocomplete="off"
+						value="#{addConflictRuleBean.cloneSelectedNode.property.value}">
+					</p:inputText>
+					<p:commandButton
+						action="#{addConflictRuleBean.saveEditOfNode}"
+						icon="ui-icon-save" title="Save changes"
+						update=":#{p:component('pan1')},:#{p:component('pan2')}"
+						value="Save" oncomplete="PF('editDialog').hide()">
+					</p:commandButton>
+					<p:commandButton
+						action="#{addConflictRuleBean.removeNode}"
+						icon="ui-icon-close" title="Remove node"
+						update=":#{p:component('pan1')},:#{p:component('pan2')}"
+						value="Delete" oncomplete="PF('editDialog').hide()">
+					</p:commandButton>
+				</h:panelGrid>
+			</p:dialog>
+
+		</h:form>
+
+		
 	</h:body>
 </f:view>
