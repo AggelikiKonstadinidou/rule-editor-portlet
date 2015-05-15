@@ -13,19 +13,10 @@
 				style="font-size: 18px; font-weight:bold" />
 			<br />
 			<br />
-			<p:commandButton id="ConflictResolution"
-				action="/views/addConflictResolRule.xhtml?javax.portlet.faces.PortletMode=view&amp;javax.portlet.faces.WindowState=normal"
-				actionListener="#{addConflictRuleBean.init}"
-				ajax="false" value="Add a new conflict/resolution rule"
-				title="Create a new conflict or resolution rule for the RBMM">
-			</p:commandButton>
-			<br />
-			<br />
-			<p:commandButton id="feddback"
-				action="/views/profileView.xhtml?javax.portlet.faces.PortletMode=view&amp;javax.portlet.faces.WindowState=normal"
-				ajax="false" value="Add a new feddback rule"
-				title="Create a new feedback rule for the RBMM">
-			</p:commandButton>
+			<p:commandButton
+				oncomplete="PF('newRuleDialog').show()"
+				value="Create a new rule">
+			</p:commandButton> 
 			<br />
 			<br />
 			<p:commandButton id="edit"
@@ -38,6 +29,25 @@
 			<p:commandButton id="configuration" value="Configuration of rules"
 				title="Configure the order of rules">
 			</p:commandButton>
+
+			<p:dialog widgetVar="newRuleDialog" id="newRuleDialog" modal="true"
+				header="New rule configuration" resizable="false" showEffect="clip"
+				dynamic="true" hideEffect="fold" position="center,center">
+				<p:messages for="msgs" showDetail="true" autoUpdate="true"
+					closable="true" />
+				<h:panelGrid columns="2" columnClasses="label,value"
+					styleClass="grid">
+
+					<p:commandButton value="Create a conflict/Resolution rule"
+						id="ConflictResolution"
+						action="/views/addConflictResolRule.xhtml?javax.portlet.faces.PortletMode=view&amp;javax.portlet.faces.WindowState=normal"
+						actionListener="#{addNewRuleBean.init(false)}" ajax="false" />
+					<p:commandButton value="Create a feedback rule" id="feedbackRule"
+						action="/views/addFeedbackRule.xhtml?javax.portlet.faces.PortletMode=view&amp;javax.portlet.faces.WindowState=normal"
+						actionListener="#{addNewRuleBean.init(true)}" ajax="false" />
+
+				</h:panelGrid>
+			</p:dialog>
 
 		</h:form>
 	</h:body>

@@ -51,7 +51,24 @@ public class BuiltinMethod {
 		this.typeOfParam = typeOfParam;
 	}
 	
-	
+	@Override
+	public boolean equals(Object obj) {
+		if (this.getUsingName().equals(((BuiltinMethod) obj).getUsingName())) {
+			return true;
+		} else
+			return false;
+	}
+
+	public BuiltinMethod clone() {
+		BuiltinMethod method = new BuiltinMethod("", "", "", 0,
+				Type.BUILTIN_METHOD);
+		method.setUsingName(this.getUsingName());
+		method.setOriginalName(this.getOriginalName());
+		method.setDescription(this.getDescription());
+		method.setNumberOfParams(this.getNumberOfParams());
+		method.setTypeOfParam(this.getTypeOfParam());
+		return method;
+	}
 	
 	
 

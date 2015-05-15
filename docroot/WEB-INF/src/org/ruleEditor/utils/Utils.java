@@ -1,13 +1,17 @@
 package org.ruleEditor.utils;
 
+import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.OutputStream;
+import java.lang.reflect.Type;
 import java.util.ArrayList;
+import java.util.List;
 
 import javax.faces.component.UIComponent;
 import javax.faces.component.UIViewRoot;
@@ -26,11 +30,20 @@ import org.primefaces.model.diagram.endpoint.DotEndPoint;
 import org.primefaces.model.diagram.endpoint.EndPoint;
 import org.primefaces.model.diagram.endpoint.EndPointAnchor;
 import org.primefaces.model.diagram.endpoint.RectangleEndPoint;
+import org.ruleEditor.ontology.Message;
 import org.ruleEditor.ontology.OntologyProperty;
 import org.ruleEditor.ontology.OntologyProperty.DataProperty;
 import org.ruleEditor.ontology.PointElement;
-import org.ruleEditor.ontology.PointElement.Type;
+import org.ruleEditor.utils.MessageForJson.Group;
+import org.ruleEditor.utils.MessageForJson.Group.TextMessage;
 
+import com.google.gson.FieldNamingPolicy;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonPrimitive;
+import com.google.gson.reflect.TypeToken;
 import com.liferay.portal.util.PortalUtil;
 import com.sun.faces.component.visit.FullVisitContext;
 
@@ -60,30 +73,40 @@ public class Utils {
 
 		// work on conditions
 		for (PointElement el : list) {
-			if (el.getType() == Type.CLASS) {
+			if (el.getType() == PointElement.Type.CLASS) {
 
-				rule = rule + "(" + el.getVarName() + " rdf:type " + "c4a:"
-						+ el.getElementName() + ")\n";
+				rule = rule + "(" + "?" + el.getVarName() + " rdf:type "
+						+ "c4a:" + el.getElementName() + ")\n";
 
-			} else if (el.getType() == Type.DATA_PROPERTY) {
-              
-				OntologyProperty property = (DataProperty)el.getProperty();
-				if(el.getConnections().size()>0)
-				rule = rule + "(" + el.getConnections().get(0).getVarName()
-						+ " c4a:" + el.getElementName() + " "
-						+ ((DataProperty) property).getValue() + ")\n";
+			} else if (el.getType() == PointElement.Type.DATA_PROPERTY) {
 
-			} else if (el.getType() == Type.OBJECT_PROPERTY) {
+				OntologyProperty property = (DataProperty) el.getProperty();
+				if (el.getConnections().size() > 0)
+					rule = rule + "(" + el.getConnections().get(0).getVarName()
+							+ " c4a:" + el.getElementName() + " "
+							+ ((DataProperty) property).getValue() + ")\n";
+
+			} else if (el.getType() == PointElement.Type.OBJECT_PROPERTY) {
 
 				// TODO: check that there are two connections
 				// and define the correct order
 				// in case that something is missing, throw away
 				// the property node
-				if(el.getConnections().size()>1)
-				rule = rule + "(" + el.getConnections().get(0).getVarName()
-						+ " c4a:" + el.getElementName() + " "
-						+ el.getConnections().get(1).getVarName() + ")\n";
+				if (el.getConnections().size() > 1)
+					rule = rule + "(" + el.getConnections().get(0).getVarName()
+							+ " c4a:" + el.getElementName() + " " + "?"
+							+ el.getConnections().get(1).getVarName() + ")\n";
 
+			} else if (el.getType() == PointElement.Type.BUILTIN_METHOD) {
+
+				rule = rule + el.getMethod().getOriginalName() + "(";
+				for (PointElement temp : el.getConnections()) {
+					DataProperty property = (DataProperty) temp.getProperty();
+					rule = rule + "?" + property.getValue() + ",";
+				}
+
+				rule = rule.substring(0, rule.length() - 1);
+				rule = rule + ")\n";
 			}
 
 		}
@@ -91,46 +114,7 @@ public class Utils {
 		return rule;
 	}
 
-	public static void writeGsonAndExportFile(String fileName, String json)
-			throws IOException {
-
-		// 1. write json to a new file
-		BufferedWriter out = new BufferedWriter(new FileWriter(fileName));
-		out.write(json);
-		out.close();
-
-		File fil = new File(fileName);
-
-		InputStream stream = new FileInputStream(fil);
-		StreamedContent file = new DefaultStreamedContent(stream, "text/txt", fileName);
-
-		File localfile = new File(fileName);
-		FileInputStream fis = new FileInputStream(localfile);
-
-		// 2. get Liferay's ServletResponse
-		PortletResponse portletResponse = (PortletResponse) FacesContext
-				.getCurrentInstance().getExternalContext().getResponse();
-		HttpServletResponse res = PortalUtil
-				.getHttpServletResponse(portletResponse);
-		res.setHeader("Content-Disposition", "attachment; filename=\""
-				+ fileName + "\"");//
-		res.setHeader("Content-Transfer-Encoding", "binary");
-		res.setContentType("application/octet-stream");
-		res.flushBuffer();
-
-		// 3. write the file into the outputStream
-		OutputStream outputStream = res.getOutputStream();
-		byte[] buffer = new byte[4096];
-		int bytesRead;
-		while ((bytesRead = fis.read(buffer)) != -1) {
-			outputStream.write(buffer, 0, bytesRead);
-			buffer = new byte[4096];
-		}
-
-		outputStream.close();
-		fis.close();
-
-	}
+	
 	
 	public UIComponent findComponent(final String id) {
 
@@ -212,6 +196,99 @@ public class Utils {
 		}
 
 		return el;
+	}
+	
+	public static String writeMessagesInJsonLdFile(InputStream inputStream,
+			List<Message> list) throws IOException {
+
+		String json = "";
+		BufferedReader reader = new BufferedReader(new InputStreamReader(
+				inputStream));
+		StringBuilder out = new StringBuilder();
+		String line;
+		while ((line = reader.readLine()) != null) {
+			out.append(line);
+		}
+
+		String result = out.toString();
+		System.out.println(result);
+		reader.close();
+
+		Gson gson = new Gson();
+		Type type = new TypeToken<MessageForJson>() {
+		}.getType();
+
+		result = result.replace("c4a:", "").replace("@type", "type")
+				.replace("@id", "id");
+
+		// System.out.println(result);
+		MessageForJson test = (MessageForJson) gson.fromJson(result, type);
+		
+		//append messages in the json
+		String idforMessages = "aaa";
+		json = appendMessages(list, test, idforMessages);
+		
+		return json;
+
+	}
+	
+	public static String appendMessages(List<Message> list, MessageForJson test, String id){
+		String s = "";
+		
+		JsonObject json = new JsonObject();
+		JsonObject context = new JsonObject();
+		JsonArray graph = new JsonArray();
+
+		context.add("c4a", new JsonPrimitive(test.getContext().getC4a()));
+		context.add("rdfs", new JsonPrimitive(test.getContext().getRdfs()));
+
+		JsonObject msg;
+		JsonObject innerObj;
+		JsonArray messages;
+		//add existing messages
+		for (Group temp : test.getGraph()) {
+			msg = new JsonObject();
+			messages = new JsonArray();
+			msg.add("@id", new JsonPrimitive(temp.getId()));
+			msg.add("@type", new JsonPrimitive(temp.getType()));
+
+			for (TextMessage textMsg : temp.getMessages()) {
+				innerObj = new JsonObject();
+				innerObj.add(textMsg.getLanguage(),
+						new JsonPrimitive(textMsg.getText()));
+				messages.add(innerObj);
+			}
+			msg.add("@messages", messages);
+			graph.add(msg);
+		}
+		
+		//add new messages
+		msg = new JsonObject();
+		messages = new JsonArray();
+		msg.add("@id", new JsonPrimitive(id));
+		msg.add("@type", new JsonPrimitive("Message"));
+		for(Message temp: list){
+			innerObj = new JsonObject();
+			innerObj.add(temp.getLanguage(),
+					new JsonPrimitive(temp.getText()));
+			messages.add(innerObj);
+		}
+		
+		msg.add("@messages", messages);
+		graph.add(msg);
+		
+		json.add("context", context);
+		json.add("graph", graph);
+		
+		Gson gson = new GsonBuilder().setPrettyPrinting()
+				.disableHtmlEscaping().serializeNulls()
+				.setFieldNamingPolicy(FieldNamingPolicy.UPPER_CAMEL_CASE)
+				.create();
+		
+		s = gson.toJson(json);
+		
+		
+		return s;
 	}
 
 

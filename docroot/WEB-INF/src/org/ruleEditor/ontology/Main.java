@@ -3,6 +3,7 @@ package org.ruleEditor.ontology;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Locale;
 
 import javax.faces.bean.ApplicationScoped;
 import javax.faces.bean.ManagedBean;
@@ -18,19 +19,39 @@ public class Main {
 	private Ontology ontology;
     private List<ArrayList<OntologyClass>> allClasses;
     private List<BuiltinMethod> methods = new ArrayList<BuiltinMethod>();
+    private List<String> languages = new ArrayList<String>();
 	
-	public Main(){
-		 System.gc();
-		 ontology = new Ontology();
-		 this.getOntology().loadOntology();
-		 
-		 allClasses = new ArrayList<ArrayList<OntologyClass>>();
-		 allClasses = this.getOntology().getClassesStructured();
-		 
-		 methods = getBuiltinMethods();
-		 
-		 System.out.println("Ontology loaded successfully");
-		 
+	public Main() {
+		System.gc();
+		ontology = new Ontology();
+		this.getOntology().loadOntology();
+
+		//load classes
+		allClasses = new ArrayList<ArrayList<OntologyClass>>();
+		allClasses = this.getOntology().getClassesStructured();
+
+		//load built in methods
+		//TODO complete the methods
+		methods = getBuiltinMethods();
+
+		//load all languages
+		Locale l = Locale.ENGLISH;
+		String[] locales = l.getISOLanguages();
+		for (int i = 0; i < locales.length; i++) {
+			String str = locales[i];
+			Locale obj = new Locale(str, str);
+			languages.add(obj.getDisplayLanguage());
+		}
+		String[] ar = languages.toArray(new String[languages.size()]);
+		Arrays.sort(ar);
+
+		languages = new ArrayList<String>();
+		for (int i = 0; i < ar.length; i++) {
+			languages.add(ar[i]);
+		}
+
+		System.out.println("Ontology loaded successfully");
+
 	}
 	
 	public OntologyClass getOntologyClassByName(String name) {
@@ -122,6 +143,14 @@ public class Main {
 
 	public void setMethods(List<BuiltinMethod> methods) {
 		this.methods = methods;
+	}
+
+	public List<String> getLanguages() {
+		return languages;
+	}
+
+	public void setLanguages(List<String> languages) {
+		this.languages = languages;
 	}
 	
 	

@@ -20,6 +20,7 @@ import javax.faces.context.FacesContext;
 import javax.faces.event.ActionEvent;
 import javax.faces.event.AjaxBehaviorEvent;
 
+import org.apache.commons.io.FilenameUtils;
 import org.primefaces.component.commandbutton.CommandButton;
 import org.primefaces.component.contextmenu.ContextMenu;
 import org.primefaces.component.panel.Panel;
@@ -50,6 +51,7 @@ import org.primefaces.model.mindmap.DefaultMindmapNode;
 import org.primefaces.model.mindmap.MindmapNode;
 import org.ruleEditor.ontology.BuiltinMethod;
 import org.ruleEditor.ontology.Main;
+import org.ruleEditor.ontology.Message;
 import org.ruleEditor.ontology.Ontology;
 import org.ruleEditor.ontology.OntologyClass;
 import org.ruleEditor.ontology.OntologyProperty;
@@ -57,6 +59,7 @@ import org.ruleEditor.ontology.OntologyProperty.DataProperty;
 import org.ruleEditor.ontology.OntologyProperty.ObjectProperty;
 import org.ruleEditor.ontology.PointElement;
 import org.ruleEditor.ontology.PointElement.Type;
+import org.ruleEditor.utils.FileDownloadController;
 import org.ruleEditor.utils.FileUploadController;
 import org.ruleEditor.utils.Utils;
 
@@ -64,15 +67,15 @@ import sun.rmi.runtime.NewThreadAction;
 
 import com.sun.faces.component.visit.FullVisitContext;
 
-@ManagedBean(name = "addConflictRuleBean")
+@ManagedBean(name = "addNewRuleBean")
 @SessionScoped
-public class AddConfictRuleBean {
+public class AddNewRuleBean {
 
 	private Main main;
 	private DefaultTreeNode root;
 	private TreeNode selectedNode = null;
-	private String ruleName = "", newFileName = "", oldFileName = "";
-	private InputStream oldFileStream;
+	private String ruleName = "", newFileName = "", oldFileName = "", feedbackFile="";
+	private InputStream fileStream;
 	private DefaultDiagramModel conditionsModel;
 	private DefaultDiagramModel conclusionsModel;
 	private List<DataProperty> datatypes = null;
@@ -94,8 +97,13 @@ public class AddConfictRuleBean {
 	private PointElement clonedOriginalTargetElement = null;
 	private PointElement cloneSelectedNode = null;
 	private BuiltinMethod selectedMethod = null;
+	private List<Message> messages = null;
+	private Message messageForRemove = new Message();
+	private boolean flag = false;// false : for simple rule
+	                             // true : for feedback rule
+	private String jsonString = "";
 
-	public AddConfictRuleBean() {
+	public AddNewRuleBean() {
 		super();
 
 		FacesContext context = FacesContext.getCurrentInstance();
@@ -105,11 +113,13 @@ public class AddConfictRuleBean {
 
 	}
 
-	public void init() {
+	public void init(boolean tempFlag) {
 
+		flag = tempFlag;
 		ruleName = "";
 		newFileName = "";
 		oldFileName = "";
+		feedbackFile="";
 		datatypes = new ArrayList<DataProperty>();
 		objects = new ArrayList<ObjectProperty>();
 		instances = new ArrayList<String>();
@@ -128,6 +138,11 @@ public class AddConfictRuleBean {
 		sourceElement= new PointElement();
 		originalTargetElement = new PointElement();
 		clonedOriginalTargetElement = new PointElement();
+		
+		Message emptyMessage = new Message();
+		emptyMessage.setLanguage("English");
+		messages = new ArrayList<Message>();
+		messages.add(emptyMessage);
 
 		// Initialization of conditions model
 		conditionsModel = new DefaultDiagramModel();
@@ -316,30 +331,25 @@ public class AddConfictRuleBean {
 
 		}
 	}
-
-	public void onConnect(ConnectEvent event) {
-
-		targetElement = (PointElement) event.getTargetElement()
-				.getData();
-		sourceElement = (PointElement) event.getSourceElement()
-				.getData();
-		
-		//update the list with the connections for the target element
-		for(PointElement el: conditions){
-			if(el.getVarName().equalsIgnoreCase(targetElement.getVarName())){
+	
+	public void connectClassWithProperty(PointElement targetElement,
+			PointElement sourceElement) {
+		// update the list with the connections for the target element
+		for (PointElement el : conditions) {
+			if (el.getId().equalsIgnoreCase(targetElement.getId())) {
 				targetElement.setConnections(el.getConnections());
 				break;
 			}
 		}
-		
-		for(PointElement el: conclusions){
-			if(el.getVarName().equalsIgnoreCase(targetElement.getVarName())){
+
+		for (PointElement el : conclusions) {
+			if (el.getId().equalsIgnoreCase(targetElement.getId())) {
 				targetElement.setConnections(el.getConnections());
 				break;
 			}
 		}
-		
-		//clone the old target element in order to make the changes
+
+		// clone the old target element in order to make the changes
 
 		clonedTargetElement = targetElement.clone();
 
@@ -347,7 +357,6 @@ public class AddConfictRuleBean {
 			clonedTargetElement.getConnections().add(sourceElement);
 		}
 
-		
 		int index = -1;
 		if (sourceElement.getPanel().equals("conditions")) {
 			// remove old object from the list
@@ -366,7 +375,66 @@ public class AddConfictRuleBean {
 				this.conclusions.add(index, clonedTargetElement);
 			}
 		}
+	}
+
+	public void connectBuiltinMethodWithProperty(PointElement sourceElement,
+			PointElement targetElement) {
+		// update the connections of the source element (built in method)
+		for (PointElement el : conditions) {
+			if (el.getId().equalsIgnoreCase(sourceElement.getId())) {
+				sourceElement.setConnections(el.getConnections());
+				break;
+			}
+		}
+
+		for (PointElement el : conclusions) {
+			if (el.getId().equalsIgnoreCase(sourceElement.getId())) {
+				sourceElement.setConnections(el.getConnections());
+				break;
+			}
+		}
+
+		PointElement clonedSourceElement = sourceElement.clone();
+		int i = clonedSourceElement.getMethod().getNumberOfParams();
+		if (clonedSourceElement.getConnections().size() < i) {
+			clonedSourceElement.getConnections().add(targetElement.clone());
+		}
+
+		int index = -1;
+		if (sourceElement.getPanel().equals("conditions")) {
+			// remove old object from the list
+			// add the updated one
+
+			index = this.conditions.indexOf(sourceElement);
+			if (index != -1) {
+				this.conditions.remove(index);
+				this.conditions.add(index, clonedSourceElement);
+			}
+
+		} else {
+			index = this.conclusions.indexOf(sourceElement);
+			if (index != -1) {
+				this.conclusions.remove(index);
+				this.conclusions.add(index, clonedSourceElement);
+			}
+		}
+	}
+
+	public void onConnect(ConnectEvent event) {
+
+		targetElement = (PointElement) event.getTargetElement()
+				.getData();
+		sourceElement = (PointElement) event.getSourceElement()
+				.getData();
+		
+		// 1st case, connect a class with a property
+		if (sourceElement.getType() == Type.CLASS)
+			connectClassWithProperty(targetElement, sourceElement);
+		// 2nd case, connect a built in method with a property
+		else if (sourceElement.getType() == Type.BUILTIN_METHOD)
+			connectBuiltinMethodWithProperty(sourceElement, targetElement);
 			
+		
 		
 	}
 
@@ -505,6 +573,15 @@ public class AddConfictRuleBean {
 	
 	public void saveRule() throws IOException{
 		
+		
+		// feedback rule
+		if(flag){
+			//write messages in jsonld file
+			if(!feedbackFile.isEmpty())
+				jsonString = Utils.writeMessagesInJsonLdFile(fileStream,messages);
+			
+		}
+		
 		if (ruleName.trim().equals("")) {
 			FacesContext.getCurrentInstance().addMessage(
 					"msgs",
@@ -527,60 +604,32 @@ public class AddConfictRuleBean {
 			return;
 		}
 
+		
+		
+		//create the rule
 		String rule = Utils.createRule(conditions, conclusions, ruleName);
 
 		RequestContext rc = RequestContext.getCurrentInstance();
 		rc.execute("PF('newRuleDialog').hide()");
 		
+		//export the rule
 		if (!rule.isEmpty())
-			Utils.writeGsonAndExportFile(newFileName, rule);
+			FileDownloadController.writeGsonAndExportFile(newFileName, rule);
 		
 	}
-
-	/**
-	 * <!--  	<h:panelGrid columns="3" columnClasses="label,value,name"
-					styleClass="grid">
-					<h:outputText value="Rule name: " id="ruleName" />
-					<p:inputText label="Rule name" style="width: 300px;"
-						id="newRuleName" autocomplete="off"
-						value="#{addConflictRuleBean.ruleName}">
-					</p:inputText>
-					<h:outputText id="empty1" required="false" />
-
-					<h:outputText value="Insert a new file name: " id="FileName"
-						required="false" />
-					<p:inputText label="File Name" required="false"
-						style="width: 300px;" id="newFileName" autocomplete="off"
-						value="#{addConflictRuleBean.newFileName}">
-					</p:inputText>
-					<h:outputText id="empty2" required="false" />
-
-					<h:outputText value="or Select an existing rule file:  "
-						id="existingFile" required="false" />
-					<p:fileUpload mode="advanced" auto="false"
-						value="#{addConflictRuleBean.oldFileName}"
-						fileUploadListener="#{addConflictRuleBean.onFileUpload}"
-						allowTypes="/(\.|\/)(rules)$/"
-						description="Select an existing rule file">
-					</p:fileUpload>
-					<h:outputText value="#{addConfictRuleBean.oldFileName}"
-						id="selectedFile" required="false" />
-				</h:panelGrid> -->	
-	 * @param event
-	 */
-
+	
 	public void onFileUpload(FileUploadEvent event) {
 
-		oldFileName = event.getFile().getFileName();
+		feedbackFile = event.getFile().getFileName();
+		String filename = FilenameUtils.getName(event.getFile().getFileName());
 		try {
-			oldFileStream = event.getFile().getInputstream();
+			fileStream = event.getFile().getInputstream();
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 
-		RequestContext rc = RequestContext.getCurrentInstance();
-		rc.update("informationPanel");
+		System.out.println(feedbackFile);
 
 	}
 
@@ -615,6 +664,7 @@ public class AddConfictRuleBean {
 		networkElement.setVarName(setVariableName());
 		networkElement.setId(networkElement.getVarName());
 		networkElement = setPosition(networkElement);
+		networkElement.setMethod(selectedMethod.clone());
 		Element element = new Element(networkElement,
 				String.valueOf(networkElement.getX() + "em"),
 				String.valueOf(networkElement.getY() + "em"));
@@ -728,6 +778,15 @@ public class AddConfictRuleBean {
 			conclusionsModel = new DefaultDiagramModel();
 			conclusions = new ArrayList<PointElement>();
 		}
+	}
+	
+	public void removeMessageFromList() {
+		messages.remove(messageForRemove);
+	}
+
+	public void addMessageToList() {
+		Message newMessage = new Message();
+		messages.add(newMessage);
 	}
 	
 
@@ -846,6 +905,30 @@ public class AddConfictRuleBean {
 
 	public void setSelectedMethod(BuiltinMethod selectedMethod) {
 		this.selectedMethod = selectedMethod;
+	}
+
+	public List<Message> getMessages() {
+		return messages;
+	}
+
+	public void setMessages(List<Message> messages) {
+		this.messages = messages;
+	}
+
+	public Message getMessageForRemove() {
+		return messageForRemove;
+	}
+
+	public void setMessageForRemove(Message messageForRemove) {
+		this.messageForRemove = messageForRemove;
+	}
+
+	public String getFeedbackFile() {
+		return feedbackFile;
+	}
+
+	public void setFeedbackFile(String feedbackFile) {
+		this.feedbackFile = feedbackFile;
 	}
 
 

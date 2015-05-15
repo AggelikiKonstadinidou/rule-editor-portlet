@@ -18,7 +18,7 @@
 			<br />
 			<p:panel id="informationPanel">
 				<f:facet name="header">
-					<h:outputText value="New Conflict/Resolution Rule" />
+					<h:outputText value="New Feedback Rule" />
 				</f:facet>
 
 					<h:panelGrid columns="2" id="grid1">
@@ -213,6 +213,57 @@
 
 					</h:panelGrid>
 
+				<p:panel id="feedbackMessages" style="margin-top:10px">
+
+					<f:facet name="header">
+						<h:outputText value="FeedBack Messages" id="feed"
+							title="Add feedback messages in different languages to support the rule" />
+					</f:facet>
+
+					<c:forEach items="#{addNewRuleBean.messages}" var="item"
+						varStatus="status">
+
+						<p:panelGrid style="width:100%;margin-bottom:5px">
+							<p:row>
+								<p:column style="font-weight: bold;">Language
+									<p:selectOneMenu value="#{item.language}"
+										style="width:150px">
+										<f:selectItems value="#{main.languages}" />
+									</p:selectOneMenu>
+								</p:column>
+								<p:column style="font-weight: bold;">Message text
+									<p:inputText value="#{item.text}" style="width: 300px;" />
+								</p:column>
+								<p:column style="font-weight: bold;">
+									<p:commandButton value="Remove message"
+										rendered="#{addNewRuleBean.messages.size() > 1}"
+										action="#{addNewRuleBean.removeMessageFromList}"
+										update="feedbackMessages" icon="ui-icon-close"
+										title="Remove message">
+										<f:setPropertyActionListener value="#{item}"
+											target="#{addNewRuleBean.messageForRemove}" />
+									</p:commandButton>
+								</p:column>
+							</p:row>
+						</p:panelGrid>
+
+					</c:forEach>
+					
+					<p:commandButton value="Add message"
+						actionListener="#{addNewRuleBean.addMessageToList}"
+						update="feedbackMessages" icon="ui-icon-plus"
+						title="Add a message in a another language" />
+						
+					<br/>
+					<h:outputText value="Select file" />
+					<p:fileUpload auto="true" style="width: 600px;"
+						value="#{addNewRuleBean.feedbackFile}"
+						fileUploadListener="#{addNewRuleBean.onFileUpload}"
+						allowTypes="/(\.|\/)(jsonld)$/">
+					</p:fileUpload>
+					
+				</p:panel>
+
 
 				<p:commandButton oncomplete="PF('newRuleDialog').show()"
 					value="Save Rule" title="Save the rule">
@@ -232,6 +283,7 @@
 
 				
 			</p:panel>
+			
 
 			<p:dialog widgetVar="newRuleDialog" id="newRuleDialog" modal="true"
 				header="Save rule configuration" resizable="false" showEffect="clip"

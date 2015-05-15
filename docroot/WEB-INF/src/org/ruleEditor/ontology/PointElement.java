@@ -14,6 +14,7 @@ public class PointElement {
 	private ArrayList<PointElement> connections;
 	private String panel;
 	private String id;
+	private BuiltinMethod method;
 
 	public PointElement() {
 		super();
@@ -27,6 +28,15 @@ public class PointElement {
 		this.connections = new ArrayList<PointElement>();
 		this.panel = "";
 		this.id = "";
+		this.method = new BuiltinMethod("", "", "", 0, Type.BUILTIN_METHOD);
+	}
+
+	public BuiltinMethod getMethod() {
+		return method;
+	}
+
+	public void setMethod(BuiltinMethod method) {
+		this.method = method;
 	}
 
 	public String getId() {
@@ -138,6 +148,7 @@ public class PointElement {
 		}
 		el.setPanel(this.getPanel());
 		el.setId(this.getId());
+		el.setMethod(this.getMethod().clone());
 
 		return el;
 	}
