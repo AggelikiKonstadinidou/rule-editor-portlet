@@ -26,11 +26,10 @@
 							orientation="horizontal" selectionMode="single"
 							selection="#{addNewRuleBean.selectedNode}"
 							style="width:535px;">
-							<p:ajax event="select"
-								listener="#{addNewRuleBean.onNodeSelect}"
-								update=":#{p:component('dataProperties')},
-								:#{p:component('objectProperties')}" />
-							<p:treeNode>
+						<p:ajax event="select" listener="#{addNewRuleBean.onNodeSelect}"
+							update=":#{p:component('dataProperties')},
+								:#{p:component('objectProperties')},:#{p:component('instances')}" />
+						<p:treeNode>
 								<h:outputText value="#{node}" />
 							</p:treeNode>
 
@@ -67,7 +66,7 @@
 								<h:outputText value="#{data.propertyName}" />
 							</p:column>
 							<p:column headerText="Range">
-								<h:outputText value="#{data.propertyName}" />
+								<h:outputText value="#{data.rangeOfClasses[0]}" />
 							</p:column>
 
 						</p:dataTable>
@@ -255,13 +254,16 @@
 						title="Add a message in a another language" />
 						
 					<br/>
-					<h:outputText value="Select file" />
-					<p:fileUpload auto="true" style="width: 600px;"
-						value="#{addNewRuleBean.feedbackFile}"
-						fileUploadListener="#{addNewRuleBean.onFileUpload}"
-						allowTypes="/(\.|\/)(jsonld)$/">
-					</p:fileUpload>
-					
+					<h:panelGrid columns="2" columnClasses="label,value"
+						styleClass="grid">
+						<p:fileUpload style="width: 500px;" mode="advanced"
+							value="#{addNewRuleBean.feedbackFile}"
+							fileUploadListener="#{addNewRuleBean.onFileUpload}"
+							allowTypes="/(\.|\/)(jsonld)$/">
+						</p:fileUpload>
+						<p:commandButton value="Export Messages" id="export" ajax="false"
+							actionListener="#{addNewRuleBean.exportJsonLdFile}" />
+					</h:panelGrid>
 				</p:panel>
 
 

@@ -12,6 +12,7 @@ import javax.servlet.ServletContext;
 
 import org.ruleEditor.ontology.OntologyProperty.DataProperty;
 import org.ruleEditor.ontology.OntologyProperty.ObjectProperty;
+import org.ruleEditor.utils.Utils;
 
 import com.hp.hpl.jena.ontology.DatatypeProperty;
 import com.hp.hpl.jena.ontology.Individual;
@@ -85,7 +86,7 @@ public class Ontology implements Serializable {
 			if (essaClasse.hasSubClass()) {
 				for (Iterator i = essaClasse.listSubClasses(true); i.hasNext();) {
 					OntClass c = (OntClass) i.next();
-					l.add(getConceptChildrenStructured(c));
+					l.add(getConceptChildrenStructured(c,vClasse));
 				}
 			}
 
@@ -95,7 +96,7 @@ public class Ontology implements Serializable {
 			on.setChildren(l);
 
 			// TODO
-			fillClassData(on);
+			fillClassData(on,vClasse);
 
 			tempList.add(on);
 			list.add(tempList);
@@ -105,7 +106,7 @@ public class Ontology implements Serializable {
 		return list;
 	}
 
-	public void fillClassData(OntologyClass myClass) {
+	public void fillClassData(OntologyClass myClass,String motherClassName) {
 
 		ArrayList<DataProperty> dataProperties = new ArrayList<DataProperty>();
 		ArrayList<ObjectProperty> objectProperties = new ArrayList<ObjectProperty>();
@@ -113,8 +114,8 @@ public class Ontology implements Serializable {
 
 		String className = myClass.getClassName();
 
-		List<String> dataPropertiesNames = setDataPropertiesToClass(className);
-		List<String> objectPropertiesNames = setObjectPropertiesToClass(className);
+		List<String> dataPropertiesNames = setDataPropertiesToClass(motherClassName);
+		List<String> objectPropertiesNames = setObjectPropertiesToClass(motherClassName);
 
 		OntClass cl = ontologyModel.getOntClass(NS + myClass.getClassName());
 		// get instances
@@ -124,8 +125,17 @@ public class Ontology implements Serializable {
 			Iterator it = cl.listInstances();
 			while (it.hasNext()) {
 				IndividualImpl in = (IndividualImpl) it.next();
-				instances.add(in.getURI());
-				myinstances.add(in);
+				String categoryName = in.getOntClass().toString().split("#")[1];
+				
+				//format the name of the instance and add it to the correct
+				//class 
+				if (categoryName.equalsIgnoreCase(className)) {
+					String instanceName = in.getURI().replace(NS, "");
+					if (instanceName.contains("_"))
+						instanceName = instanceName.split("_")[0];
+					instances.add(Utils.splitCamelCase(instanceName));
+					myinstances.add(in);
+				}
 			}
 		}
 
@@ -145,9 +155,13 @@ public class Ontology implements Serializable {
 		// object properties
 		OntologyProperty.ObjectProperty objectProp = null;
 		for (String s : objectPropertiesNames) {
-			objectProp = prop.new ObjectProperty(s, className);
-			objectProp.setOntologyURI(NS+className+"_"+s);
+
+			String objName = s.split("_")[0];
+			String range = s.split("_")[1];
+			objectProp = prop.new ObjectProperty(objName, className);
+			objectProp.setOntologyURI(NS + className + "_" + objName);
 			objectProp.setRangeOfClasses(new ArrayList<String>());
+			objectProp.getRangeOfClasses().add(range);
 			objectProperties.add(objectProp);
 		}
 		
@@ -156,44 +170,26 @@ public class Ontology implements Serializable {
 		myClass.setInstances(instances);
 	}
 
-	public List<OntologyClass> getSolutionsClassesStructured() {
-		List<OntologyClass> list = new ArrayList<OntologyClass>();
-
-		OntClass essaClasse = ontologyModel.getOntClass(NS + "Solutions");
-
-		String vClasse = essaClasse.getLocalName().toString();
-		List<OntologyClass> l = new ArrayList<OntologyClass>();
-		if (essaClasse.hasSubClass()) {
-			for (Iterator i = essaClasse.listSubClasses(true); i.hasNext();) {
-				OntClass c = (OntClass) i.next();
-				l.add(getConceptChildrenStructured(c));
-			}
-		}
-		OntologyClass on = new OntologyClass();
-		on.setClassName(vClasse);
-		on.setChildren(l);
-		list.add(on);
-
-		return list;
-	}
-
-	public OntologyClass getConceptChildrenStructured(OntClass c) {
+	public OntologyClass getConceptChildrenStructured(OntClass c,String motherClassName) {
 		List<OntologyClass> l = new ArrayList<OntologyClass>();
 		if (c.hasSubClass()) {
 			for (Iterator i = c.listSubClasses(true); i.hasNext();) {
 				OntClass cc = (OntClass) i.next();
-				l.add(getConceptChildrenStructured(cc));
+				l.add(getConceptChildrenStructured(cc,motherClassName));
 			}
 		}
 		OntologyClass on = new OntologyClass();
 		on.setClassName(c.getLocalName());
 		on.setChildren(l);
+		
+		fillClassData(on, motherClassName);
 
 		return on;
 	}
 
 	public List<String> setDataPropertiesToClass(String name) {
-		List<String> solutions = Arrays.asList("name", "Id", "description");
+		List<String> solutions = Arrays.asList("hasSolutionName", "id", "hasSolutionDescription","hasSolutionVersion",
+				"hasStartCommand","hasStopCommand","hasCapabilities","hasCapabilitiesTransformations","hasContraints");
 		List<String> installedSolution = Arrays.asList("name", "id");
 		List<String> preference = Arrays.asList("id", "name", "type", "value");
 		List<String> metadata = Arrays.asList("value", "type");
@@ -209,32 +205,34 @@ public class Ontology implements Serializable {
 		List<String> operatingSystem = Arrays.asList("name", "version");
 		List<String> multipleATConflict = new ArrayList<String>();
 		List<String> multipleSolutionConflict = new ArrayList<String>();
-		List<String> environment = new ArrayList<String>();
-		List<String> devices = Arrays.asList("name", "description");
-		List<String> platforms = Arrays.asList("name", "description",
-				"version", "subType", "type");
+		List<String> environment = Arrays.asList("hasEnvironmentName");
+		List<String> devices = Arrays.asList("hasDeviceName", "hasDeviceDescription");
+		List<String> platforms = Arrays.asList("hasPlatformName", "hasPlatformDescription",
+				"hasPlatformVersion", "hasPlatformSubType", "hasPlatfomType");
 
-		if (name.equals("Solutions"))
+		if (name.equalsIgnoreCase("Solutions"))
 			return solutions;
-		else if (name.equals("InstalledSolution"))
+		else if (name.equalsIgnoreCase("InstalledSolution"))
 			return installedSolution;
-		else if (name.equals("Preference"))
+		else if (name.equalsIgnoreCase("Preference"))
 			return preference;
-		else if (name.equals("Metadata"))
+		else if (name.equalsIgnoreCase("Metadata"))
 			return metadata;
-		else if (name.equals("Setting"))
+		else if (name.equalsIgnoreCase("Setting"))
 			return setting;
-		else if (name.equals("InferredConfiguration"))
+		else if (name.equalsIgnoreCase("InferredConfiguration"))
 			return inferredConfiguration;
-		else if (name.equals("Configuration"))
+		else if (name.equalsIgnoreCase("Configuration"))
 			return configuration;
-		else if (name.equals("Conflict") || name.equals("ConflictResolution"))
+		else if (name.equalsIgnoreCase("Conflict") || name.equalsIgnoreCase("ConflictResolution"))
 			return conflict;
-		else if (name.equals("OperatingSystem"))
+		else if (name.equalsIgnoreCase("OperatingSystem"))
 			return operatingSystem;
-		else if (name.equals("Devices"))
+		else if (name.equalsIgnoreCase("Devices"))
 			return devices;
-		else if (name.equals("platforms"))
+		else if (name.equalsIgnoreCase("platforms"))
+			return platforms;
+		else if (name.equalsIgnoreCase("environment"))
 			return platforms;
 		else
 			return new ArrayList<String>();
@@ -242,30 +240,20 @@ public class Ontology implements Serializable {
 	}
 
 	public List<String> setObjectPropertiesToClass(String name) {
-		List<String> solutions = Arrays.asList("refersTo", "InstalledSolution",
-				"Preference", "Metadata", "Setting", "InferredConfiguration",
-				"Configuration", "Conflict", "ConflictResolution",
-				"PreferenceSet", "OperatingSystem", "MultipleATConflict",
-				"MultipleSolutionConflict", "Environment", "Devices",
-				"Platforms");
-
-		List<String> setting = Arrays.asList("Solutions", "InstalledSolution",
-				"Preference", "Metadata", "Setting", "InferredConfiguration",
-				"Configuration", "Conflict", "ConflictResolution",
-				"PreferenceSet", "OperatingSystem", "MultipleATConflict",
-				"MultipleSolutionConflict", "Environment", "Devices",
-				"Platforms");
-		List<String> metadata = Arrays.asList("scope");
-		List<String> conflict = Arrays.asList("hasResolution");
-		List<String> preferenceSet = Arrays.asList("hasMetadata",
-				"hasPreference");
-		List<String> inferredConfiguration = Arrays.asList("hasMetadata",
-				"hasPreference", "refersTo");
-		List<String> devices = Arrays.asList("specific Setting",
-				"supporting Device");
-		List<String> platforms = Arrays.asList("specific Setting",
-				"supporting Platform");
-		List<String> installedSolution = Arrays.asList("settings");
+		List<String> solutions = Arrays.asList("hasSolutionSpecificSettings_Settings",
+				"runsOnDevice_Devices", "runsOnPlatform_Platforms");
+		List<String> setting = new ArrayList<String>();
+		List<String> metadata = Arrays.asList("scope_?");
+		List<String> conflict = Arrays.asList("hasResolution_?");
+		List<String> preferenceSet = Arrays.asList("hasMetadata_Metadata",
+				"hasPreference_Preference");
+		List<String> inferredConfiguration = Arrays.asList("hasMetadata_Metadata",
+				"hasPreference_Preference", "refersTo_?");
+		List<String> devices = Arrays.asList("hasDeviceVendor_Vendor","hasDeviceSpecificSetting_Settings",
+				"isSupportingDeviceOf_Solutions");
+		List<String> platforms = Arrays.asList("hasPlatformVendor_Vendor","hasPlatformSpecificSetting_Settings",
+				"platformSupports_Solutions");
+		List<String> installedSolution = Arrays.asList("settings_Settings");
 
 		if (name.equals("Solutions"))
 			return solutions;

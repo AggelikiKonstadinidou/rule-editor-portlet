@@ -13,10 +13,12 @@
 				style="font-size: 18px; font-weight:bold" />
 			<br />
 			<br />
-			<p:commandButton
-				oncomplete="PF('newRuleDialog').show()"
-				value="Create a new rule">
-			</p:commandButton> 
+			<p:commandButton id="addNewRule"
+			    actionListener="#{step1Bean.init}"
+				action="/views/step1Bean.xhtml?javax.portlet.faces.PortletMode=view&amp;javax.portlet.faces.WindowState=normal"
+				ajax="false" value="Add new rule"
+				title="Add a new conflict/resolution or feedback rule">
+			</p:commandButton>
 			<br />
 			<br />
 			<p:commandButton id="edit"

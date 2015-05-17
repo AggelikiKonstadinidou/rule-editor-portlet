@@ -13,7 +13,7 @@ import org.primefaces.event.FileUploadEvent;
 
 @ManagedBean(name = "fileUploadController")
 public class FileUploadController {
-	private String destination = "C:\\";
+	private static String destination = "C:\\";
 
 	public void upload(FileUploadEvent event) {
 		FacesMessage msg = new FacesMessage("Success! ", event.getFile()
@@ -29,7 +29,7 @@ public class FileUploadController {
 
 	}
 
-	public void copyFile(String fileName, InputStream in) {
+	public static void copyFile(String fileName, InputStream in) {
 		try {
 
 			// write the inputStream to a FileOutputStream

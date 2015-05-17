@@ -577,8 +577,7 @@ public class AddNewRuleBean {
 		// feedback rule
 		if(flag){
 			//write messages in jsonld file
-			if(!feedbackFile.isEmpty())
-				jsonString = Utils.writeMessagesInJsonLdFile(fileStream,messages);
+			
 			
 		}
 		
@@ -618,41 +617,52 @@ public class AddNewRuleBean {
 		
 	}
 	
-	public void onFileUpload(FileUploadEvent event) {
+	public void onFileUpload(FileUploadEvent event) throws IOException {
 
 		feedbackFile = event.getFile().getFileName();
-		String filename = FilenameUtils.getName(event.getFile().getFileName());
-		try {
-			fileStream = event.getFile().getInputstream();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
 
+		fileStream = event.getFile().getInputstream();
+		
 		System.out.println(feedbackFile);
 
+	}
+	
+	public void exportJsonLdFile() throws IOException{
+		if (!feedbackFile.isEmpty())
+			jsonString = Utils.writeMessagesInJsonLdFile(fileStream, messages);
+
+		FileDownloadController.writeGsonAndExportFile(feedbackFile, jsonString);
 	}
 
 	public void onNodeSelect() {
 
-		DefaultTreeNode node = null;
-
-		// update data and object properties panel according to
-		// the selected node
-
 		for (ArrayList<OntologyClass> temp : main.getAllClasses()) {
-			if (temp.get(0).getClassName().equals(this.selectedNode.getData())) {
-
-				datatypes = temp.get(0).getDataProperties();
-				objects = temp.get(0).getObjectProperties();
-
-				break;
-			}
+			searchChildrenByName(temp.get(0));
 
 		}
 
 	}
-	
+
+	public boolean searchChildrenByName(OntologyClass tempClass) {
+		boolean flag = false;
+		if (tempClass.getClassName().equals(this.selectedNode.getData())) {
+
+			datatypes = tempClass.getDataProperties();
+			objects = tempClass.getObjectProperties();
+			instances = tempClass.getInstances();
+			return true;
+
+		} else {
+			for (OntologyClass tempChild : tempClass.getChildren()) {
+				flag = searchChildrenByName(tempChild);
+				if (flag)
+					break;
+			}
+		}
+
+		return false;
+	}
+
 	public void moveMethodToPanel(String panelID) {
 		
 		// create the element for the diagram

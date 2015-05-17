@@ -1,0 +1,54 @@
+<?xml version="1.0"?>
+
+<f:view xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:c="http://java.sun.com/jsp/jstl/core"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:ui="http://java.sun.com/jsf/facelets">
+	<h:head />
+	<h:body>
+		<h:form id="form">
+		<p:panel id="informationPanel">
+				<f:facet name="header">
+					<h:outputText value="Step 1" />
+				</f:facet>
+			<h:outputLabel for="name" value="This rule"
+				style="font-size: 16px;" />
+			<br />
+			<br />
+
+				<p:selectOneRadio id="options" value="#{step1Bean.selectedOption}"
+					layout="pageDirection" style="font-size: 16px;">
+					<f:selectItem itemLabel=" will resolve a conflict situation."
+						itemValue="/views/addConflictResolRule.xhtml?javax.portlet.faces.PortletMode=view&amp;javax.portlet.faces.WindowState=normal" />
+					<f:selectItem itemLabel=" will send a message to the user."
+						itemValue="/views/addFeedbackRule.xhtml?javax.portlet.faces.PortletMode=view&amp;javax.portlet.faces.WindowState=normal" />
+					<f:selectItem itemLabel=" both options." itemValue="both options" />
+					<p:ajax listener="#{step1Bean.handleChange}" update=":#{p:component('nextBut')}" />
+				</p:selectOneRadio>
+
+
+				<div align="right">
+					<p:commandLink id="prevBut"
+						ajax="false" style="align: right"
+						action="/views/initialMenu.xhtml?javax.portlet.faces.PortletMode=view&amp;javax.portlet.faces.WindowState=normal">
+						<h:graphicImage url="/previous.png"
+							styleClass="basicImageStyle valign-middle"
+							title="Go back to the previous page" />
+						<span style="margin-right: 20px"> Go to initial menu </span>
+					</p:commandLink>
+					<p:commandLink id="nextBut" ajax="false"
+						binding="#{step1Bean.button}" style="align: right"
+						disabled="#{step1Bean.formCompleted}"
+						actionListener="#{step1Bean.submitOption}">
+						<span> Go to next step </span>
+						<h:graphicImage url="/next.png"
+							styleClass="basicImageStyle valign-middle"
+							title="Go forward to the next page" />
+					</p:commandLink>
+				</div>
+			</p:panel>
+		</h:form>
+	</h:body>
+</f:view>
