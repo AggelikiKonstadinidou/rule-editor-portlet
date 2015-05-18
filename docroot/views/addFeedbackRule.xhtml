@@ -22,20 +22,20 @@
 				</f:facet>
 
 					<h:panelGrid columns="2" id="grid1">
+					<p:scrollPanel style="width:535px;height:800px;">
 						<p:tree id="tree" value="#{addNewRuleBean.root}" var="node"
 							orientation="horizontal" selectionMode="single"
-							selection="#{addNewRuleBean.selectedNode}"
-							style="width:535px;">
-						<p:ajax event="select" listener="#{addNewRuleBean.onNodeSelect}"
-							update=":#{p:component('dataProperties')},
+							selection="#{addNewRuleBean.selectedNode}">
+							<p:ajax event="select" listener="#{addNewRuleBean.onNodeSelect}"
+								update=":#{p:component('dataProperties')},
 								:#{p:component('objectProperties')},:#{p:component('instances')}" />
-						<p:treeNode>
+							<p:treeNode>
 								<h:outputText value="#{node}" />
 							</p:treeNode>
-
-
 						</p:tree>
-						<h:panelGrid rows="4" id="grid2" style="width:535px;">
+					</p:scrollPanel>
+
+					<h:panelGrid rows="4" id="grid2" style="width:535px;">
 
 						<p:dataTable id="dataProperties" var="data"
 							value="#{addNewRuleBean.datatypes}"
@@ -73,7 +73,8 @@
 
 						<p:dataTable id="instances" var="data"
 							value="#{addNewRuleBean.instances}" rowKey="#{data}"
-							selectionMode="single">
+							selectionMode="single"
+							selection="#{addNewRuleBean.selectedInstance}">
 
 							<p:column headerText="Instances">
 								<h:outputText value="#{data}" />
@@ -93,46 +94,46 @@
 						<p:contextMenu for="tree">
 							<p:menuitem value="Move to conditions"
 								update=":#{p:component('pan1')}"
-								actionListener="#{addNewRuleBean.moveToPanel('pan1')}" />
+								actionListener="#{addNewRuleBean.createClassElement('pan1')}" />
 							<p:menuitem value="Move to conclusions"
 								update=":#{p:component('pan2')}"
-								actionListener="#{addNewRuleBean.moveToPanel('pan2')}" />
+								actionListener="#{addNewRuleBean.createClassElement('pan2')}" />
 						</p:contextMenu>
 						
 						<p:contextMenu for="methods">
 							<p:menuitem value="Move to conditions"
 								update=":#{p:component('pan1')}"
-								actionListener="#{addNewRuleBean.moveMethodToPanel('pan1')}" />
+								actionListener="#{addNewRuleBean.createMethodElement('pan1')}" />
 							<p:menuitem value="Move to conclusions"
 								update=":#{p:component('pan2')}"
-								actionListener="#{addNewRuleBean.moveMethodToPanel('pan2')}" />
+								actionListener="#{addNewRuleBean.createMethodElement('pan2')}" />
 						</p:contextMenu>
 
 						<p:contextMenu for="dataProperties">
 							<p:menuitem value="Move to conditions"
 								update=":#{p:component('pan1')},:#{p:component('dataProperties')}"
-								actionListener="#{addNewRuleBean.moveToPanel2('pan1')}" />
+								actionListener="#{addNewRuleBean.createPropertyElement('pan1')}" />
 							<p:menuitem value="Move to conclusions"
 								update=":#{p:component('pan2')},:#{p:component('dataProperties')}"
-								actionListener="#{addNewRuleBean.moveToPanel2('pan2')}" />
+								actionListener="#{addNewRuleBean.createPropertyElement('pan2')}" />
 						</p:contextMenu>
 
 						<p:contextMenu for="objectProperties">
 							<p:menuitem value="Move to conditions"
 								update=":#{p:component('pan1')},:#{p:component('objectProperties')}"
-								actionListener="#{addNewRuleBean.moveToPanel2('pan1')}" />
+								actionListener="#{addNewRuleBean.createPropertyElement('pan1')}" />
 							<p:menuitem value="Move to conclusions"
 								update=":#{p:component('pan2')},:#{p:component('objectProperties')}"
-								actionListener="#{addNewRuleBean.moveToPanel2('pan2')}" />
+								actionListener="#{addNewRuleBean.createPropertyElement('pan2')}" />
 						</p:contextMenu>
 
 						<p:contextMenu for="instances">
 							<p:menuitem value="Move to conditions"
 								update=":#{p:component('pan1')}"
-								actionListener="#{addNewRuleBean.moveToPanel2('pan1')}" />
+								actionListener="#{addNewRuleBean.createInstanceElement('pan1')}" />
 							<p:menuitem value="Move to conclusions"
 								update=":#{p:component('pan2')}"
-								actionListener="#{addNewRuleBean.moveToPanel2('pan2')}" />
+								actionListener="#{addNewRuleBean.createInstanceElement('pan2')}" />
 						</p:contextMenu>
 
 					</h:panelGrid>
@@ -150,7 +151,7 @@
 							styleClass="ui-widget-content" var="item">
 
 							<f:facet name="element">
-								<p:panel id="pnl1" header="#{item.type}: #{item.elementName}">
+								<p:panel id="pnl1" header="#{item.elementName}">
 									<h:panelGrid columns="4" id="elementGrid1">
 										<h:outputText value="Variable: #{item.varName}"
 											rendered="#{!item.renderEditText}" />
@@ -183,7 +184,7 @@
 								style="height:750px;width:500px;" styleClass="ui-widget-content"
 								var="item">
 								<f:facet name="element">
-									<p:panel id="pnl2" header="#{item.type}: #{item.elementName}">
+									<p:panel id="pnl2" header="#{item.elementName}">
 									<h:panelGrid columns="3" id="elementGrid2">
 										<h:outputText value="Variable: #{item.varName}"
 											rendered="#{!item.renderEditText}" />
