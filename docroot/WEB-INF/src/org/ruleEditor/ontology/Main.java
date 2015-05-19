@@ -115,8 +115,14 @@ public class Main {
 				"check equality", 4, Type.DATA_PROPERTY);
 		BuiltinMethod test2 = new BuiltinMethod("notEquals", "notEquals",
 				"check not equality", 4, Type.DATA_PROPERTY);
+		BuiltinMethod test3 = new BuiltinMethod("makeSkolem", "makeSkolem",
+				"create a new instance", 4, Type.DATA_PROPERTY);
+		BuiltinMethod test4 = new BuiltinMethod("noValue", "noValue",
+				"no value", 1, Type.DATA_PROPERTY);
 		list.add(test1);
 		list.add(test2);
+		list.add(test3);
+		list.add(test4);
 
 		return list;
 	}

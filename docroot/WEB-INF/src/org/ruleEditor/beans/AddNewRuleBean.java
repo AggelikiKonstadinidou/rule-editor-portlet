@@ -103,7 +103,9 @@ public class AddNewRuleBean {
 	                             // true : for feedback rule
 	private String jsonString = "";
 	private String selectedInstance = "";
-
+    private String feedbackClass = "";
+    private String feedbackScope = "";
+    private String feedbackId = "";
 
 	public AddNewRuleBean() {
 		super();
@@ -141,6 +143,9 @@ public class AddNewRuleBean {
 		originalTargetElement = new PointElement();
 		clonedOriginalTargetElement = new PointElement();
 		selectedInstance = "";
+		feedbackClass = "";
+	    feedbackScope = "";
+	    feedbackId = "";
 		
 		Message emptyMessage = new Message();
 		emptyMessage.setLanguage("English");
@@ -180,7 +185,7 @@ public class AddNewRuleBean {
 		
 		if (panel.equalsIgnoreCase("conditions")) {
 			for (PointElement el : conditions) {
-				if (el.getVarName().equals(nodeForRemoveId)) {
+				if (el.getId().equals(nodeForRemoveId)) {
 					cloneSelectedNode = el.clone();
 					break;
 				}
@@ -188,7 +193,7 @@ public class AddNewRuleBean {
 		} else {
 
 			for (PointElement el : conclusions) {
-				if (el.getVarName().equals(nodeForRemoveId)) {
+				if (el.getId().equals(nodeForRemoveId)) {
 					cloneSelectedNode = el.clone();
 					break;
 				}
@@ -247,6 +252,29 @@ public class AddNewRuleBean {
 			clonedList.remove(index);
 			clonedList.add(index, cloneSelectedNode);
 		}
+		
+		//update the variable of a class in all connections
+		int pos = -1;
+		if (cloneSelectedNode.getType() == Type.CLASS)
+			for (PointElement el : clonedList) {
+				if (el.getType() == Type.DATA_PROPERTY
+						|| el.getType() == Type.OBJECT_PROPERTY) {
+					for (PointElement connEl : el.getConnections()) {
+						if (connEl.getId().equalsIgnoreCase(
+								cloneSelectedNode.getId())) {
+							pos = el.getConnections().indexOf(connEl);
+							break;
+						}
+					}
+
+					if (pos != -1) {
+						el.getConnections().remove(pos);
+						el.getConnections().add(pos, cloneSelectedNode);
+					}
+
+					pos = -1;
+				}
+			}
 
 		// update the corresponding list
 		if (cloneSelectedNode.getPanel().equals("conditions"))
@@ -325,7 +353,7 @@ public class AddNewRuleBean {
 	
 	public void removeNode(){
 		
-		String nodeForRemoveId = cloneSelectedNode.getVarName();
+		String nodeForRemoveId = cloneSelectedNode.getId();
 		String panel = cloneSelectedNode.getPanel();
 
 		int index = -1;
@@ -453,8 +481,9 @@ public class AddNewRuleBean {
 		return 0;
 	}
 
-	public void connectBuiltinMethodWithProperty(PointElement sourceElement,
+	public int connectBuiltinMethodWithProperty(PointElement sourceElement,
 			PointElement targetElement) {
+		int result = 0;
 		// update the connections of the source element (built in method)
 		for (PointElement el : conditions) {
 			if (el.getId().equalsIgnoreCase(sourceElement.getId())) {
@@ -474,6 +503,7 @@ public class AddNewRuleBean {
 		int i = clonedSourceElement.getMethod().getNumberOfParams();
 		if (clonedSourceElement.getConnections().size() < i) {
 			clonedSourceElement.getConnections().add(targetElement.clone());
+			result = 1;
 		}
 
 		int index = -1;
@@ -494,6 +524,8 @@ public class AddNewRuleBean {
 				this.conclusions.add(index, clonedSourceElement);
 			}
 		}
+		
+		return result;
 	}
 
 	public void onConnect(ConnectEvent event) {
@@ -508,7 +540,7 @@ public class AddNewRuleBean {
 			result = connectClassWithProperty(targetElement, sourceElement);
 		// 2nd case, connect a built in method with a property
 		else if (sourceElement.getType() == Type.BUILTIN_METHOD)
-			connectBuiltinMethodWithProperty(sourceElement, targetElement);
+			result = connectBuiltinMethodWithProperty(sourceElement, targetElement);
 		
 		if (result == 0) {
 			if (conditionsModel.getConnections().size() > 0)
@@ -671,14 +703,6 @@ public class AddNewRuleBean {
 	
 	public void saveRule() throws IOException{
 		
-		
-		// feedback rule
-		if(flag){
-			//write messages in jsonld file
-			
-			
-		}
-		
 		if (ruleName.trim().equals("")) {
 			FacesContext.getCurrentInstance().addMessage(
 					"msgs",
@@ -701,15 +725,15 @@ public class AddNewRuleBean {
 			return;
 		}
 
+		//create the rule string
+		String rule = "";
+		if (!flag)
+			rule = Utils.createRule(conditions, conclusions, ruleName);
+		else
+			rule = Utils.createFeedBackRule(feedbackClass, feedbackScope,
+					feedbackId, conditions);
 		
-		
-		//create the rule
-		String rule = Utils.createRule(conditions, conclusions, ruleName);
-
-		RequestContext rc = RequestContext.getCurrentInstance();
-		rc.execute("PF('newRuleDialog').hide()");
-		
-		//export the rule
+		// export the rule
 		if (!rule.isEmpty())
 			FileDownloadController.writeGsonAndExportFile(newFileName, rule);
 		
@@ -1041,6 +1065,30 @@ public class AddNewRuleBean {
 
 	public void setSelectedInstance(String selectedInstance) {
 		this.selectedInstance = selectedInstance;
+	}
+
+	public String getFeedbackClass() {
+		return feedbackClass;
+	}
+
+	public void setFeedbackClass(String feedbackClass) {
+		this.feedbackClass = feedbackClass;
+	}
+
+	public String getFeedbackScope() {
+		return feedbackScope;
+	}
+
+	public void setFeedbackScope(String feedbackScope) {
+		this.feedbackScope = feedbackScope;
+	}
+
+	public String getFeedbackId() {
+		return feedbackId;
+	}
+
+	public void setFeedbackId(String feedbackId) {
+		this.feedbackId = feedbackId;
 	}
 
 }

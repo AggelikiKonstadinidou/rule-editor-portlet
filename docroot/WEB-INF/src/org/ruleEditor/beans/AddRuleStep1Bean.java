@@ -13,14 +13,14 @@ import org.ruleEditor.ontology.Main;
 
 @ManagedBean(name = "step1Bean")
 @SessionScoped
-public class Step1Bean {
+public class AddRuleStep1Bean {
 	private CommandLink button;
 	private boolean formCompleted = true;
 	private Main main;
 	private AddNewRuleBean addNewRuleBean;
 	private String selectedOption;
 	
-	public Step1Bean() {
+	public AddRuleStep1Bean() {
 		super();
 		FacesContext context = FacesContext.getCurrentInstance();
 		main = (Main) context.getApplication().evaluateExpressionGet(context,

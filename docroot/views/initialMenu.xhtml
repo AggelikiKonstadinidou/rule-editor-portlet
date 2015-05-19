@@ -14,7 +14,7 @@
 			<br />
 			<br />
 			<p:commandButton id="addNewRule"
-			    actionListener="#{step1Bean.init}"
+			    actionListener="#{addRuleStep1Bean.init}"
 				action="/views/step1Bean.xhtml?javax.portlet.faces.PortletMode=view&amp;javax.portlet.faces.WindowState=normal"
 				ajax="false" value="Add new rule"
 				title="Add a new conflict/resolution or feedback rule">
@@ -22,7 +22,8 @@
 			<br />
 			<br />
 			<p:commandButton id="edit"
-				action="/views/profileView.xhtml?javax.portlet.faces.PortletMode=view&amp;javax.portlet.faces.WindowState=normal"
+			    actionListener="#{editRuleStep1Bean.init}"
+				action="/views/editExistingRule.xhtml?javax.portlet.faces.PortletMode=view&amp;javax.portlet.faces.WindowState=normal"
 				ajax="false" value="Edit an existing rule"
 				title="Edit an already existing rule">
 			</p:commandButton>

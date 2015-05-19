@@ -68,6 +68,23 @@ public class Utils {
 		return rule;
 	}
 	
+	public static String createFeedBackRule(String className, String scope,
+			String id, ArrayList<PointElement> conditions) {
+
+		String rule = prefix_c4a + "\n" + prefix_rdfs + "\n\n" + "[ruleName \n";
+
+		rule = rule + convertListToRule(conditions);
+
+		rule = rule + "makeSkolem(?newMetaData, ?" + className + ", ?" + scope
+				+ ")\n" + "->\n" + "(?newMetaData rdf:type c4a:Metadata)\n"
+				+ "(?newMetaData c4a:scope ?" + scope + ")\n"
+				+ "(?newMetaData c4a:messageType \"helpMessage\")\n"
+				+ "(?newMetaData c4a:refersTo c4a:" + id + ")\n" + "(?"
+				+ className + " c4a:hasMetadata ?newMetaData)\n]";
+
+		return rule;
+	}
+	
 	public static String convertListToRule(ArrayList<PointElement> list) {
 		String rule = "";
 
@@ -82,8 +99,8 @@ public class Utils {
 
 				OntologyProperty property = (DataProperty) el.getProperty();
 				if (el.getConnections().size() > 0)
-					rule = rule + "(" + el.getConnections().get(0).getVarName()
-							+ " c4a:" + el.getElementName() + " "
+					rule = rule + "(?" + el.getConnections().get(0).getVarName()
+							+ " c4a:" + el.getElementName() + " ?"
 							+ ((DataProperty) property).getValue() + ")\n";
 
 			} else if (el.getType() == PointElement.Type.OBJECT_PROPERTY) {
@@ -93,7 +110,7 @@ public class Utils {
 				// in case that something is missing, throw away
 				// the property node
 				if (el.getConnections().size() > 1)
-					rule = rule + "(" + el.getConnections().get(0).getVarName()
+					rule = rule + "(?" + el.getConnections().get(0).getVarName()
 							+ " c4a:" + el.getElementName() + " " + "?"
 							+ el.getConnections().get(1).getVarName() + ")\n";
 

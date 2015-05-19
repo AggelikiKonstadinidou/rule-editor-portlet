@@ -39,7 +39,8 @@
 						<p:dataTable id="dataProperties" var="data"
 							value="#{addNewRuleBean.datatypes}" rowKey="#{data.ontologyURI}"
 							selectionMode="single"
-							selection="#{addNewRuleBean.selectedDataProperty}">
+							selection="#{addNewRuleBean.selectedDataProperty}"
+							scrollable="true" scrollHeight="100">
 							<f:facet name="header">
 								<h:outputText value="Data Properties" />
 							</f:facet>
@@ -56,7 +57,8 @@
 						<p:dataTable id="objectProperties" var="data"
 							value="#{addNewRuleBean.objects}" rowKey="#{data.ontologyURI}"
 							selectionMode="single"
-							selection="#{addNewRuleBean.selectedObjectProperty}">
+							selection="#{addNewRuleBean.selectedObjectProperty}"
+							scrollable="true" scrollHeight="100">
 							<f:facet name="header">
 								<h:outputText value="Object Properties" />
 							</f:facet>
@@ -73,7 +75,8 @@
 						<p:dataTable id="instances" var="data"
 							value="#{addNewRuleBean.instances}" rowKey="#{data}"
 							selectionMode="single"
-							selection="#{addNewRuleBean.selectedInstance}">
+							selection="#{addNewRuleBean.selectedInstance}"
+							scrollable="true" scrollHeight="50">
 
 							<p:column headerText="Instances">
 								<h:outputText value="#{data}" />
@@ -83,7 +86,8 @@
 
 						<p:dataTable id="methods" var="method" value="#{main.methods}"
 							rowKey="#{method.originalName}" selectionMode="single"
-							selection="#{addNewRuleBean.selectedMethod}">
+							selection="#{addNewRuleBean.selectedMethod}"
+							scrollable="true" scrollHeight="100">
 							<p:column headerText="Primitive Methods">
 								<h:outputText value="#{method.usingName}" />
 							</p:column>

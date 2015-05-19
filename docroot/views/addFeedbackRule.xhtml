@@ -21,7 +21,7 @@
 					<h:outputText value="New Feedback Rule" />
 				</f:facet>
 
-					<h:panelGrid columns="2" id="grid1">
+				<h:panelGrid columns="2" id="grid1">
 					<p:scrollPanel style="width:535px;height:800px;">
 						<p:tree id="tree" value="#{addNewRuleBean.root}" var="node"
 							orientation="horizontal" selectionMode="single"
@@ -38,9 +38,10 @@
 					<h:panelGrid rows="4" id="grid2" style="width:535px;">
 
 						<p:dataTable id="dataProperties" var="data"
-							value="#{addNewRuleBean.datatypes}"
-							rowKey="#{data.ontologyURI}" selectionMode="single"
-							selection="#{addNewRuleBean.selectedDataProperty}">
+							value="#{addNewRuleBean.datatypes}" rowKey="#{data.ontologyURI}"
+							selectionMode="single"
+							selection="#{addNewRuleBean.selectedDataProperty}"
+							scrollable="true" scrollHeight="100">
 							<f:facet name="header">
 								<h:outputText value="Data Properties" />
 							</f:facet>
@@ -55,9 +56,10 @@
 						</p:dataTable>
 
 						<p:dataTable id="objectProperties" var="data"
-							value="#{addNewRuleBean.objects}"
-							rowKey="#{data.ontologyURI}" selectionMode="single"
-							selection="#{addNewRuleBean.selectedObjectProperty}">
+							value="#{addNewRuleBean.objects}" rowKey="#{data.ontologyURI}"
+							selectionMode="single"
+							selection="#{addNewRuleBean.selectedObjectProperty}"
+							scrollable="true" scrollHeight="100">
 							<f:facet name="header">
 								<h:outputText value="Object Properties" />
 							</f:facet>
@@ -74,7 +76,8 @@
 						<p:dataTable id="instances" var="data"
 							value="#{addNewRuleBean.instances}" rowKey="#{data}"
 							selectionMode="single"
-							selection="#{addNewRuleBean.selectedInstance}">
+							selection="#{addNewRuleBean.selectedInstance}"
+							scrollable="true" scrollHeight="50">
 
 							<p:column headerText="Instances">
 								<h:outputText value="#{data}" />
@@ -84,141 +87,107 @@
 
 						<p:dataTable id="methods" var="method" value="#{main.methods}"
 							rowKey="#{method.originalName}" selectionMode="single"
-							selection="#{addNewRuleBean.selectedMethod}">
+							selection="#{addNewRuleBean.selectedMethod}"
+							scrollable="true" scrollHeight="100">
 							<p:column headerText="Primitive Methods">
 								<h:outputText value="#{method.usingName}" />
 							</p:column>
 						</p:dataTable>
 
 					</h:panelGrid>
-						<p:contextMenu for="tree">
-							<p:menuitem value="Move to conditions"
-								update=":#{p:component('pan1')}"
-								actionListener="#{addNewRuleBean.createClassElement('pan1')}" />
-							<p:menuitem value="Move to conclusions"
-								update=":#{p:component('pan2')}"
-								actionListener="#{addNewRuleBean.createClassElement('pan2')}" />
-						</p:contextMenu>
-						
-						<p:contextMenu for="methods">
-							<p:menuitem value="Move to conditions"
-								update=":#{p:component('pan1')}"
-								actionListener="#{addNewRuleBean.createMethodElement('pan1')}" />
-							<p:menuitem value="Move to conclusions"
-								update=":#{p:component('pan2')}"
-								actionListener="#{addNewRuleBean.createMethodElement('pan2')}" />
-						</p:contextMenu>
+					<p:contextMenu for="tree">
+						<p:menuitem value="Move to conditions"
+							update=":#{p:component('pan1')}"
+							actionListener="#{addNewRuleBean.createClassElement('pan1')}" />
+					</p:contextMenu>
 
-						<p:contextMenu for="dataProperties">
-							<p:menuitem value="Move to conditions"
-								update=":#{p:component('pan1')},:#{p:component('dataProperties')}"
-								actionListener="#{addNewRuleBean.createPropertyElement('pan1')}" />
-							<p:menuitem value="Move to conclusions"
-								update=":#{p:component('pan2')},:#{p:component('dataProperties')}"
-								actionListener="#{addNewRuleBean.createPropertyElement('pan2')}" />
-						</p:contextMenu>
+					<p:contextMenu for="methods">
+						<p:menuitem value="Move to conditions"
+							update=":#{p:component('pan1')}"
+							actionListener="#{addNewRuleBean.createMethodElement('pan1')}" />
+					</p:contextMenu>
 
-						<p:contextMenu for="objectProperties">
-							<p:menuitem value="Move to conditions"
-								update=":#{p:component('pan1')},:#{p:component('objectProperties')}"
-								actionListener="#{addNewRuleBean.createPropertyElement('pan1')}" />
-							<p:menuitem value="Move to conclusions"
-								update=":#{p:component('pan2')},:#{p:component('objectProperties')}"
-								actionListener="#{addNewRuleBean.createPropertyElement('pan2')}" />
-						</p:contextMenu>
+					<p:contextMenu for="dataProperties">
+						<p:menuitem value="Move to conditions"
+							update=":#{p:component('pan1')},:#{p:component('dataProperties')}"
+							actionListener="#{addNewRuleBean.createPropertyElement('pan1')}" />
+					</p:contextMenu>
 
-						<p:contextMenu for="instances">
-							<p:menuitem value="Move to conditions"
-								update=":#{p:component('pan1')}"
-								actionListener="#{addNewRuleBean.createInstanceElement('pan1')}" />
-							<p:menuitem value="Move to conclusions"
-								update=":#{p:component('pan2')}"
-								actionListener="#{addNewRuleBean.createInstanceElement('pan2')}" />
-						</p:contextMenu>
+					<p:contextMenu for="objectProperties">
+						<p:menuitem value="Move to conditions"
+							update=":#{p:component('pan1')},:#{p:component('objectProperties')}"
+							actionListener="#{addNewRuleBean.createPropertyElement('pan1')}" />
+					</p:contextMenu>
 
-					</h:panelGrid>
+					<p:contextMenu for="instances">
+						<p:menuitem value="Move to conditions"
+							update=":#{p:component('pan1')}"
+							actionListener="#{addNewRuleBean.createInstanceElement('pan1')}" />
+					</p:contextMenu>
 
+				</h:panelGrid>
 
-					<h:panelGrid columns="2" id="panelsgrid">
+				<p:panel header="Conditions" id="pan1" style="height:700px;">
+					<p:diagram value="#{addNewRuleBean.conditionsModel}"
+						id="conditionsDiagram" style="height:650px;"
+						styleClass="ui-widget-content" var="item">
 
-						<p:panel header="conditions" id="pan1"
-							style="height:800px;width:530px;">
-							<f:facet name="header">
-								<h:outputText value="Conditions" />
-							</f:facet>
-						<p:diagram value="#{addNewRuleBean.conditionsModel}"
-							id="conditionsDiagram" style="height:750px;width:500px;"
-							styleClass="ui-widget-content" var="item">
+						<f:facet name="element">
+							<p:panel id="pnl1" header="#{item.elementName}">
+								<h:panelGrid columns="4" id="elementGrid1">
+									<h:outputText value="Variable: #{item.varName}"
+										rendered="#{!item.renderEditText}" />
+									<h:outputText label="value" rendered="#{item.renderEditText}"
+										id="value" style="width: 80px;" autocomplete="off"
+										value="Value: #{item.property.value}" />
 
-							<f:facet name="element">
-								<p:panel id="pnl1" header="#{item.elementName}">
-									<h:panelGrid columns="4" id="elementGrid1">
-										<h:outputText value="Variable: #{item.varName}"
-											rendered="#{!item.renderEditText}" />
-										<h:outputText label="value" rendered="#{item.renderEditText}"
-											id="value" style="width: 80px;" autocomplete="off"
-											value="Value: #{item.property.value}"/>
-										
-										<p:commandButton oncomplete = "PF('editDialog').show()"
-											actionListener="#{addNewRuleBean.editNode}" title="View"
-											icon="ui-icon-search" update=":#{p:component('editDialog')}">
-											<f:param name="id" value="#{item.varName}" />
-											<f:param name="panel" value="conditions" />
-										</p:commandButton>
-									</h:panelGrid>
-								</p:panel>
-							</f:facet>
+									<p:commandButton oncomplete="PF('editDialog').show()"
+										actionListener="#{addNewRuleBean.editNode}" title="View"
+										icon="ui-icon-search" update=":#{p:component('editDialog')}">
+										<f:param name="id" value="#{item.varName}" />
+										<f:param name="panel" value="conditions" />
+									</p:commandButton>
+								</h:panelGrid>
+							</p:panel>
+						</f:facet>
 
-							<p:ajax event="connect"
-								listener="#{addNewRuleBean.onConnect}" />
-							<p:ajax event="disconnect"
-								listener="#{addNewRuleBean.onDisconnect}" />
-							<p:ajax event="connectionChange"
-								listener="#{addNewRuleBean.onConnectionChange}" />
-						</p:diagram>
-					</p:panel>
-
-						<p:panel header="conclusions" id="pan2"
-							style="height:800px;width:530px;">
-							<p:diagram value="#{addNewRuleBean.conclusionsModel}"
-								style="height:750px;width:500px;" styleClass="ui-widget-content"
-								var="item">
-								<f:facet name="element">
-									<p:panel id="pnl2" header="#{item.elementName}">
-									<h:panelGrid columns="3" id="elementGrid2">
-										<h:outputText value="Variable: #{item.varName}"
-											rendered="#{!item.renderEditText}" />
-										<h:outputText label="value" rendered="#{item.renderEditText}"
-											id="value2" style="width: 80px;"
-											value="Value: #{item.property.value}"/>
-										<p:commandButton oncomplete = "PF('editDialog').show()"
-											actionListener="#{addNewRuleBean.editNode}" title="View"
-											icon="ui-icon-search" update=":#{p:component('editDialog')}">
-											<f:param name="id" value="#{item.varName}" />
-											<f:param name="panel" value="conclusions" />
-										</p:commandButton>
-									</h:panelGrid>
-								</p:panel>
-								</f:facet>
-								<p:ajax event="connect"
-									listener="#{addNewRuleBean.onConnect}" />
-								<p:ajax event="disconnect"
-									listener="#{addNewRuleBean.onDisconnect}" />
-								<p:ajax event="connectionChange"
-									listener="#{addNewRuleBean.onConnectionChange}" />
-							</p:diagram>
-
-
-						</p:panel>
-
-					</h:panelGrid>
+						<p:ajax event="connect" listener="#{addNewRuleBean.onConnect}" />
+						<p:ajax event="disconnect"
+							listener="#{addNewRuleBean.onDisconnect}" />
+						<p:ajax event="connectionChange"
+							listener="#{addNewRuleBean.onConnectionChange}" />
+					</p:diagram>
+				</p:panel>
 
 				<p:panel id="feedbackMessages" style="margin-top:10px">
 
 					<f:facet name="header">
-						<h:outputText value="FeedBack Messages" id="feed"
+						<h:outputText value="FeedBack Rule Configuration" id="feed"
 							title="Add feedback messages in different languages to support the rule" />
 					</f:facet>
+					<h:panelGrid columns="2" columnClasses="label,value"
+						styleClass="grid3">
+						<h:outputText
+							value="The feedback rule will create message for class "
+							id="className" />
+						<p:inputText label="class name" style="width: 300px;"
+							id="classNameValue" autocomplete="off"
+							value="#{addNewRuleBean.feedbackClass}">
+						</p:inputText>
+
+						<h:outputText value="The feedback rule will have as scope "
+							id="scope" />
+						<p:inputText style="width: 300px;" id="scopeValue"
+							autocomplete="off" value="#{addNewRuleBean.feedbackScope}">
+						</p:inputText>
+
+						<h:outputText value="The feedback rule will have as unique id "
+							id="uniqueId" />
+						<p:inputText style="width: 300px;" id="uniqueIdValue"
+							autocomplete="off" value="#{addNewRuleBean.feedbackId}">
+						</p:inputText>
+
+					</h:panelGrid>
 
 					<c:forEach items="#{addNewRuleBean.messages}" var="item"
 						varStatus="status">
@@ -226,8 +195,7 @@
 						<p:panelGrid style="width:100%;margin-bottom:5px">
 							<p:row>
 								<p:column style="font-weight: bold;">Language
-									<p:selectOneMenu value="#{item.language}"
-										style="width:150px">
+									<p:selectOneMenu value="#{item.language}" style="width:150px">
 										<f:selectItems value="#{main.languages}" />
 									</p:selectOneMenu>
 								</p:column>
@@ -248,13 +216,13 @@
 						</p:panelGrid>
 
 					</c:forEach>
-					
+
 					<p:commandButton value="Add message"
 						actionListener="#{addNewRuleBean.addMessageToList}"
 						update="feedbackMessages" icon="ui-icon-plus"
 						title="Add a message in a another language" />
-						
-					<br/>
+
+					<br />
 					<h:panelGrid columns="2" columnClasses="label,value"
 						styleClass="grid">
 						<p:fileUpload style="width: 500px;" mode="advanced"
@@ -273,20 +241,12 @@
 				</p:commandButton>
 				<p:commandButton id="clearConditions"
 					update=":#{p:component('pan1')}"
-					actionListener="#{addNewRuleBean.clearPanel('pan1')}"
-					ajax="false" value="Clear conditions"
-					title="Clear conditions panel">
-				</p:commandButton>
-				<p:commandButton id="clearConclusions"
-					update=":#{p:component('pan2')}"
-					actionListener="#{addNewRuleBean.clearPanel('pan2')}"
-					ajax="false" value="Clear conclusions"
-					title="Clear conclusions panel">
+					actionListener="#{addNewRuleBean.clearPanel('pan1')}" ajax="false"
+					value="Clear conditions" title="Clear conditions panel">
 				</p:commandButton>
 
-				
 			</p:panel>
-			
+
 
 			<p:dialog widgetVar="newRuleDialog" id="newRuleDialog" modal="true"
 				header="Save rule configuration" resizable="false" showEffect="clip"
@@ -298,12 +258,10 @@
 					<h:outputText value="Rule name: " id="ruleName" />
 					<p:inputText label="Rule name" style="width: 300px;"
 						id="newRuleName" autocomplete="off"
-						value="#{addNewRuleBean.ruleName}"
-						required="true">
+						value="#{addNewRuleBean.ruleName}" required="true">
 					</p:inputText>
 
-					<h:outputText value="File name: " id="FileName"
-						required="false" />
+					<h:outputText value="File name: " id="FileName" required="false" />
 					<p:inputText label="File Name" required="true"
 						style="width: 300px;" id="newFileName" autocomplete="off"
 						value="#{addNewRuleBean.newFileName}">
@@ -321,7 +279,7 @@
 				header="Edit node" resizable="false" showEffect="clip"
 				dynamic="true" hideEffect="fold" position="center,center">
 				<h:panelGrid columns="2" columnClasses="label,value"
-					styleClass="grid">
+					styleClass="grid4">
 					<h:outputText value="Variable name: " id="clonedVar"
 						rendered="#{!addNewRuleBean.cloneSelectedNode.renderEditText}" />
 					<p:inputText label="Rule name" style="width: 300px;"
@@ -338,16 +296,14 @@
 						style="width: 300px;" id="clonedValue1" autocomplete="off"
 						value="#{addNewRuleBean.cloneSelectedNode.property.value}">
 					</p:inputText>
-					<p:commandButton
-						action="#{addNewRuleBean.saveEditOfNode}"
+					<p:commandButton action="#{addNewRuleBean.saveEditOfNode}"
 						icon="ui-icon-save" title="Save changes"
-						update=":#{p:component('pan1')},:#{p:component('pan2')}"
+						update=":#{p:component('pan1')}"
 						value="Save" oncomplete="PF('editDialog').hide()">
 					</p:commandButton>
-					<p:commandButton
-						action="#{addNewRuleBean.removeNode}"
+					<p:commandButton action="#{addNewRuleBean.removeNode}"
 						icon="ui-icon-close" title="Remove node"
-						update=":#{p:component('pan1')},:#{p:component('pan2')}"
+						update=":#{p:component('pan1')}"
 						value="Delete" oncomplete="PF('editDialog').hide()">
 					</p:commandButton>
 				</h:panelGrid>
@@ -355,6 +311,6 @@
 
 		</h:form>
 
-		
+
 	</h:body>
 </f:view>

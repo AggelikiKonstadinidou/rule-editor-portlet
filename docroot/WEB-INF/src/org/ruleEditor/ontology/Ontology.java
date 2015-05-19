@@ -37,7 +37,7 @@ public class Ontology implements Serializable {
 	String SOURCE = "http://www.cloud4all.eu/SemanticFrameworkForContentAndSolutions.owl";
 	String NS = SOURCE + "#";
 	private List<String> classes = Arrays.asList("Solutions",
-			"InstalledSolution", "Preference", "Metadata", "Setting",
+			"InstalledSolution", "Preference", "Metadata", "Settings",
 			"InferredConfiguration", "Configuration", "Conflict",
 			"ConflictResolution", "PreferenceSet", "OperatingSystem",
 			"MultipleATConflict", "MultipleSolutionConflict", "Environment",
@@ -85,6 +85,7 @@ public class Ontology implements Serializable {
 			//loads all instances of the mother class
             List<IndividualImpl> instances = getAllIndividualsForClass(s);
 			// get children classes
+            if(!s.equalsIgnoreCase("Settings"))
 			if (essaClasse.hasSubClass()) {
 				for (Iterator i = essaClasse.listSubClasses(true); i.hasNext();) {
 					OntClass c = (OntClass) i.next();
@@ -239,7 +240,7 @@ public class Ontology implements Serializable {
 			return preference;
 		else if (name.equalsIgnoreCase("Metadata"))
 			return metadata;
-		else if (name.equalsIgnoreCase("Setting"))
+		else if (name.equalsIgnoreCase("Settings"))
 			return setting;
 		else if (name.equalsIgnoreCase("InferredConfiguration"))
 			return inferredConfiguration;
@@ -272,7 +273,7 @@ public class Ontology implements Serializable {
 				"hasPreference_Preference");
 		List<String> inferredConfiguration = Arrays.asList(
 				"hasMetadata_Metadata", "hasPreference_Preference",
-				"refersTo_?");
+				"refersTo_Configuration");
 		List<String> devices = Arrays.asList("hasDeviceVendor_Vendor",
 				"hasDeviceSpecificSetting_Settings",
 				"isSupportingDeviceOf_Solutions");
@@ -280,10 +281,11 @@ public class Ontology implements Serializable {
 				"hasPlatformSpecificSetting_Settings",
 				"platformSupports_Solutions");
 		List<String> installedSolution = Arrays.asList("settings_Settings");
+		List<String> configuration = Arrays.asList("refersTo_Solutions");
 
 		if (name.equals("Solutions"))
 			return solutions;
-		else if (name.equals("Setting"))
+		else if (name.equals("Settings"))
 			return setting;
 		else if (name.equals("Conflict"))
 			return conflict;
@@ -299,6 +301,8 @@ public class Ontology implements Serializable {
 			return metadata;
 		else if (name.equals("InstalledSolution"))
 			return installedSolution;
+		else if (name.equals("Configuration"))
+			return configuration;
 		else
 			return new ArrayList<String>();
 
