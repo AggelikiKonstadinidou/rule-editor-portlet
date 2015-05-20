@@ -11,7 +11,7 @@ import org.primefaces.component.commandlink.CommandLink;
 import org.primefaces.context.RequestContext;
 import org.ruleEditor.ontology.Main;
 
-@ManagedBean(name = "step1Bean")
+@ManagedBean(name = "addRuleStep1Bean")
 @SessionScoped
 public class AddRuleStep1Bean {
 	private CommandLink button;

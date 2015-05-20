@@ -30,9 +30,12 @@ import org.primefaces.model.diagram.endpoint.DotEndPoint;
 import org.primefaces.model.diagram.endpoint.EndPoint;
 import org.primefaces.model.diagram.endpoint.EndPointAnchor;
 import org.primefaces.model.diagram.endpoint.RectangleEndPoint;
+import org.ruleEditor.ontology.BuiltinMethod;
 import org.ruleEditor.ontology.Message;
+import org.ruleEditor.ontology.OntologyClass;
 import org.ruleEditor.ontology.OntologyProperty;
 import org.ruleEditor.ontology.OntologyProperty.DataProperty;
+import org.ruleEditor.ontology.OntologyProperty.ObjectProperty;
 import org.ruleEditor.ontology.PointElement;
 import org.ruleEditor.utils.MessageForJson.Group;
 import org.ruleEditor.utils.MessageForJson.Group.TextMessage;
@@ -48,14 +51,21 @@ import com.liferay.portal.util.PortalUtil;
 import com.sun.faces.component.visit.FullVisitContext;
 
 public class Utils {
-	
+
 	private static String prefix_c4a = "@prefix c4a: <http://rbmm.org/schemas/cloud4all/0.1/>.";
 	private static String prefix_rdfs = "@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>.";
+	private static int initialX = 3;
+	private static int initialY = 3;
+	private static int objectCounter = 0;
+	private static int counter = 0;
+	private static List<PointElement> list = new ArrayList<PointElement>();
+	private static List<PointElement> conditions = new ArrayList<PointElement>();
+	private static List<PointElement> conclusions = new ArrayList<PointElement>();
 
 	public static String createRule(ArrayList<PointElement> conditions,
 			ArrayList<PointElement> conclusions, String ruleName) {
 
-		String rule = prefix_c4a + "\n" + prefix_rdfs + "\n\n"+"[ruleName \n";
+		String rule = prefix_c4a + "\n" + prefix_rdfs + "\n\n" + "[ruleName \n";
 
 		rule = rule + convertListToRule(conditions);
 
@@ -67,7 +77,7 @@ public class Utils {
 
 		return rule;
 	}
-	
+
 	public static String createFeedBackRule(String className, String scope,
 			String id, ArrayList<PointElement> conditions) {
 
@@ -84,7 +94,7 @@ public class Utils {
 
 		return rule;
 	}
-	
+
 	public static String convertListToRule(ArrayList<PointElement> list) {
 		String rule = "";
 
@@ -99,8 +109,9 @@ public class Utils {
 
 				OntologyProperty property = (DataProperty) el.getProperty();
 				if (el.getConnections().size() > 0)
-					rule = rule + "(?" + el.getConnections().get(0).getVarName()
-							+ " c4a:" + el.getElementName() + " ?"
+					rule = rule + "(?"
+							+ el.getConnections().get(0).getVarName() + " c4a:"
+							+ el.getElementName() + " ?"
 							+ ((DataProperty) property).getValue() + ")\n";
 
 			} else if (el.getType() == PointElement.Type.OBJECT_PROPERTY) {
@@ -110,8 +121,9 @@ public class Utils {
 				// in case that something is missing, throw away
 				// the property node
 				if (el.getConnections().size() > 1)
-					rule = rule + "(?" + el.getConnections().get(0).getVarName()
-							+ " c4a:" + el.getElementName() + " " + "?"
+					rule = rule + "(?"
+							+ el.getConnections().get(0).getVarName() + " c4a:"
+							+ el.getElementName() + " " + "?"
 							+ el.getConnections().get(1).getVarName() + ")\n";
 
 			} else if (el.getType() == PointElement.Type.BUILTIN_METHOD) {
@@ -131,8 +143,6 @@ public class Utils {
 		return rule;
 	}
 
-	
-	
 	public UIComponent findComponent(final String id) {
 
 		FacesContext context = FacesContext.getCurrentInstance();
@@ -153,7 +163,7 @@ public class Utils {
 		return found[0];
 
 	}
-	
+
 	public static EndPoint createDotEndPoint(EndPointAnchor anchor) {
 		DotEndPoint endPoint = new DotEndPoint(anchor);
 		endPoint.setScope("panel");
@@ -176,7 +186,7 @@ public class Utils {
 
 		return endPoint;
 	}
-	
+
 	public static boolean findPanelOfElement(String id,
 			ArrayList<PointElement> conditions,
 			ArrayList<PointElement> conclusions) {
@@ -200,7 +210,7 @@ public class Utils {
 		return flag;
 
 	}
-	
+
 	public static Element getElementFromID(DefaultDiagramModel model, String id) {
 		Element el = new Element();
 
@@ -214,7 +224,7 @@ public class Utils {
 
 		return el;
 	}
-	
+
 	public static String writeMessagesInJsonLdFile(InputStream inputStream,
 			List<Message> list) throws IOException {
 
@@ -240,18 +250,19 @@ public class Utils {
 
 		// System.out.println(result);
 		MessageForJson test = (MessageForJson) gson.fromJson(result, type);
-		
-		//append messages in the json
+
+		// append messages in the json
 		String idforMessages = "aaa";
 		json = appendMessages(list, test, idforMessages);
-		
+
 		return json;
 
 	}
-	
-	public static String appendMessages(List<Message> list, MessageForJson test, String id){
+
+	public static String appendMessages(List<Message> list,
+			MessageForJson test, String id) {
 		String s = "";
-		
+
 		JsonObject json = new JsonObject();
 		JsonObject context = new JsonObject();
 		JsonArray graph = new JsonArray();
@@ -262,7 +273,7 @@ public class Utils {
 		JsonObject msg;
 		JsonObject innerObj;
 		JsonArray messages;
-		//add existing messages
+		// add existing messages
 		for (Group temp : test.getGraph()) {
 			msg = new JsonObject();
 			messages = new JsonArray();
@@ -278,41 +289,256 @@ public class Utils {
 			msg.add("@messages", messages);
 			graph.add(msg);
 		}
-		
-		//add new messages
+
+		// add new messages
 		msg = new JsonObject();
 		messages = new JsonArray();
 		msg.add("@id", new JsonPrimitive(id));
 		msg.add("@type", new JsonPrimitive("Message"));
-		for(Message temp: list){
+		for (Message temp : list) {
 			innerObj = new JsonObject();
-			innerObj.add(temp.getLanguage(),
-					new JsonPrimitive(temp.getText()));
+			innerObj.add(temp.getLanguage(), new JsonPrimitive(temp.getText()));
 			messages.add(innerObj);
 		}
-		
+
 		msg.add("@messages", messages);
 		graph.add(msg);
-		
+
 		json.add("context", context);
 		json.add("graph", graph);
-		
-		Gson gson = new GsonBuilder().setPrettyPrinting()
-				.disableHtmlEscaping().serializeNulls()
+
+		Gson gson = new GsonBuilder().setPrettyPrinting().disableHtmlEscaping()
+				.serializeNulls()
 				.setFieldNamingPolicy(FieldNamingPolicy.UPPER_CAMEL_CASE)
 				.create();
-		
+
 		s = gson.toJson(json);
-		
-		
+
 		return s;
 	}
-	
+
 	static public String splitCamelCase(String s) {
 		return s.replaceAll(String.format("%s|%s|%s",
 				"(?<=[A-Z])(?=[A-Z][a-z])", "(?<=[^A-Z])(?=[A-Z])",
 				"(?<=[A-Za-z])(?=[^A-Za-z])"), " ");
 	}
 
+	public static List<PointElement> convertRuleToDiagram(
+			InputStream inputStream, List<ArrayList<OntologyClass>> classes,
+			List<BuiltinMethod> methods) throws IOException {
+
+		BufferedReader reader = new BufferedReader(new InputStreamReader(
+				inputStream));
+		StringBuilder out = new StringBuilder();
+		String line;
+		String ruleName = "";
+		list = new ArrayList<PointElement>();
+		PointElement element;
+		String panel = "conditions";
+
+		while ((line = reader.readLine()) != null) {
+			element = new PointElement();
+			if (line.contains("[")) {
+				ruleName = line.replace("[", "");
+				System.out.println(ruleName);
+			} else if (line.contains("]")) {
+				System.out.println("end of rule");
+			} else if (line.contains("->")) {
+				System.out.println("change of panel");
+				panel = "conclusions";
+			} else if (!line.isEmpty() && !line.contains(prefix_rdfs)
+					&& !line.contains(prefix_c4a)) {
+				element = convertRuleLineToPointElement(line, classes, methods,
+						panel);
+				list.add(element);
+			}
+			out.append(line);
+		}
+
+		return list;
+	}
+
+	public static PointElement convertRuleLineToPointElement(String line,
+			List<ArrayList<OntologyClass>> classes,
+			List<BuiltinMethod> methods, String panel) {
+
+		PointElement element = new PointElement();
+		String[] splitted = null;
+		String varName = "";
+		String className = "";
+		String propertyName = "";
+		// declaration of a class
+		if (line.contains("rdf:type")) {
+
+			splitted = line.split(" ");
+			varName = splitted[0].replace("(?", "");
+			className = splitted[2].replace("c4a:", "").replace(")", "");
+			element.setVarName(varName);
+			element.setType(PointElement.Type.CLASS);
+			element.setElementName(className);
+			element.setPanel(panel);
+			element.setId(setUniqueID());
+			element = setPosition(element);
+			list.add(element);
+
+		}
+		// declaration of a property
+		else if (!line.contains("rdf:type") && line.contains("c4a")) {
+
+			splitted = line.split(" ");
+			element.setId(setUniqueID());
+			element.setVarName(element.getId());
+			element = setPosition(element);
+			element.setPanel(panel);
+			propertyName = splitted[1].replace("c4a:", "");
+			varName = splitted[0].replace("(?", "");
+			// find from varName which class owns this property
+			PointElement classEl = findElementClassByVarName(varName);
+			// find what type of property is, and the whole property
+			OntologyProperty property = findPropertyByName(propertyName,
+					classes, classEl.getElementName());
+			// set the type of the element according to the type of the property
+			if (property instanceof DataProperty) {
+				DataProperty dataProp = (DataProperty) property.clone();
+				dataProp.setValue(splitted[2].replace("?", "").replace(")", ""));
+				element.setType(PointElement.Type.DATA_PROPERTY);
+				element.setProperty(dataProp);
+			} else {
+				element.setType(PointElement.Type.OBJECT_PROPERTY);
+				element.getConnections().add(classEl);
+				element.setProperty(property);
+			}
+
+		}
+		// declaration of a built in method
+		else {
+
+		}
+
+		return element;
+	}
+
+	public static PointElement findElementClassByVarName(String name) {
+
+		PointElement element = new PointElement();
+
+		for (PointElement pel : list) {
+			if (pel.getType() == PointElement.Type.CLASS) {
+				if (pel.getVarName().equalsIgnoreCase(name)) {
+					element = pel.clone();
+					break;
+				}
+			}
+		}
+		return element;
+	}
+
+	public static OntologyProperty findPropertyByName(String name,
+			List<ArrayList<OntologyClass>> classes, String className) {
+
+		OntologyProperty property = new OntologyProperty("", "");
+		boolean flag = false;
+
+		for (ArrayList<OntologyClass> temp : classes) {
+
+			if (className.equalsIgnoreCase(temp.get(0).getClassName())) {
+				// look in data properties
+				for (DataProperty dataProp : temp.get(0).getDataProperties()) {
+
+					if (dataProp.getPropertyName().equalsIgnoreCase(name)) {
+						property = (DataProperty) dataProp.clone();
+						flag = true;
+						break;
+					}
+				}
+
+				// look in object properties
+				if (!flag)
+					for (ObjectProperty objProp : temp.get(0)
+							.getObjectProperties()) {
+						if (objProp.getPropertyName().equalsIgnoreCase(name)) {
+							property = (ObjectProperty) objProp.clone();
+							break;
+						}
+					}
+			} else {
+				
+				for(OntologyClass childClass: temp.get(0).getChildren()){
+				property = findPropertyByNameInChildren(name, childClass, className);
+				}
+			}
+
+		}
+
+		return property;
+	}
+
+	public static OntologyProperty findPropertyByNameInChildren(String name,
+			OntologyClass ontClass, String className) {
+
+		OntologyProperty property = new OntologyProperty("", "");
+		boolean flag = false;
+
+		for (OntologyClass temp : ontClass.getChildren()) {
+			if (temp.getClassName().equalsIgnoreCase(className)) {
+				// look in data properties
+				for (DataProperty dataProp : temp.getDataProperties()) {
+
+					if (dataProp.getPropertyName().equalsIgnoreCase(name)) {
+						property = (DataProperty) dataProp.clone();
+						flag = true;
+						break;
+					}
+				}
+
+				// look in object properties
+				if (!flag)
+					for (ObjectProperty objProp : temp.getObjectProperties()) {
+						if (objProp.getPropertyName().equalsIgnoreCase(name)) {
+							property = (ObjectProperty) objProp.clone();
+							break;
+						}
+					}
+			} else {
+
+				// recursion, look in the children classes
+				
+				property = findPropertyByNameInChildren(name,
+						temp,
+						className);
+			}
+		}
+
+		return property;
+
+	}
+
+	public static PointElement setPosition(PointElement el) {
+		int x = 0;
+		int y = 0;
+		if (objectCounter == 0) {
+			x = initialX;
+			y = initialY;
+			objectCounter++;
+		} else if (objectCounter == 1) {
+			x = initialX + 15;
+			y = initialY;
+			objectCounter++;
+		} else if (objectCounter == 2) {
+			x = initialX + 30;
+			y = initialY;
+			objectCounter = 0;
+			initialY = initialY + 8;
+		}
+
+		el.setX(x);
+		el.setY(y);
+
+		return el;
+	}
+
+	public static String setUniqueID() {
+		return "X_" + counter++;
+	}
 
 }
