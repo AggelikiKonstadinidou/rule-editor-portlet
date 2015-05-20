@@ -37,7 +37,7 @@ public class Ontology implements Serializable {
 	String SOURCE = "http://www.cloud4all.eu/SemanticFrameworkForContentAndSolutions.owl";
 	String NS = SOURCE + "#";
 	private List<String> classes = Arrays.asList("Solutions",
-			"InstalledSolution", "Preference", "Metadata", "Settings",
+			"InstalledSolution", "Preference", "Metadata", "Setting",
 			"InferredConfiguration", "Configuration", "Conflict",
 			"ConflictResolution", "PreferenceSet", "OperatingSystem",
 			"MultipleATConflict", "MultipleSolutionConflict", "Environment",
@@ -240,7 +240,7 @@ public class Ontology implements Serializable {
 			return preference;
 		else if (name.equalsIgnoreCase("Metadata"))
 			return metadata;
-		else if (name.equalsIgnoreCase("Settings"))
+		else if (name.equalsIgnoreCase("Setting"))
 			return setting;
 		else if (name.equalsIgnoreCase("InferredConfiguration"))
 			return inferredConfiguration;
@@ -264,7 +264,7 @@ public class Ontology implements Serializable {
 
 	public List<String> setObjectPropertiesToClass(String name) {
 		List<String> solutions = Arrays.asList(
-				"hasSolutionSpecificSettings_Settings", "runsOnDevice_Devices",
+				"settings_Settings", "runsOnDevice_Devices",
 				"runsOnPlatform_Platforms");
 		List<String> setting = new ArrayList<String>();
 		List<String> metadata = Arrays.asList("scope_?");
@@ -272,20 +272,20 @@ public class Ontology implements Serializable {
 		List<String> preferenceSet = Arrays.asList("hasMetadata_Metadata",
 				"hasPreference_Preference");
 		List<String> inferredConfiguration = Arrays.asList(
-				"hasMetadata_Metadata", "hasPreference_Preference",
+				"hasMetadata_Metadata", "hasPrefs_Preference",
 				"refersTo_Configuration");
 		List<String> devices = Arrays.asList("hasDeviceVendor_Vendor",
-				"hasDeviceSpecificSetting_Settings",
+				"hasDeviceSpecificSetting_Setting",
 				"isSupportingDeviceOf_Solutions");
 		List<String> platforms = Arrays.asList("hasPlatformVendor_Vendor",
-				"hasPlatformSpecificSetting_Settings",
+				"hasPlatformSpecificSetting_Setting",
 				"platformSupports_Solutions");
-		List<String> installedSolution = Arrays.asList("settings_Settings");
-		List<String> configuration = Arrays.asList("refersTo_Solutions");
+		List<String> installedSolution = Arrays.asList("settings_Setting");
+		List<String> configuration = Arrays.asList("refersTo_Solutions","settings_Setting");
 
 		if (name.equals("Solutions"))
 			return solutions;
-		else if (name.equals("Settings"))
+		else if (name.equals("Setting"))
 			return setting;
 		else if (name.equals("Conflict"))
 			return conflict;

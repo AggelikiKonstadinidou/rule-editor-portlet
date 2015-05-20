@@ -3,6 +3,7 @@ package org.ruleEditor.beans;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.faces.bean.ManagedBean;
@@ -51,8 +52,13 @@ public class EditRuleStep1Bean {
 	}
 
 	public void submitOption() throws IOException {
-		List<PointElement> list = Utils.convertRuleToDiagram(fileStream,
+		List<List<PointElement>> list = Utils.convertRuleToDiagram(fileStream,
 				main.getAllClasses(), main.getMethods());
+		ArrayList<PointElement> conditions = (ArrayList<PointElement>) list.get(0);
+		ArrayList<PointElement> conclusions = (ArrayList<PointElement>) list.get(1);
+		
+		String rule = Utils.createRule(conditions, conclusions, "aaaa");
+		System.out.println(rule);
 	}
 
 	public String getFileName() {

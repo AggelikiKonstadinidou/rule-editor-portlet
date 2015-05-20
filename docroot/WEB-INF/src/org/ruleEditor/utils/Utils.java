@@ -58,7 +58,6 @@ public class Utils {
 	private static int initialY = 3;
 	private static int objectCounter = 0;
 	private static int counter = 0;
-	private static List<PointElement> list = new ArrayList<PointElement>();
 	private static List<PointElement> conditions = new ArrayList<PointElement>();
 	private static List<PointElement> conclusions = new ArrayList<PointElement>();
 
@@ -323,37 +322,60 @@ public class Utils {
 				"(?<=[A-Za-z])(?=[^A-Za-z])"), " ");
 	}
 
-	public static List<PointElement> convertRuleToDiagram(
+	public static List<List<PointElement>> convertRuleToDiagram(
 			InputStream inputStream, List<ArrayList<OntologyClass>> classes,
 			List<BuiltinMethod> methods) throws IOException {
 
+		List<List<PointElement>> list = new ArrayList<List<PointElement>>();
 		BufferedReader reader = new BufferedReader(new InputStreamReader(
 				inputStream));
 		StringBuilder out = new StringBuilder();
 		String line;
 		String ruleName = "";
-		list = new ArrayList<PointElement>();
+		
 		PointElement element;
 		String panel = "conditions";
+		conditions = new ArrayList<PointElement>();
+		conclusions = new ArrayList<PointElement>();
+		initialX = 3;
+		initialY = 3;
+		objectCounter = 0;
 
 		while ((line = reader.readLine()) != null) {
 			element = new PointElement();
 			if (line.contains("[")) {
-				ruleName = line.replace("[", "");
+				
+				ruleName = line.replace("[", "").replace(":", "");
 				System.out.println(ruleName);
+				
 			} else if (line.contains("]")) {
 				System.out.println("end of rule");
 			} else if (line.contains("->")) {
+
 				System.out.println("change of panel");
 				panel = "conclusions";
+				initialX = 3;
+				initialY = 3;
+				objectCounter = 0;
+
 			} else if (!line.isEmpty() && !line.contains(prefix_rdfs)
 					&& !line.contains(prefix_c4a)) {
 				element = convertRuleLineToPointElement(line, classes, methods,
 						panel);
-				list.add(element);
+				if(panel.equalsIgnoreCase("conditions"))
+					conditions.add(element);
+				else
+					conclusions.add(element);
+				
 			}
 			out.append(line);
 		}
+		
+		//fill missing values in object properties
+		fillMissingClasses(classes);
+		
+		list.add(conditions);
+		list.add(conclusions);
 
 		return list;
 	}
@@ -379,7 +401,6 @@ public class Utils {
 			element.setPanel(panel);
 			element.setId(setUniqueID());
 			element = setPosition(element);
-			list.add(element);
 
 		}
 		// declaration of a property
@@ -397,15 +418,33 @@ public class Utils {
 			// find what type of property is, and the whole property
 			OntologyProperty property = findPropertyByName(propertyName,
 					classes, classEl.getElementName());
+			element.setElementName(propertyName);
 			// set the type of the element according to the type of the property
 			if (property instanceof DataProperty) {
 				DataProperty dataProp = (DataProperty) property.clone();
 				dataProp.setValue(splitted[2].replace("?", "").replace(")", ""));
 				element.setType(PointElement.Type.DATA_PROPERTY);
+				element.setRenderEditText(true);
 				element.setProperty(dataProp);
+				element.getConnections().add(classEl);
 			} else {
 				element.setType(PointElement.Type.OBJECT_PROPERTY);
+				String objectValue = splitted[2].replace("?", "").replace(")", "");
+				PointElement objValue = findElementClassByVarName(objectValue);
+				
+				if(classEl.getId().isEmpty())
+					classEl.setVarName(varName);
+				
 				element.getConnections().add(classEl);
+				
+				if(objValue.getId().isEmpty())
+					objValue.setVarName(objectValue);
+				
+				if(property == null){
+					property = new OntologyProperty(propertyName, "");
+				}
+					
+				element.getConnections().add(objValue);
 				element.setProperty(property);
 			}
 
@@ -417,12 +456,72 @@ public class Utils {
 
 		return element;
 	}
+	
+	public static void fillMissingClasses(List<ArrayList<OntologyClass>> classes){
+		for (PointElement el : conditions) {
+			if (el.getType() == PointElement.Type.OBJECT_PROPERTY) {
+				if (el.getConnections().get(0).getId().isEmpty()) {
+					PointElement classEl = findElementClassByVarName(el
+							.getConnections().get(0).getVarName());
+					el.getConnections().remove(0);
+					el.getConnections().add(0,classEl);
+				}
+				
+				if (el.getConnections().get(1).getId().isEmpty()) {
+					PointElement classEl = findElementClassByVarName(el
+							.getConnections().get(1).getVarName());
+					el.getConnections().remove(1);
+					el.getConnections().add(1,classEl);
+				}
+				
+				if(el.getProperty().getOntologyURI().isEmpty()){
+					OntologyProperty property = findPropertyByName(el.getProperty().getPropertyName(),
+							classes, el.getConnections().get(0).getElementName());
+					el.setProperty(property);
+				}
+			}
+		}
+		
+		for (PointElement el : conclusions) {
+			if (el.getType() == PointElement.Type.OBJECT_PROPERTY) {
+				if (el.getConnections().get(0).getId().isEmpty()) {
+					PointElement classEl = findElementClassByVarName(el
+							.getConnections().get(0).getVarName());
+					el.getConnections().remove(0);
+					el.getConnections().add(0,classEl);
+				}
+				
+				if (el.getConnections().get(1).getId().isEmpty()) {
+					PointElement classEl = findElementClassByVarName(el
+							.getConnections().get(1).getVarName());
+					el.getConnections().remove(1);
+					el.getConnections().add(1,classEl);
+				}
+				
+				if(el.getProperty().getOntologyURI().isEmpty()){
+					OntologyProperty property = findPropertyByName(el.getProperty().getPropertyName(),
+							classes, el.getConnections().get(0).getElementName());
+					el.setProperty(property);
+				}
+			}
+		}
+	}
 
 	public static PointElement findElementClassByVarName(String name) {
 
 		PointElement element = new PointElement();
 
-		for (PointElement pel : list) {
+		for (PointElement pel : conditions) {
+			if (pel.getType() == PointElement.Type.CLASS) {
+				if (pel.getVarName().equalsIgnoreCase(name)) {
+					element = pel.clone();
+					break;
+				}
+			}
+		}
+		
+		if(element.getId().isEmpty())
+		for (PointElement pel : conclusions) {
 			if (pel.getType() == PointElement.Type.CLASS) {
 				if (pel.getVarName().equalsIgnoreCase(name)) {
 					element = pel.clone();
@@ -437,7 +536,6 @@ public class Utils {
 			List<ArrayList<OntologyClass>> classes, String className) {
 
 		OntologyProperty property = new OntologyProperty("", "");
-		boolean flag = false;
 
 		for (ArrayList<OntologyClass> temp : classes) {
 
@@ -447,24 +545,25 @@ public class Utils {
 
 					if (dataProp.getPropertyName().equalsIgnoreCase(name)) {
 						property = (DataProperty) dataProp.clone();
-						flag = true;
-						break;
+						return property;
 					}
 				}
 
 				// look in object properties
-				if (!flag)
-					for (ObjectProperty objProp : temp.get(0)
-							.getObjectProperties()) {
-						if (objProp.getPropertyName().equalsIgnoreCase(name)) {
-							property = (ObjectProperty) objProp.clone();
-							break;
-						}
+
+				for (ObjectProperty objProp : temp.get(0).getObjectProperties()) {
+					if (objProp.getPropertyName().equalsIgnoreCase(name)) {
+						property = (ObjectProperty) objProp.clone();
+						return property;
 					}
+				}
 			} else {
-				
-				for(OntologyClass childClass: temp.get(0).getChildren()){
-				property = findPropertyByNameInChildren(name, childClass, className);
+
+				for (OntologyClass childClass : temp.get(0).getChildren()) {
+					property = findPropertyByNameInChildren(name, childClass,
+							className);
+					if(property!=null)
+						break;
 				}
 			}
 
@@ -476,38 +575,35 @@ public class Utils {
 	public static OntologyProperty findPropertyByNameInChildren(String name,
 			OntologyClass ontClass, String className) {
 
-		OntologyProperty property = new OntologyProperty("", "");
-		boolean flag = false;
-
-		for (OntologyClass temp : ontClass.getChildren()) {
-			if (temp.getClassName().equalsIgnoreCase(className)) {
+	    OntologyProperty property = null;
+			if (ontClass.getClassName().equalsIgnoreCase(className)) {
 				// look in data properties
-				for (DataProperty dataProp : temp.getDataProperties()) {
+			for (DataProperty dataProp : ontClass.getDataProperties()) {
+				if (dataProp.getPropertyName().equalsIgnoreCase(name)) {
+					property = (DataProperty) dataProp.clone();
+					return property;
 
-					if (dataProp.getPropertyName().equalsIgnoreCase(name)) {
-						property = (DataProperty) dataProp.clone();
-						flag = true;
-						break;
-					}
 				}
+			}
 
-				// look in object properties
-				if (!flag)
-					for (ObjectProperty objProp : temp.getObjectProperties()) {
-						if (objProp.getPropertyName().equalsIgnoreCase(name)) {
-							property = (ObjectProperty) objProp.clone();
-							break;
-						}
-					}
+			// look in object properties
+			for (ObjectProperty objProp : ontClass.getObjectProperties()) {
+				if (objProp.getPropertyName().equalsIgnoreCase(name)) {
+					property = (ObjectProperty) objProp.clone();
+					return property;
+				}
+			}
 			} else {
 
 				// recursion, look in the children classes
-				
+				for(OntologyClass temp : ontClass.getChildren()){
 				property = findPropertyByNameInChildren(name,
 						temp,
 						className);
+				if(property!=null)
+					break;
+				}
 			}
-		}
 
 		return property;
 
