@@ -34,6 +34,7 @@
 					<p:commandLink id="nextBut" ajax="false"
 						binding="#{editRuleStep1Bean.button}" style="align: right"
 						disabled="#{editRuleStep1Bean.formCompleted}"
+						action= "/views/addConflictResolRule.xhtml?javax.portlet.faces.PortletMode=view&amp;javax.portlet.faces.WindowState=normal"
 						actionListener="#{editRuleStep1Bean.submitOption}">
 						<span> Go to next step </span>
 						<h:graphicImage url="/next.png"

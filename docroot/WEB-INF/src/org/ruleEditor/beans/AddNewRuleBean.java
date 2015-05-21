@@ -176,6 +176,153 @@ public class AddNewRuleBean {
 
 	}
 	
+	public void editRule(boolean flag, ArrayList<PointElement> conditionsList,
+			ArrayList<PointElement> conclusionsList) {
+
+		ruleName = "";
+		newFileName = "";
+		oldFileName = "";
+		feedbackFile = "";
+		datatypes = new ArrayList<DataProperty>();
+		objects = new ArrayList<ObjectProperty>();
+		instances = new ArrayList<String>();
+		conditions = (ArrayList<PointElement>) conditionsList.clone();
+		conclusions =(ArrayList<PointElement>) conclusionsList.clone();
+		counter = 0;
+		initialX = 3;
+		initialY = 3;
+		objectCounter = 0;
+		selectedNode = null;
+		selectedDataProperty = new OntologyProperty("", "");
+		selectedObjectProperty = new OntologyProperty("", "");
+		nodeForRemove = "";
+		clonedTargetElement = new PointElement();
+		targetElement = new PointElement();
+		sourceElement = new PointElement();
+		originalTargetElement = new PointElement();
+		clonedOriginalTargetElement = new PointElement();
+		selectedInstance = "";
+		feedbackClass = "";
+		feedbackScope = "";
+		feedbackId = "";
+
+		Message emptyMessage = new Message();
+		emptyMessage.setLanguage("English");
+		messages = new ArrayList<Message>();
+		messages.add(emptyMessage);
+
+		// Initialization of conditions model
+		conditionsModel = new DefaultDiagramModel();
+		conditionsModel.setMaxConnections(-1);
+
+		conditionsModel.getDefaultConnectionOverlays().add(
+				new ArrowOverlay(20, 20, 1, 1));
+
+		// create a connector
+		StraightConnector connector = new StraightConnector();
+		connector.setPaintStyle("{strokeStyle:'#98AFC7', lineWidth:2}");
+		connector.setHoverPaintStyle("{strokeStyle:'#5C738B'}");
+
+		conditionsModel.setDefaultConnector(connector);
+
+		// Initialization of conclusions model
+		conclusionsModel = new DefaultDiagramModel();
+		conclusionsModel.setMaxConnections(-1);
+		conclusionsModel.getDefaultConnectionOverlays().add(
+				new ArrowOverlay(20, 20, 1, 1));
+		conclusionsModel.setDefaultConnector(connector);
+		
+		createModels("conditions",conditions);
+		createModels("conclusions",conclusions);
+
+	}
+	
+	public void createModels(String panelID, ArrayList<PointElement> list) {
+
+		Element element = null;
+		EndPoint endPointCA = null;
+
+		//create the diagram models with the point elements
+		for (PointElement el : list) {
+
+			element = new Element(el, String.valueOf(el.getX() + "em"),
+					String.valueOf(el.getY() + "em"));
+
+			if (el.getType() == Type.CLASS) {
+
+				endPointCA = Utils
+						.createRectangleEndPoint(EndPointAnchor.BOTTOM);
+				endPointCA.setSource(true);
+				element.addEndPoint(endPointCA);
+
+			} else {
+
+				endPointCA = Utils
+						.createDotEndPoint(EndPointAnchor.AUTO_DEFAULT);
+				endPointCA.setTarget(true);
+				element.addEndPoint(endPointCA);
+			}
+
+			if (panelID.equalsIgnoreCase("conditions"))
+				conditionsModel.addElement(element);
+			else
+				conclusionsModel.addElement(element);
+		}
+		
+		int sourceIndex = -1;
+		int targetIndex = -1;
+		//make connections between the elements of the diagram models
+		for (PointElement el : list) {
+			if (el.getType() == Type.OBJECT_PROPERTY
+					|| el.getType() == Type.DATA_PROPERTY) {
+
+				targetIndex = findIndexOfElementByPointElement(el,
+						conditionsModel);
+				
+				for (PointElement temp : el.getConnections()) {
+
+					sourceIndex = findIndexOfElementByPointElement(temp,
+							conditionsModel);
+
+					if (sourceIndex == -1)
+						sourceIndex = findIndexOfElementByPointElement(temp,
+								conclusionsModel);
+
+					if (panelID.equalsIgnoreCase("conclusions"))
+						targetIndex = findIndexOfElementByPointElement(el,
+								conclusionsModel);
+
+					if (panelID.equalsIgnoreCase("conditions"))
+						conditionsModel.connect(new Connection(conditionsModel
+								.getElements().get(sourceIndex).getEndPoints()
+								.get(0), conditionsModel.getElements()
+								.get(targetIndex).getEndPoints().get(0)));
+					else
+						conclusionsModel.connect(new Connection(
+								conclusionsModel.getElements().get(sourceIndex)
+										.getEndPoints().get(0),
+								conclusionsModel.getElements().get(targetIndex)
+										.getEndPoints().get(0)));
+				}
+			}
+		}
+
+	}
+	
+	public int findIndexOfElementByPointElement(PointElement element,
+			DiagramModel model) {
+		
+		int index = -1;
+		for (Element el : model.getElements()) {
+			PointElement pel = (PointElement) el.getData();
+			if (element.getId().equalsIgnoreCase(pel.getId())) {
+				index = model.getElements().indexOf(el);
+				break;
+			}
+		}
+
+		return index;
+	}
 	
 	public void editNode(){
 		Map<String, String> params = FacesContext.getCurrentInstance()

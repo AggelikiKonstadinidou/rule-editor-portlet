@@ -25,6 +25,10 @@ public class EditRuleStep1Bean {
 	private boolean formCompleted = true;
 	private Main main;
 	private InputStream fileStream;
+	private String rule;
+	private ArrayList<PointElement> conditions;
+	private ArrayList<PointElement> conclusions;
+	int counter = 0;
 
 	public EditRuleStep1Bean() {
 		super();
@@ -37,6 +41,7 @@ public class EditRuleStep1Bean {
 		fileName = "";
 		formCompleted = true;
 		fileStream = null;
+		counter = 0;
 	}
 
 	public void onFileUpload(FileUploadEvent event) throws IOException {
@@ -48,17 +53,35 @@ public class EditRuleStep1Bean {
 		System.out.println(fileName);
 
 		this.formCompleted = false;
+		
+		List<List<PointElement>> list = Utils.convertRuleToDiagram(fileStream,
+				main.getAllClasses(), main.getMethods());
+		conditions = (ArrayList<PointElement>) list
+				.get(0);
+		conclusions = (ArrayList<PointElement>) list
+				.get(1);
+
+		rule = Utils.createRule(conditions, conclusions, "aaaa");
+		System.out.println(rule);
 
 	}
 
 	public void submitOption() throws IOException {
-		List<List<PointElement>> list = Utils.convertRuleToDiagram(fileStream,
-				main.getAllClasses(), main.getMethods());
-		ArrayList<PointElement> conditions = (ArrayList<PointElement>) list.get(0);
-		ArrayList<PointElement> conclusions = (ArrayList<PointElement>) list.get(1);
 		
-		String rule = Utils.createRule(conditions, conclusions, "aaaa");
-		System.out.println(rule);
+		FacesContext context = FacesContext.getCurrentInstance();
+		AddNewRuleBean addNewRuleBean = (AddNewRuleBean) context
+				.getApplication().evaluateExpressionGet(context,
+						"#{addNewRuleBean}", AddNewRuleBean.class);
+
+		boolean flag = false;
+		if (rule.contains("message"))
+			flag = true;
+
+		if (counter == 0) {
+			addNewRuleBean.editRule(flag, conditions, conclusions);
+			counter++;
+		}
+		
 	}
 
 	public String getFileName() {
