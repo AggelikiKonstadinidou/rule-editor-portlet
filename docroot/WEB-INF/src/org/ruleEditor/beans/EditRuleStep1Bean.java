@@ -14,6 +14,7 @@ import org.primefaces.component.commandlink.CommandLink;
 import org.primefaces.event.FileUploadEvent;
 import org.ruleEditor.ontology.Main;
 import org.ruleEditor.ontology.PointElement;
+import org.ruleEditor.utils.Rule;
 import org.ruleEditor.utils.Utils;
 
 @ManagedBean(name = "editRuleStep1Bean")
@@ -28,7 +29,9 @@ public class EditRuleStep1Bean {
 	private String rule;
 	private ArrayList<PointElement> conditions;
 	private ArrayList<PointElement> conclusions;
+	private ArrayList<Rule> rulesList;
 	int counter = 0;
+	private Rule selectedRule = null;
 
 	public EditRuleStep1Bean() {
 		super();
@@ -42,6 +45,8 @@ public class EditRuleStep1Bean {
 		formCompleted = true;
 		fileStream = null;
 		counter = 0;
+		rulesList = new ArrayList<Rule>();
+		selectedRule = new Rule("", "", null);
 	}
 
 	public void onFileUpload(FileUploadEvent event) throws IOException {
@@ -54,20 +59,25 @@ public class EditRuleStep1Bean {
 
 		this.formCompleted = false;
 		
-		List<List<PointElement>> list = Utils.convertRuleToDiagram(fileStream,
-				main.getAllClasses(), main.getMethods());
-		conditions = (ArrayList<PointElement>) list
-				.get(0);
-		conclusions = (ArrayList<PointElement>) list
-				.get(1);
-
-		rule = Utils.createRule(conditions, conclusions, "aaaa");
-		System.out.println(rule);
+		rulesList = Utils.getRulesFromFile(fileStream);
+		
+		
 
 	}
 
 	public void submitOption() throws IOException {
-		
+
+		if (counter == 0) {
+			List<List<PointElement>> list = Utils.convertRuleToDiagram(
+					selectedRule, main.getAllClasses(), main.getMethods());
+			conditions = (ArrayList<PointElement>) list.get(0);
+			conclusions = (ArrayList<PointElement>) list.get(1);
+
+			rule = Utils.createRule(conditions, conclusions, "aaaa");
+			System.out.println(rule);
+			counter++;
+		}
+
 		FacesContext context = FacesContext.getCurrentInstance();
 		AddNewRuleBean addNewRuleBean = (AddNewRuleBean) context
 				.getApplication().evaluateExpressionGet(context,
@@ -77,11 +87,8 @@ public class EditRuleStep1Bean {
 		if (rule.contains("message"))
 			flag = true;
 
-		if (counter == 0) {
-			addNewRuleBean.editRule(flag, conditions, conclusions);
-			counter++;
-		}
-		
+		addNewRuleBean.editRule(flag, conditions, conclusions);
+
 	}
 
 	public String getFileName() {
@@ -107,5 +114,23 @@ public class EditRuleStep1Bean {
 	public void setButton(CommandLink button) {
 		this.button = button;
 	}
+
+	public ArrayList<Rule> getRulesList() {
+		return rulesList;
+	}
+
+	public void setRulesList(ArrayList<Rule> rulesList) {
+		this.rulesList = rulesList;
+	}
+
+	public Rule getSelectedRule() {
+		return selectedRule;
+	}
+
+	public void setSelectedRule(Rule selectedRule){
+		this.selectedRule = selectedRule;
+		counter = 0;
+	}
+	
 
 }

@@ -2,6 +2,7 @@ package org.ruleEditor.utils;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
+import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileWriter;
@@ -10,6 +11,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.lang.reflect.Type;
+import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -39,6 +41,7 @@ import org.ruleEditor.ontology.OntologyProperty.ObjectProperty;
 import org.ruleEditor.ontology.PointElement;
 import org.ruleEditor.utils.MessageForJson.Group;
 import org.ruleEditor.utils.MessageForJson.Group.TextMessage;
+import org.ruleEditor.utils.Rule.RuleType;
 
 import com.google.gson.FieldNamingPolicy;
 import com.google.gson.Gson;
@@ -323,9 +326,10 @@ public class Utils {
 	}
 
 	public static List<List<PointElement>> convertRuleToDiagram(
-			InputStream inputStream, List<ArrayList<OntologyClass>> classes,
+			Rule selectedRule, List<ArrayList<OntologyClass>> classes,
 			List<BuiltinMethod> methods) throws IOException {
-
+		
+		InputStream inputStream = new ByteArrayInputStream(selectedRule.getBody().getBytes());
 		List<List<PointElement>> list = new ArrayList<List<PointElement>>();
 		BufferedReader reader = new BufferedReader(new InputStreamReader(
 				inputStream));
@@ -346,10 +350,10 @@ public class Utils {
 			if (line.contains("[")) {
 				
 				ruleName = line.replace("[", "").replace(":", "");
-				System.out.println(ruleName);
+				//System.out.println(ruleName);
 				
 			} else if (line.contains("]")) {
-				System.out.println("end of rule");
+				//System.out.println("end of rule");
 			} else if (line.contains("->")) {
 
 				System.out.println("change of panel");
@@ -360,7 +364,7 @@ public class Utils {
 
 			} else if (!line.isEmpty() && !line.contains(prefix_rdfs)
 					&& !line.contains(prefix_c4a)) {
-				element = convertRuleLineToPointElement(line, classes, methods,
+				element = convertRuleLineToPointElement(line.trim(), classes, methods,
 						panel);
 				if(panel.equalsIgnoreCase("conditions"))
 					conditions.add(element);
@@ -450,6 +454,7 @@ public class Utils {
 
 		}
 		// declaration of a built in method
+		//TODO for primitive jena methods
 		else {
 
 		}
@@ -607,6 +612,58 @@ public class Utils {
 
 		return property;
 
+	}
+	
+	public static ArrayList<Rule> getRulesFromFile(InputStream inputStream)
+			throws IOException {
+		ArrayList<Rule> list = new ArrayList<Rule>();
+
+		BufferedReader reader = new BufferedReader(new InputStreamReader(
+				inputStream));
+		StringBuilder out = new StringBuilder();
+		String line;
+
+		Rule rule = null;
+		String name = "";
+		String body = "";
+		RuleType ruleType = RuleType.CONFLICT;
+
+		while ((line = reader.readLine()) != null) {
+			if (!line.equalsIgnoreCase(prefix_c4a)
+					&& !line.equalsIgnoreCase(prefix_rdfs)
+					&& !line.contains("//"))
+				out.append(line + "\n");
+		}
+
+		String stringFile = out.toString().trim();
+		String[] splitted = stringFile.split("]");
+		for (int i = 0; i < splitted.length; i++) {
+
+			name = splitted[i].trim().substring(1, splitted[i].indexOf(":")).trim();
+			name = name.replace(":", "").replace("(", "").trim();
+			body = splitted[i] + "]";
+			
+			//TODO check if its both conflict and feedback rule
+			if (body.contains("Metadata"))
+				ruleType = RuleType.FEEDBACK;
+			else
+				ruleType = RuleType.CONFLICT;
+			
+			rule = new Rule(name, body, ruleType);
+			list.add(rule);
+		}
+
+		return list;
+	}
+	
+	public static String showPrettyBodyRule(String body) {
+		String newBody = "";
+
+		String[] splitted = body.split(")");
+		for (int i = 0; i < splitted.length; i++) {
+			newBody = newBody.concat(splitted[i] + ")\n");
+		}
+		return newBody;
 	}
 
 	public static PointElement setPosition(PointElement el) {

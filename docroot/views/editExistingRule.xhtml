@@ -17,11 +17,29 @@
 				<br />
 
 				<p:fileUpload style="width: 600px;" mode="advanced"
-					value="#{editRuleStep1Bean.fileName}"
+					value="#{editRuleStep1Bean.fileName}" auto="true"
 					fileUploadListener="#{editRuleStep1Bean.onFileUpload}"
-					allowTypes="/(\.|\/)(rules)$/" update=":#{p:component('nextBut')}">
+					allowTypes="/(\.|\/)(rules)$/" update=":#{p:component('rulesList')}">
 				</p:fileUpload>
 
+				<p:dataTable id="rulesList" var="rule"
+					value="#{editRuleStep1Bean.rulesList}" rowKey="#{rule.name}"
+					selectionMode="single"
+					selection="#{editRuleStep1Bean.selectedRule}" scrollable="true"
+					scrollHeight="300">
+					<p:ajax event="rowSelect" update=":#{p:component('nextBut')}" />
+					<f:facet name="header">
+						<h:outputText value="Rules" />
+					</f:facet>
+
+					<p:column headerText="Name">
+						<h:outputText value="#{rule.name}" />
+					</p:column>
+					<p:column headerText="Rule body">
+						<h:outputText value="#{rule.body}" />
+					</p:column>
+
+				</p:dataTable>
 
 				<div align="right">
 					<p:commandLink id="prevBut" ajax="false" style="align: right"
