@@ -30,23 +30,16 @@
 
 
 				<div align="right">
-					<p:commandLink id="prevBut"
-						ajax="false" style="align: right"
-						action="/views/initialMenu.xhtml?javax.portlet.faces.PortletMode=view&amp;javax.portlet.faces.WindowState=normal">
-						<h:graphicImage url="/previous.png"
-							styleClass="basicImageStyle valign-middle"
-							title="Go back to the previous page" />
-						<span style="margin-right: 20px"> Go to initial menu </span>
-					</p:commandLink>
-					<p:commandLink id="nextBut" ajax="false"
-						binding="#{addRuleStep1Bean.button}" style="align: right"
-						disabled="#{addRuleStep1Bean.formCompleted}"
-						actionListener="#{addRuleStep1Bean.submitOption}">
-						<span> Go to next step </span>
-						<h:graphicImage url="/next.png"
-							styleClass="basicImageStyle valign-middle"
-							title="Go forward to the next page" />
-					</p:commandLink>
+					<p:commandButton
+						action="/views/initialMenu.xhtml?javax.portlet.faces.PortletMode=view&amp;javax.portlet.faces.WindowState=normal"
+						title="Go to initial menu" id="prevBut" style="align: right"
+						ajax="false" value="Initial Menu">
+					</p:commandButton>
+					<p:commandButton title="Go to the next step" id="nextBut"
+						disabled="#{addRuleStep1Bean.formCompleted}" style="align: right"
+						ajax="false" actionListener="#{addRuleStep1Bean.submitOption}"
+						value="Next step">
+					</p:commandButton>
 				</div>
 			</p:panel>
 		</h:form>

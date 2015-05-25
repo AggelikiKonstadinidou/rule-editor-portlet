@@ -61,6 +61,7 @@ import org.ruleEditor.ontology.PointElement;
 import org.ruleEditor.ontology.PointElement.Type;
 import org.ruleEditor.utils.FileDownloadController;
 import org.ruleEditor.utils.FileUploadController;
+import org.ruleEditor.utils.Rule;
 import org.ruleEditor.utils.Utils;
 
 import sun.rmi.runtime.NewThreadAction;
@@ -106,6 +107,9 @@ public class AddNewRuleBean {
     private String feedbackClass = "";
     private String feedbackScope = "";
     private String feedbackId = "";
+    private Rule  rule = null;
+    private ArrayList<Rule> existingRules = new ArrayList<Rule>();
+    private boolean feedback = true;
 
 	public AddNewRuleBean() {
 		super();
@@ -177,9 +181,20 @@ public class AddNewRuleBean {
 	}
 	
 	public void editRule(boolean flag, ArrayList<PointElement> conditionsList,
-			ArrayList<PointElement> conclusionsList) {
+			ArrayList<PointElement> conclusionsList, Rule ruleForEdit, ArrayList<Rule> rulesList) {
 
-		ruleName = "";
+		
+		rule = ruleForEdit;
+		if (rule.getRuleType() == Rule.RuleType.FEEDBACK) {
+			feedback = true;
+			this.feedbackClass = rule.getFeedbackClass();
+			this.feedbackScope = rule.getFeedbackScope();
+			this.feedbackId = rule.getFeedbackID();
+		} else
+			feedback = false;
+		
+		ruleName = rule.getName();
+		existingRules = rulesList;
 		newFileName = "";
 		oldFileName = "";
 		feedbackFile = "";
@@ -232,8 +247,8 @@ public class AddNewRuleBean {
 				new ArrowOverlay(20, 20, 1, 1));
 		conclusionsModel.setDefaultConnector(connector);
 		
-		createModels("conditions",conditions);
-		createModels("conclusions",conclusions);
+		//createModels("conditions",conditions);
+		//createModels("conclusions",conclusions);
 
 	}
 	
@@ -881,9 +896,28 @@ public class AddNewRuleBean {
 					feedbackId, conditions);
 		
 		// export the rule
-		if (!rule.isEmpty())
-			FileDownloadController.writeGsonAndExportFile(newFileName, rule);
+		if (!rule.isEmpty() && !newFileName.isEmpty())
+			FileDownloadController.writeGsonAndExportFile(finalFileName, rule);
+		else {
+			existingRules = Utils.getRulesFromFile(fileStream);
+			String allRuleString = Utils.prefix_c4a + "\n" + Utils.prefix_rdfs
+					+ "\n";
+			for (Rule temp : existingRules) {
+				allRuleString = allRuleString.concat(temp.getBody()) + "\n";
+			}
+
+			allRuleString = allRuleString.concat(rule
+					.replace(Utils.prefix_c4a, "")
+					.replace(Utils.prefix_rdfs, "").trim());
+			FileDownloadController.writeGsonAndExportFile(finalFileName,
+					allRuleString);
+		}
 		
+	}
+	
+	public void uploadFileForSaveAs(FileUploadEvent event) throws IOException{
+		oldFileName = event.getFile().getFileName();
+		fileStream = event.getFile().getInputstream();
 	}
 	
 	public void onFileUpload(FileUploadEvent event) throws IOException {
@@ -1238,4 +1272,21 @@ public class AddNewRuleBean {
 		this.feedbackId = feedbackId;
 	}
 
+	public boolean isFlag() {
+		return flag;
+	}
+
+	public void setFlag(boolean flag) {
+		this.flag = flag;
+	}
+
+	public boolean isFeedback() {
+		return feedback;
+	}
+
+	public void setFeedback(boolean feedback) {
+		this.feedback = feedback;
+	}
+	
+	
 }

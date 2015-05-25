@@ -5,12 +5,18 @@ public class Rule {
 	private String name;
 	private String body;
 	private RuleType ruleType;
+	private String feedbackClass;
+	private String feedbackScope;
+	private String feedbackID;
 	
 	public Rule(String name, String body, RuleType ruleType) {
 		super();
 		this.name = name;
 		this.body = body;
 		this.ruleType = ruleType;
+		this.feedbackClass ="";
+		this.feedbackScope ="";
+		this.feedbackID = "";
 	}
 
 	public String getName() {
@@ -37,15 +43,35 @@ public class Rule {
 		this.ruleType = ruleType;
 	}
 	
-	
+	public String getFeedbackClass() {
+		return feedbackClass;
+	}
+
+	public void setFeedbackClass(String feedbackClass) {
+		this.feedbackClass = feedbackClass;
+	}
+
+	public String getFeedbackScope() {
+		return feedbackScope;
+	}
+
+	public void setFeedbackScope(String feedbackScope) {
+		this.feedbackScope = feedbackScope;
+	}
+
+	public String getFeedbackID() {
+		return feedbackID;
+	}
+
+	public void setFeedbackID(String feedbackID) {
+		this.feedbackID = feedbackID;
+	}
 
 	@Override
 	public String toString() {
 		return "Rule [name=" + name + ", body=" + body + ", ruleType="
 				+ ruleType + "]";
 	}
-
-
 
 	public enum RuleType {
 		CONFLICT, FEEDBACK, BOTH;

@@ -55,8 +55,8 @@ import com.sun.faces.component.visit.FullVisitContext;
 
 public class Utils {
 
-	private static String prefix_c4a = "@prefix c4a: <http://rbmm.org/schemas/cloud4all/0.1/>.";
-	private static String prefix_rdfs = "@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>.";
+	public static String prefix_c4a = "@prefix c4a: <http://rbmm.org/schemas/cloud4all/0.1/>.";
+	public static String prefix_rdfs = "@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>.";
 	private static int initialX = 3;
 	private static int initialY = 3;
 	private static int objectCounter = 0;
@@ -627,12 +627,15 @@ public class Utils {
 		String name = "";
 		String body = "";
 		RuleType ruleType = RuleType.CONFLICT;
+		String feedbackClass = "";
+		String feedbackScope = "";
+		String feedbackID = "";
 
 		while ((line = reader.readLine()) != null) {
 			if (!line.equalsIgnoreCase(prefix_c4a)
 					&& !line.equalsIgnoreCase(prefix_rdfs)
-					&& !line.contains("//"))
-				out.append(line + "\n");
+					&& !line.contains("//") && !line.isEmpty())
+				out.append(line.trim() + "\n");
 		}
 
 		String stringFile = out.toString().trim();
@@ -641,15 +644,39 @@ public class Utils {
 
 			name = splitted[i].trim().substring(1, splitted[i].indexOf(":")).trim();
 			name = name.replace(":", "").replace("(", "").trim();
-			body = splitted[i] + "]";
+			body = splitted[i].trim() + "]";
 			
 			//TODO check if its both conflict and feedback rule
-			if (body.contains("Metadata"))
+			if (body.contains("Metadata")) {
 				ruleType = RuleType.FEEDBACK;
-			else
+
+				String[] splitted2 = null;
+				String[] lines = body.split(">")[1].split("\n");
+				
+				for (int j = 0; j < lines.length; j++) {
+					if (lines[j].contains("hasMetadata"))
+						feedbackClass = lines[j].substring(2,
+								lines[j].indexOf(" "));
+					else if (lines[j].contains("scope")) {
+						splitted2 = lines[j].split(" ");
+						feedbackScope = splitted2[2].replace("?", "").replace(
+								")", "");
+
+					} else if (lines[j].contains("refersTo")) {
+						splitted2 = lines[j].split(" ");
+						feedbackID = splitted2[2].replace("c4a:", "").replace(
+								")", "");
+					}
+				}
+
+			} else
 				ruleType = RuleType.CONFLICT;
-			
+
 			rule = new Rule(name, body, ruleType);
+			rule.setFeedbackClass(feedbackClass);
+			rule.setFeedbackScope(feedbackScope);
+			rule.setFeedbackID(feedbackID);
+			
 			list.add(rule);
 		}
 

@@ -9,13 +9,6 @@
 	<h:head />
 	<h:body>
 		<h:form id="form" enctype="multipart/form-data">
-			<p:commandLink process="@this" immediate="true"
-				action="/views/initialMenu.xhtml?javax.portlet.faces.PortletMode=view&amp;javax.portlet.faces.WindowState=normal">
-				<h:graphicImage url="/Home.png" styleClass="basicImageStyle"
-					title="Go to initial menu" />
-			</p:commandLink>
-			<br />
-			<br />
 			<p:panel id="informationPanel">
 				<f:facet name="header">
 					<h:outputText value="New Feedback Rule" />
@@ -225,8 +218,8 @@
 					<br />
 					<h:panelGrid columns="2" columnClasses="label,value"
 						styleClass="grid">
-						<p:fileUpload style="width: 500px;" mode="advanced"
-							value="#{addNewRuleBean.feedbackFile}"
+						<p:fileUpload style="width: 500px;" mode="advanced" auto="true"
+							value="#{addNewRuleBean.feedbackFile}" label="Select feedbackMessages file"
 							fileUploadListener="#{addNewRuleBean.onFileUpload}"
 							allowTypes="/(\.|\/)(jsonld)$/">
 						</p:fileUpload>
@@ -236,6 +229,11 @@
 				</p:panel>
 
 
+				<p:commandButton actionListener="#{addRuleStep1Bean.init}"
+					action="/views/addRuleStep1Bean.xhtml?javax.portlet.faces.PortletMode=view&amp;javax.portlet.faces.WindowState=normal"
+					title="Go to initial menu" id="prevBut" ajax="false"
+					value="Previous step">
+				</p:commandButton>
 				<p:commandButton oncomplete="PF('newRuleDialog').show()"
 					value="Save Rule" title="Save the rule">
 				</p:commandButton>
@@ -260,9 +258,18 @@
 						id="newRuleName" autocomplete="off"
 						value="#{addNewRuleBean.ruleName}" required="true">
 					</p:inputText>
-
-					<h:outputText value="File name: " id="FileName" required="false" />
-					<p:inputText label="File Name" required="true"
+				</h:panelGrid>
+				<p:fileUpload style="width: 600px;" mode="advanced"
+					label="Select an existing rule file"
+					value="#{addNewRuleBean.oldFileName}" auto="true"
+					fileUploadListener="#{addNewRuleBean.uploadFileForSaveAs}"
+					allowTypes="/(\.|\/)(rules)$/">
+				</p:fileUpload>
+				<h:panelGrid columns="2" columnClasses="label,value"
+					styleClass="grid">
+					<h:outputText value="Or create a new file " id="FileName"
+						required="false" />
+					<p:inputText label="File Name"
 						style="width: 300px;" id="newFileName" autocomplete="off"
 						value="#{addNewRuleBean.newFileName}">
 					</p:inputText>
@@ -271,7 +278,6 @@
 						actionListener="#{addNewRuleBean.saveRule}" />
 					<p:commandButton value="Cancel" id="cancelBut"
 						oncomplete="PF('newRuleDialog').hide()" />
-
 				</h:panelGrid>
 			</p:dialog>
 

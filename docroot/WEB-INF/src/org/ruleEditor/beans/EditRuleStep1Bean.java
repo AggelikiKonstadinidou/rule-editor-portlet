@@ -61,10 +61,13 @@ public class EditRuleStep1Bean {
 		
 		rulesList = Utils.getRulesFromFile(fileStream);
 		
-		
 
 	}
 
+	public void reload(){
+		selectedRule = null;
+		formCompleted = true;
+	}
 	public void submitOption() throws IOException {
 
 		if (counter == 0) {
@@ -73,7 +76,7 @@ public class EditRuleStep1Bean {
 			conditions = (ArrayList<PointElement>) list.get(0);
 			conclusions = (ArrayList<PointElement>) list.get(1);
 
-			rule = Utils.createRule(conditions, conclusions, "aaaa");
+			rule = Utils.createRule(conditions, conclusions, selectedRule.getName());
 			System.out.println(rule);
 			counter++;
 		}
@@ -87,7 +90,7 @@ public class EditRuleStep1Bean {
 		if (rule.contains("message"))
 			flag = true;
 
-		addNewRuleBean.editRule(flag, conditions, conclusions);
+		addNewRuleBean.editRule(flag, conditions, conclusions,selectedRule, rulesList);
 
 	}
 
@@ -131,6 +134,5 @@ public class EditRuleStep1Bean {
 		this.selectedRule = selectedRule;
 		counter = 0;
 	}
-	
 
 }

@@ -7,11 +7,13 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.net.URLEncoder;
 
 import javax.faces.context.FacesContext;
 import javax.portlet.PortletResponse;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.io.output.FileWriterWithEncoding;
 import org.primefaces.model.DefaultStreamedContent;
 import org.primefaces.model.StreamedContent;
 
@@ -25,15 +27,15 @@ public class FileDownloadController {
 			throws IOException {
 
 		// 1. write json to a new file
-		BufferedWriter out = new BufferedWriter(new FileWriter(fileName));
+		BufferedWriter out = new BufferedWriter(new FileWriterWithEncoding(fileName, "UTF-8"));
 		out.write(json);
 		out.close();
 
-		File fil = new File(fileName);
+//		File fil = new File(fileName);
 
-		InputStream stream = new FileInputStream(fil);
-		StreamedContent file = new DefaultStreamedContent(stream, "text/txt",
-				fileName);
+//		InputStream stream = new FileInputStream(fil);
+//		StreamedContent file = new DefaultStreamedContent(stream, "text/txt",
+//				fileName);
 
 		File localfile = new File(fileName);
 		FileInputStream fis = new FileInputStream(localfile);
@@ -47,7 +49,9 @@ public class FileDownloadController {
 				+ fileName + "\"");//
 		res.setHeader("Content-Transfer-Encoding", "binary");
 		res.setContentType("application/octet-stream");
+		res.setCharacterEncoding("UTF-8");
 		res.flushBuffer();
+		
 
 		// 3. write the file into the outputStream
 		OutputStream outputStream = res.getOutputStream();
