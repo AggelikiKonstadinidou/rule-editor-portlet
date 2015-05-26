@@ -18,7 +18,7 @@
 					<p:scrollPanel style="width:535px;height:800px;">
 						<p:tree id="tree" value="#{addNewRuleBean.root}" var="node"
 							orientation="horizontal" selectionMode="single"
-							selection="#{addNewRuleBean.selectedNode}"  >
+							selection="#{addNewRuleBean.selectedNode}">
 							<p:ajax event="select" listener="#{addNewRuleBean.onNodeSelect}"
 								update=":#{p:component('dataProperties')},
 								:#{p:component('objectProperties')},:#{p:component('instances')}" />
@@ -68,8 +68,8 @@
 						<p:dataTable id="instances" var="data"
 							value="#{addNewRuleBean.instances}" rowKey="#{data}"
 							selectionMode="single"
-							selection="#{addNewRuleBean.selectedInstance}"
-							scrollable="true" scrollHeight="50">
+							selection="#{addNewRuleBean.selectedInstance}" scrollable="true"
+							scrollHeight="50">
 
 							<p:column headerText="Instances">
 								<h:outputText value="#{data}" />
@@ -79,8 +79,8 @@
 
 						<p:dataTable id="methods" var="method" value="#{main.methods}"
 							rowKey="#{method.originalName}" selectionMode="single"
-							selection="#{addNewRuleBean.selectedMethod}"
-							scrollable="true" scrollHeight="100">
+							selection="#{addNewRuleBean.selectedMethod}" scrollable="true"
+							scrollHeight="100">
 							<p:column headerText="Primitive Methods">
 								<h:outputText value="#{method.usingName}" />
 							</p:column>
@@ -150,8 +150,8 @@
 								<p:panel id="pnl1" header="#{item.elementName}">
 									<h:panelGrid columns="4" id="elementGrid1">
 										<h:outputText value="Variable: #{item.varName}"
-											rendered="#{!item.renderEditText}" />
-										<h:outputText label="value" rendered="#{item.renderEditText}"
+											rendered="#{item.editVar}" />
+										<h:outputText label="value" rendered="#{item.editValue}"
 											id="value" style="width: 80px;" autocomplete="off"
 											value="Value: #{item.property.value}" />
 
@@ -184,8 +184,8 @@
 								<p:panel id="pnl2" header="#{item.elementName}">
 									<h:panelGrid columns="3" id="elementGrid2">
 										<h:outputText value="Variable: #{item.varName}"
-											rendered="#{!item.renderEditText}" />
-										<h:outputText label="value" rendered="#{item.renderEditText}"
+											rendered="#{item.editVar}" />
+										<h:outputText label="value" rendered="#{item.editValue}"
 											id="value2" style="width: 80px;"
 											value="Value: #{item.property.value}" />
 										<p:commandButton oncomplete="PF('editDialog').show()"
@@ -210,8 +210,9 @@
 					</p:panel>
 
 				</h:panelGrid>
-				
-				<p:panel id="feedbackMessages" style="margin-top:10px" rendered="#{addNewRuleBean.feedback}">
+
+				<p:panel id="feedbackMessages" style="margin-top:10px"
+					rendered="#{addNewRuleBean.feedback}">
 
 					<f:facet name="header">
 						<h:outputText value="FeedBack Rule Configuration" id="feed"
@@ -224,19 +225,19 @@
 							id="className" />
 						<p:inputText label="class name" style="width: 300px;"
 							id="classNameValue" autocomplete="off"
-							value="#{addNewRuleBean.feedbackClass}">
+							value="#{addNewRuleBean.rule.feedbackClass}">
 						</p:inputText>
 
 						<h:outputText value="The feedback rule will have as scope "
 							id="scope" />
 						<p:inputText style="width: 300px;" id="scopeValue"
-							autocomplete="off" value="#{addNewRuleBean.feedbackScope}">
+							autocomplete="off" value="#{addNewRuleBean.rule.feedbackScope}">
 						</p:inputText>
 
 						<h:outputText value="The feedback rule will have as unique id "
 							id="uniqueId" />
 						<p:inputText style="width: 300px;" id="uniqueIdValue"
-							autocomplete="off" value="#{addNewRuleBean.feedbackId}">
+							autocomplete="off" value="#{addNewRuleBean.rule.feedbackID}">
 						</p:inputText>
 
 					</h:panelGrid>
@@ -334,8 +335,8 @@
 					styleClass="grid">
 					<h:outputText value="Or create a new file " id="FileName"
 						required="false" />
-					<p:inputText label="File Name"
-						style="width: 300px;" id="newFileName" autocomplete="off"
+					<p:inputText label="File Name" style="width: 300px;"
+						id="newFileName" autocomplete="off"
 						value="#{addNewRuleBean.newFileName}">
 					</p:inputText>
 					<p:commandButton value="OK" id="okBut" ajax="false"
@@ -353,23 +354,24 @@
 				<h:panelGrid columns="2" columnClasses="label,value"
 					styleClass="grid">
 					<h:outputText value="Variable name: " id="clonedVar"
-						rendered="#{!addNewRuleBean.cloneSelectedNode.renderEditText}" />
+						rendered="#{addNewRuleBean.cloneSelectedNode.editVar}" />
 					<p:inputText label="Rule name" style="width: 300px;"
 						id="clonedVar1" autocomplete="off"
-						rendered="#{!addNewRuleBean.cloneSelectedNode.renderEditText}"
+						rendered="#{addNewRuleBean.cloneSelectedNode.editVar}"
 						value="#{addNewRuleBean.cloneSelectedNode.varName}"
 						required="true">
 					</p:inputText>
 
 					<h:outputText value="Value: " id="clonedValue" required="false"
-						rendered="#{addNewRuleBean.cloneSelectedNode.renderEditText}" />
+						rendered="#{addNewRuleBean.cloneSelectedNode.editValue}" />
 					<p:inputText
-						rendered="#{addNewRuleBean.cloneSelectedNode.renderEditText}"
+						rendered="#{addNewRuleBean.cloneSelectedNode.editValue}"
 						style="width: 300px;" id="clonedValue1" autocomplete="off"
 						value="#{addNewRuleBean.cloneSelectedNode.property.value}">
 					</p:inputText>
 					<p:commandButton action="#{addNewRuleBean.saveEditOfNode}"
 						icon="ui-icon-save" title="Save changes"
+						rendered="#{addNewRuleBean.cloneSelectedNode.enableEdit}"
 						update=":#{p:component('pan1')},:#{p:component('pan2')}"
 						value="Save" oncomplete="PF('editDialog').hide()">
 					</p:commandButton>

@@ -30,27 +30,10 @@
 			<br />
 			<br />
 			<p:commandButton id="configuration" value="Configuration of rules"
+				actionListener="#{configurateOrderBean.init}" ajax="false"
+				action="/views/orderRules.xhtml?javax.portlet.faces.PortletMode=view&amp;javax.portlet.faces.WindowState=normal"
 				title="Configure the order of rules">
 			</p:commandButton>
-
-			<p:dialog widgetVar="newRuleDialog" id="newRuleDialog" modal="true"
-				header="New rule configuration" resizable="false" showEffect="clip"
-				dynamic="true" hideEffect="fold" position="center,center">
-				<p:messages for="msgs" showDetail="true" autoUpdate="true"
-					closable="true" />
-				<h:panelGrid columns="2" columnClasses="label,value"
-					styleClass="grid">
-
-					<p:commandButton value="Create a conflict/Resolution rule"
-						id="ConflictResolution"
-						action="/views/addConflictResolRule.xhtml?javax.portlet.faces.PortletMode=view&amp;javax.portlet.faces.WindowState=normal"
-						actionListener="#{addNewRuleBean.init(false)}" ajax="false" />
-					<p:commandButton value="Create a feedback rule" id="feedbackRule"
-						action="/views/addFeedbackRule.xhtml?javax.portlet.faces.PortletMode=view&amp;javax.portlet.faces.WindowState=normal"
-						actionListener="#{addNewRuleBean.init(true)}" ajax="false" />
-
-				</h:panelGrid>
-			</p:dialog>
 
 		</h:form>
 	</h:body>

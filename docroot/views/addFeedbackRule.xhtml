@@ -11,7 +11,7 @@
 		<h:form id="form" enctype="multipart/form-data">
 			<p:panel id="informationPanel">
 				<f:facet name="header">
-					<h:outputText value="New Feedback Rule" />
+					<h:outputText value="Step2: Create a Feedback Rule" />
 				</f:facet>
 
 				<h:panelGrid columns="2" id="grid1">
@@ -129,8 +129,8 @@
 							<p:panel id="pnl1" header="#{item.elementName}">
 								<h:panelGrid columns="4" id="elementGrid1">
 									<h:outputText value="Variable: #{item.varName}"
-										rendered="#{!item.renderEditText}" />
-									<h:outputText label="value" rendered="#{item.renderEditText}"
+										rendered="#{item.editVar}" />
+									<h:outputText label="value" rendered="#{item.editValue}"
 										id="value" style="width: 80px;" autocomplete="off"
 										value="Value: #{item.property.value}" />
 
@@ -287,25 +287,26 @@
 				<h:panelGrid columns="2" columnClasses="label,value"
 					styleClass="grid4">
 					<h:outputText value="Variable name: " id="clonedVar"
-						rendered="#{!addNewRuleBean.cloneSelectedNode.renderEditText}" />
+						rendered="#{addNewRuleBean.cloneSelectedNode.editVar}" />
 					<p:inputText label="Rule name" style="width: 300px;"
 						id="clonedVar1" autocomplete="off"
-						rendered="#{!addNewRuleBean.cloneSelectedNode.renderEditText}"
+						rendered="#{addNewRuleBean.cloneSelectedNode.editVar}"
 						value="#{addNewRuleBean.cloneSelectedNode.varName}"
 						required="true">
 					</p:inputText>
 
 					<h:outputText value="Value: " id="clonedValue" required="false"
-						rendered="#{addNewRuleBean.cloneSelectedNode.renderEditText}" />
+						rendered="#{addNewRuleBean.cloneSelectedNode.editValue}" />
 					<p:inputText
-						rendered="#{addNewRuleBean.cloneSelectedNode.renderEditText}"
+						rendered="#{addNewRuleBean.cloneSelectedNode.editValue}"
 						style="width: 300px;" id="clonedValue1" autocomplete="off"
 						value="#{addNewRuleBean.cloneSelectedNode.property.value}">
 					</p:inputText>
 					<p:commandButton action="#{addNewRuleBean.saveEditOfNode}"
 						icon="ui-icon-save" title="Save changes"
-						update=":#{p:component('pan1')}"
-						value="Save" oncomplete="PF('editDialog').hide()">
+						rendered="#{addNewRuleBean.cloneSelectedNode.enableEdit}"
+						update=":#{p:component('pan1')}" value="Save"
+						oncomplete="PF('editDialog').hide()">
 					</p:commandButton>
 					<p:commandButton action="#{addNewRuleBean.removeNode}"
 						icon="ui-icon-close" title="Remove node"

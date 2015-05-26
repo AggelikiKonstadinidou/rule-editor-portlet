@@ -328,15 +328,16 @@ public class Utils {
 	public static List<List<PointElement>> convertRuleToDiagram(
 			Rule selectedRule, List<ArrayList<OntologyClass>> classes,
 			List<BuiltinMethod> methods) throws IOException {
-		
-		InputStream inputStream = new ByteArrayInputStream(selectedRule.getBody().getBytes());
+
+		InputStream inputStream = new ByteArrayInputStream(selectedRule
+				.getBody().getBytes());
 		List<List<PointElement>> list = new ArrayList<List<PointElement>>();
 		BufferedReader reader = new BufferedReader(new InputStreamReader(
 				inputStream));
 		StringBuilder out = new StringBuilder();
 		String line;
 		String ruleName = "";
-		
+
 		PointElement element;
 		String panel = "conditions";
 		conditions = new ArrayList<PointElement>();
@@ -348,12 +349,12 @@ public class Utils {
 		while ((line = reader.readLine()) != null) {
 			element = new PointElement();
 			if (line.contains("[")) {
-				
+
 				ruleName = line.replace("[", "").replace(":", "");
-				//System.out.println(ruleName);
-				
+				// System.out.println(ruleName);
+
 			} else if (line.contains("]")) {
-				//System.out.println("end of rule");
+				// System.out.println("end of rule");
 			} else if (line.contains("->")) {
 
 				System.out.println("change of panel");
@@ -364,20 +365,20 @@ public class Utils {
 
 			} else if (!line.isEmpty() && !line.contains(prefix_rdfs)
 					&& !line.contains(prefix_c4a)) {
-				element = convertRuleLineToPointElement(line.trim(), classes, methods,
-						panel);
-				if(panel.equalsIgnoreCase("conditions"))
+				element = convertRuleLineToPointElement(line.trim(), classes,
+						methods, panel);
+				if (panel.equalsIgnoreCase("conditions"))
 					conditions.add(element);
 				else
 					conclusions.add(element);
-				
+
 			}
 			out.append(line);
 		}
-		
-		//fill missing values in object properties
+
+		// fill missing values in object properties
 		fillMissingClasses(classes);
-		
+
 		list.add(conditions);
 		list.add(conclusions);
 
@@ -428,84 +429,86 @@ public class Utils {
 				DataProperty dataProp = (DataProperty) property.clone();
 				dataProp.setValue(splitted[2].replace("?", "").replace(")", ""));
 				element.setType(PointElement.Type.DATA_PROPERTY);
-				element.setRenderEditText(true);
 				element.setProperty(dataProp);
 				element.getConnections().add(classEl);
 			} else {
 				element.setType(PointElement.Type.OBJECT_PROPERTY);
-				String objectValue = splitted[2].replace("?", "").replace(")", "");
+				String objectValue = splitted[2].replace("?", "").replace(")",
+						"");
 				PointElement objValue = findElementClassByVarName(objectValue);
-				
-				if(classEl.getId().isEmpty())
+
+				if (classEl.getId().isEmpty())
 					classEl.setVarName(varName);
-				
+
 				element.getConnections().add(classEl);
-				
-				if(objValue.getId().isEmpty())
+
+				if (objValue.getId().isEmpty())
 					objValue.setVarName(objectValue);
-				
-				if(property == null){
+
+				if (property == null) {
 					property = new OntologyProperty(propertyName, "");
 				}
-					
+
 				element.getConnections().add(objValue);
 				element.setProperty(property);
 			}
 
 		}
 		// declaration of a built in method
-		//TODO for primitive jena methods
+		// TODO for primitive jena methods
 		else {
 
 		}
 
 		return element;
 	}
-	
-	public static void fillMissingClasses(List<ArrayList<OntologyClass>> classes){
+
+	public static void fillMissingClasses(List<ArrayList<OntologyClass>> classes) {
 		for (PointElement el : conditions) {
 			if (el.getType() == PointElement.Type.OBJECT_PROPERTY) {
 				if (el.getConnections().get(0).getId().isEmpty()) {
 					PointElement classEl = findElementClassByVarName(el
 							.getConnections().get(0).getVarName());
 					el.getConnections().remove(0);
-					el.getConnections().add(0,classEl);
+					el.getConnections().add(0, classEl);
 				}
-				
+
 				if (el.getConnections().get(1).getId().isEmpty()) {
 					PointElement classEl = findElementClassByVarName(el
 							.getConnections().get(1).getVarName());
 					el.getConnections().remove(1);
-					el.getConnections().add(1,classEl);
+					el.getConnections().add(1, classEl);
 				}
-				
-				if(el.getProperty().getOntologyURI().isEmpty()){
-					OntologyProperty property = findPropertyByName(el.getProperty().getPropertyName(),
-							classes, el.getConnections().get(0).getElementName());
+
+				if (el.getProperty().getOntologyURI().isEmpty()) {
+					OntologyProperty property = findPropertyByName(el
+							.getProperty().getPropertyName(), classes, el
+							.getConnections().get(0).getElementName());
 					el.setProperty(property);
 				}
 			}
 		}
-		
+
 		for (PointElement el : conclusions) {
 			if (el.getType() == PointElement.Type.OBJECT_PROPERTY) {
 				if (el.getConnections().get(0).getId().isEmpty()) {
 					PointElement classEl = findElementClassByVarName(el
 							.getConnections().get(0).getVarName());
 					el.getConnections().remove(0);
-					el.getConnections().add(0,classEl);
+					el.getConnections().add(0, classEl);
 				}
-				
+
 				if (el.getConnections().get(1).getId().isEmpty()) {
 					PointElement classEl = findElementClassByVarName(el
 							.getConnections().get(1).getVarName());
 					el.getConnections().remove(1);
-					el.getConnections().add(1,classEl);
+					el.getConnections().add(1, classEl);
 				}
-				
-				if(el.getProperty().getOntologyURI().isEmpty()){
-					OntologyProperty property = findPropertyByName(el.getProperty().getPropertyName(),
-							classes, el.getConnections().get(0).getElementName());
+
+				if (el.getProperty().getOntologyURI().isEmpty()) {
+					OntologyProperty property = findPropertyByName(el
+							.getProperty().getPropertyName(), classes, el
+							.getConnections().get(0).getElementName());
 					el.setProperty(property);
 				}
 			}
@@ -524,16 +527,16 @@ public class Utils {
 				}
 			}
 		}
-		
-		if(element.getId().isEmpty())
-		for (PointElement pel : conclusions) {
-			if (pel.getType() == PointElement.Type.CLASS) {
-				if (pel.getVarName().equalsIgnoreCase(name)) {
-					element = pel.clone();
-					break;
+
+		if (element.getId().isEmpty())
+			for (PointElement pel : conclusions) {
+				if (pel.getType() == PointElement.Type.CLASS) {
+					if (pel.getVarName().equalsIgnoreCase(name)) {
+						element = pel.clone();
+						break;
+					}
 				}
 			}
-		}
 		return element;
 	}
 
@@ -567,7 +570,7 @@ public class Utils {
 				for (OntologyClass childClass : temp.get(0).getChildren()) {
 					property = findPropertyByNameInChildren(name, childClass,
 							className);
-					if(property!=null)
+					if (property != null)
 						break;
 				}
 			}
@@ -580,9 +583,9 @@ public class Utils {
 	public static OntologyProperty findPropertyByNameInChildren(String name,
 			OntologyClass ontClass, String className) {
 
-	    OntologyProperty property = null;
-			if (ontClass.getClassName().equalsIgnoreCase(className)) {
-				// look in data properties
+		OntologyProperty property = null;
+		if (ontClass.getClassName().equalsIgnoreCase(className)) {
+			// look in data properties
 			for (DataProperty dataProp : ontClass.getDataProperties()) {
 				if (dataProp.getPropertyName().equalsIgnoreCase(name)) {
 					property = (DataProperty) dataProp.clone();
@@ -598,22 +601,20 @@ public class Utils {
 					return property;
 				}
 			}
-			} else {
+		} else {
 
-				// recursion, look in the children classes
-				for(OntologyClass temp : ontClass.getChildren()){
-				property = findPropertyByNameInChildren(name,
-						temp,
-						className);
-				if(property!=null)
+			// recursion, look in the children classes
+			for (OntologyClass temp : ontClass.getChildren()) {
+				property = findPropertyByNameInChildren(name, temp, className);
+				if (property != null)
 					break;
-				}
 			}
+		}
 
 		return property;
 
 	}
-	
+
 	public static ArrayList<Rule> getRulesFromFile(InputStream inputStream)
 			throws IOException {
 		ArrayList<Rule> list = new ArrayList<Rule>();
@@ -642,17 +643,18 @@ public class Utils {
 		String[] splitted = stringFile.split("]");
 		for (int i = 0; i < splitted.length; i++) {
 
-			name = splitted[i].trim().substring(1, splitted[i].indexOf(":")).trim();
+			name = splitted[i].trim().substring(1, splitted[i].indexOf(":"))
+					.trim();
 			name = name.replace(":", "").replace("(", "").trim();
 			body = splitted[i].trim() + "]";
-			
-			//TODO check if its both conflict and feedback rule
+
+			// TODO check if its both conflict and feedback rule
 			if (body.contains("Metadata")) {
 				ruleType = RuleType.FEEDBACK;
 
 				String[] splitted2 = null;
 				String[] lines = body.split(">")[1].split("\n");
-				
+
 				for (int j = 0; j < lines.length; j++) {
 					if (lines[j].contains("hasMetadata"))
 						feedbackClass = lines[j].substring(2,
@@ -676,13 +678,13 @@ public class Utils {
 			rule.setFeedbackClass(feedbackClass);
 			rule.setFeedbackScope(feedbackScope);
 			rule.setFeedbackID(feedbackID);
-			
+
 			list.add(rule);
 		}
 
 		return list;
 	}
-	
+
 	public static String showPrettyBodyRule(String body) {
 		String newBody = "";
 
@@ -719,6 +721,39 @@ public class Utils {
 
 	public static String setUniqueID() {
 		return "X_" + counter++;
+	}
+	
+	public static ArrayList<String> getRuleArray(InputStream inputStream)
+			throws IOException {
+		ArrayList<String> rules = new ArrayList<String>();
+		BufferedReader reader = new BufferedReader(new InputStreamReader(
+				inputStream));
+		StringBuilder out = new StringBuilder();
+		String line;
+		String ruleString = "";
+		int counter = 0;
+		while ((line = reader.readLine()) != null) {
+			if (line.contains("rules=")) {
+				ruleString = ruleString.concat(line);
+				counter++;
+			}
+			else if (!line.contains("queries=") && !line.isEmpty() && counter > 0) {
+				ruleString = ruleString.concat(line);
+				counter++;
+			}
+
+			else if (line.contains("queries="))
+				counter = 0;
+			
+		}
+
+		
+		String[] splitted = ruleString.split(";");
+		for (int i = 0; i < splitted.length; i++) {
+			rules.add(splitted[i].replace("testData/rules/", ""));
+		}
+		
+		return rules;
 	}
 
 }

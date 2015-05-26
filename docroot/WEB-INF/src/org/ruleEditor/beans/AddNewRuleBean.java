@@ -187,9 +187,6 @@ public class AddNewRuleBean {
 		rule = ruleForEdit;
 		if (rule.getRuleType() == Rule.RuleType.FEEDBACK) {
 			feedback = true;
-			this.feedbackClass = rule.getFeedbackClass();
-			this.feedbackScope = rule.getFeedbackScope();
-			this.feedbackId = rule.getFeedbackID();
 		} else
 			feedback = false;
 		
@@ -247,8 +244,8 @@ public class AddNewRuleBean {
 				new ArrowOverlay(20, 20, 1, 1));
 		conclusionsModel.setDefaultConnector(connector);
 		
-		//createModels("conditions",conditions);
-		//createModels("conclusions",conclusions);
+		createModels("conditions",conditions);
+		createModels("conclusions",conclusions);
 
 	}
 	
@@ -971,7 +968,6 @@ public class AddNewRuleBean {
 		networkElement.setElementName(this.selectedMethod
 				.getUsingName().toString());
 		networkElement.setType(Type.BUILTIN_METHOD);
-		networkElement.setRenderEditText(false);
 		networkElement.setVarName(setVariableName());
 		networkElement.setId(networkElement.getVarName());
 		networkElement = setPosition(networkElement);
@@ -990,7 +986,6 @@ public class AddNewRuleBean {
 		PointElement networkElement = new PointElement();
 		networkElement.setElementName(this.selectedNode.getData().toString());
 		networkElement.setType(Type.CLASS);
-		networkElement.setRenderEditText(false);
 		networkElement.setVarName(setVariableName());
 		networkElement.setId(networkElement.getVarName());
 		networkElement = setPosition(networkElement);
@@ -1008,7 +1003,6 @@ public class AddNewRuleBean {
 		PointElement networkElement = new PointElement();
 		networkElement.setElementName(this.selectedInstance.toString());
 		networkElement.setType(Type.INSTANCE);
-		networkElement.setRenderEditText(false);
 		networkElement.setVarName(setVariableName());
 		networkElement.setId(networkElement.getVarName());
 		networkElement = setPosition(networkElement);
@@ -1040,9 +1034,6 @@ public class AddNewRuleBean {
 		propElement.setId(propElement.getVarName());
 		propElement = setPosition(propElement);
 		propElement.setType(type);
-		if (type == Type.DATA_PROPERTY)
-			propElement.setRenderEditText(true);
-		
 		propElement.setProperty(property);
 		
 		//create element for the model diagram
@@ -1286,6 +1277,14 @@ public class AddNewRuleBean {
 
 	public void setFeedback(boolean feedback) {
 		this.feedback = feedback;
+	}
+
+	public Rule getRule() {
+		return rule;
+	}
+
+	public void setRule(Rule rule) {
+		this.rule = rule;
 	}
 	
 	

@@ -11,7 +11,7 @@
 		<h:form id="form" enctype="multipart/form-data">
 			<p:panel id="informationPanel">
 				<f:facet name="header">
-					<h:outputText value="Step2: Create/Edit Rule" />
+					<h:outputText value="Step2: Create a conflict/resolution Rule" />
 				</f:facet>
 
 				<h:panelGrid columns="2" id="grid1">
@@ -150,8 +150,8 @@
 								<p:panel id="pnl1" header="#{item.elementName}">
 									<h:panelGrid columns="4" id="elementGrid1">
 										<h:outputText value="Variable: #{item.varName}"
-											rendered="#{!item.renderEditText}" />
-										<h:outputText label="value" rendered="#{item.renderEditText}"
+											rendered="#{item.editVar}" />
+										<h:outputText label="value" rendered="#{item.editValue}"
 											id="value" style="width: 80px;" autocomplete="off"
 											value="Value: #{item.property.value}" />
 
@@ -184,8 +184,8 @@
 								<p:panel id="pnl2" header="#{item.elementName}">
 									<h:panelGrid columns="3" id="elementGrid2">
 										<h:outputText value="Variable: #{item.varName}"
-											rendered="#{!item.renderEditText}" />
-										<h:outputText label="value" rendered="#{item.renderEditText}"
+											rendered="#{item.editVar}" />
+										<h:outputText label="value" rendered="#{item.editValue}"
 											id="value2" style="width: 80px;"
 											value="Value: #{item.property.value}" />
 										<p:commandButton oncomplete="PF('editDialog').show()"
@@ -276,23 +276,24 @@
 				<h:panelGrid columns="2" columnClasses="label,value"
 					styleClass="grid">
 					<h:outputText value="Variable name: " id="clonedVar"
-						rendered="#{!addNewRuleBean.cloneSelectedNode.renderEditText}" />
+						rendered="#{addNewRuleBean.cloneSelectedNode.editVar}" />
 					<p:inputText label="Rule name" style="width: 300px;"
 						id="clonedVar1" autocomplete="off"
-						rendered="#{!addNewRuleBean.cloneSelectedNode.renderEditText}"
+						rendered="#{addNewRuleBean.cloneSelectedNode.editVar}"
 						value="#{addNewRuleBean.cloneSelectedNode.varName}"
 						required="true">
 					</p:inputText>
 
 					<h:outputText value="Value: " id="clonedValue" required="false"
-						rendered="#{addNewRuleBean.cloneSelectedNode.renderEditText}" />
+						rendered="#{addNewRuleBean.cloneSelectedNode.editValue}" />
 					<p:inputText
-						rendered="#{addNewRuleBean.cloneSelectedNode.renderEditText}"
+						rendered="#{addNewRuleBean.cloneSelectedNode.editValue}"
 						style="width: 300px;" id="clonedValue1" autocomplete="off"
 						value="#{addNewRuleBean.cloneSelectedNode.property.value}">
 					</p:inputText>
 					<p:commandButton action="#{addNewRuleBean.saveEditOfNode}"
 						icon="ui-icon-save" title="Save changes"
+						rendered="#{addNewRuleBean.cloneSelectedNode.enableEdit}"
 						update=":#{p:component('pan1')},:#{p:component('pan2')}"
 						value="Save" oncomplete="PF('editDialog').hide()">
 					</p:commandButton>

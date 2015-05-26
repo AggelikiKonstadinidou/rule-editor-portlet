@@ -24,7 +24,7 @@
 						itemValue="/views/addConflictResolRule.xhtml?javax.portlet.faces.PortletMode=view&amp;javax.portlet.faces.WindowState=normal" />
 					<f:selectItem itemLabel=" will send a message to the user."
 						itemValue="/views/addFeedbackRule.xhtml?javax.portlet.faces.PortletMode=view&amp;javax.portlet.faces.WindowState=normal" />
-					<f:selectItem itemLabel=" both options." itemValue="both options" />
+					<!--  <f:selectItem itemLabel=" both options." itemValue="both options" /> -->
 					<p:ajax listener="#{addRuleStep1Bean.handleChange}" update=":#{p:component('nextBut')}" />
 				</p:selectOneRadio>
 

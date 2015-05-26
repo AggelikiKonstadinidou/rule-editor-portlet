@@ -1,0 +1,30 @@
+<?xml version="1.0"?>
+
+<f:view xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:c="http://java.sun.com/jsp/jstl/core"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:ui="http://java.sun.com/jsf/facelets">
+	<h:head />
+	<h:body>
+		<h:form id="form">
+			<p:panel id="informationPanel">
+				<f:facet name="header">
+					<h:outputText value="Configurate order of rules" />
+				</f:facet>
+
+				<br />
+ 
+				<p:fileUpload style="width: 600px;" mode="advanced" label="Select a file"
+					value="#{configurateOrderBean.propertiesFileName}" auto="true" multiple ="true"
+					fileUploadListener="#{configurateOrderBean.onFileUpload}"
+					allowTypes="/(\.|\/)(properties)$/">
+				</p:fileUpload>
+
+			</p:panel> 
+			
+		</h:form>
+
+	</h:body>
+</f:view>
