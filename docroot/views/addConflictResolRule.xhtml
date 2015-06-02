@@ -283,6 +283,10 @@
 						value="#{addNewRuleBean.cloneSelectedNode.varName}"
 						required="true">
 					</p:inputText>
+					<p:watermark for="clonedVar1"
+						value="Insert a variable name e.g ?Sol" id="watermarkVar" />
+					<!--  	<h:outputText value="Value: " id="clonedValue" required="false"
+						rendered="#{addNewRuleBean.cloneSelectedNode.editValue}" />-->
 
 					<h:outputText value="Value: " id="clonedValue" required="false"
 						rendered="#{addNewRuleBean.cloneSelectedNode.editValue}" />
@@ -291,6 +295,12 @@
 						style="width: 300px;" id="clonedValue1" autocomplete="off"
 						value="#{addNewRuleBean.cloneSelectedNode.property.value}">
 					</p:inputText>
+					<p:watermark for="clonedValue1"
+						value="Insert a value e.g ?value or 
+					'test'"
+						id="watermarkValue" />
+					<!--  	<h:outputText value="Value: " id="clonedValue" required="false"
+						rendered="#{addNewRuleBean.cloneSelectedNode.editValue}" />-->
 					<p:commandButton action="#{addNewRuleBean.saveEditOfNode}"
 						icon="ui-icon-save" title="Save changes"
 						rendered="#{addNewRuleBean.cloneSelectedNode.enableEdit}"

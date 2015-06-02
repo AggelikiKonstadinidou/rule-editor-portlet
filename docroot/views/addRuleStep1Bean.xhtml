@@ -11,15 +11,14 @@
 		<h:form id="form">
 		<p:panel id="informationPanel">
 				<f:facet name="header">
-					<h:outputText value="Step 1" />
+					<h:outputText value="Step 1: Select the type of the rule" />
 				</f:facet>
-			<h:outputLabel for="name" value="This rule"
-				style="font-size: 16px;" />
+			<h:outputLabel for="name" value="This rule" />
 			<br />
 			<br />
 
 				<p:selectOneRadio id="options" value="#{addRuleStep1Bean.selectedOption}"
-					layout="pageDirection" style="font-size: 16px;">
+					layout="pageDirection">
 					<f:selectItem itemLabel=" will resolve a conflict situation."
 						itemValue="/views/addConflictResolRule.xhtml?javax.portlet.faces.PortletMode=view&amp;javax.portlet.faces.WindowState=normal" />
 					<f:selectItem itemLabel=" will send a message to the user."

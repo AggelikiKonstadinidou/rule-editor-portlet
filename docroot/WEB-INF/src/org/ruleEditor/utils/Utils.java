@@ -67,7 +67,8 @@ public class Utils {
 	public static String createRule(ArrayList<PointElement> conditions,
 			ArrayList<PointElement> conclusions, String ruleName) {
 
-		String rule = prefix_c4a + "\n" + prefix_rdfs + "\n\n" + "[ruleName \n";
+		String rule = prefix_c4a + "\n" + prefix_rdfs + "\n\n" + "[" + ruleName
+				+ "\n";
 
 		rule = rule + convertListToRule(conditions);
 
@@ -81,9 +82,10 @@ public class Utils {
 	}
 
 	public static String createFeedBackRule(String className, String scope,
-			String id, ArrayList<PointElement> conditions) {
+			String id, ArrayList<PointElement> conditions, String ruleName) {
 
-		String rule = prefix_c4a + "\n" + prefix_rdfs + "\n\n" + "[ruleName \n";
+		String rule = prefix_c4a + "\n" + prefix_rdfs + "\n\n" + "[" + ruleName
+				+ "\n";
 
 		rule = rule + convertListToRule(conditions);
 
@@ -104,16 +106,15 @@ public class Utils {
 		for (PointElement el : list) {
 			if (el.getType() == PointElement.Type.CLASS) {
 
-				rule = rule + "(" + "?" + el.getVarName() + " rdf:type "
-						+ "c4a:" + el.getElementName() + ")\n";
+				rule = rule + "(" + el.getVarName() + " rdf:type " + "c4a:"
+						+ el.getElementName() + ")\n";
 
 			} else if (el.getType() == PointElement.Type.DATA_PROPERTY) {
 
 				OntologyProperty property = (DataProperty) el.getProperty();
 				if (el.getConnections().size() > 0)
-					rule = rule + "(?"
-							+ el.getConnections().get(0).getVarName() + " c4a:"
-							+ el.getElementName() + " ?"
+					rule = rule + "(" + el.getConnections().get(0).getVarName()
+							+ " c4a:" + el.getElementName() + " "
 							+ ((DataProperty) property).getValue() + ")\n";
 
 			} else if (el.getType() == PointElement.Type.OBJECT_PROPERTY) {
@@ -123,9 +124,8 @@ public class Utils {
 				// in case that something is missing, throw away
 				// the property node
 				if (el.getConnections().size() > 1)
-					rule = rule + "(?"
-							+ el.getConnections().get(0).getVarName() + " c4a:"
-							+ el.getElementName() + " " + "?"
+					rule = rule + "(" + el.getConnections().get(0).getVarName()
+							+ " c4a:" + el.getElementName() + " "
 							+ el.getConnections().get(1).getVarName() + ")\n";
 
 			} else if (el.getType() == PointElement.Type.BUILTIN_METHOD) {
@@ -133,7 +133,7 @@ public class Utils {
 				rule = rule + el.getMethod().getOriginalName() + "(";
 				for (PointElement temp : el.getConnections()) {
 					DataProperty property = (DataProperty) temp.getProperty();
-					rule = rule + "?" + property.getValue() + ",";
+					rule = rule + property.getValue() + ",";
 				}
 
 				rule = rule.substring(0, rule.length() - 1);
@@ -722,7 +722,7 @@ public class Utils {
 	public static String setUniqueID() {
 		return "X_" + counter++;
 	}
-	
+
 	public static ArrayList<String> getRuleArray(InputStream inputStream)
 			throws IOException {
 		ArrayList<String> rules = new ArrayList<String>();
@@ -736,24 +736,42 @@ public class Utils {
 			if (line.contains("rules=")) {
 				ruleString = ruleString.concat(line);
 				counter++;
-			}
-			else if (!line.contains("queries=") && !line.isEmpty() && counter > 0) {
+			} else if (!line.contains("queries=") && !line.isEmpty()
+					&& counter > 0) {
 				ruleString = ruleString.concat(line);
 				counter++;
 			}
 
 			else if (line.contains("queries="))
 				counter = 0;
-			
+
+			 out.append(line+"\n");
+
 		}
 
-		
+	    String fileInput = out.toString();
+
 		String[] splitted = ruleString.split(";");
 		for (int i = 0; i < splitted.length; i++) {
-			rules.add(splitted[i].replace("testData/rules/", ""));
+			rules.add(splitted[i].replace("testData/rules/", "")
+					.replace("rules=", "").replace(".rules", ""));
 		}
-		
+
+		rules.add(fileInput);
 		return rules;
+	}
+
+	public static String getInputOfFileToString(InputStream inputStream)
+			throws IOException {
+		BufferedReader reader = new BufferedReader(new InputStreamReader(
+				inputStream));
+		StringBuilder out = new StringBuilder();
+		String line;
+		while ((line = reader.readLine()) != null) {
+			out.append(line);
+		}
+
+		return out.toString();
 	}
 
 }

@@ -890,7 +890,7 @@ public class AddNewRuleBean {
 			rule = Utils.createRule(conditions, conclusions, ruleName);
 		else
 			rule = Utils.createFeedBackRule(feedbackClass, feedbackScope,
-					feedbackId, conditions);
+					feedbackId, conditions,ruleName);
 		
 		// export the rule
 		if (!rule.isEmpty() && !newFileName.isEmpty())
