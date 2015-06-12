@@ -1,0 +1,46 @@
+<?xml version="1.0"?>
+
+<f:view xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:c="http://java.sun.com/jsp/jstl/core"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:ui="http://java.sun.com/jsf/facelets">
+	<h:head />
+	<h:body>
+		<h:form id="form">
+		<p:panel id="informationPanel">
+				<f:facet name="header">
+					<h:outputText value="Step 1: Select the type of the configuration" />
+				</f:facet>
+			<h:outputLabel for="name" value="Select one of the following options" />
+			<br />
+			<br />
+
+				<p:selectOneRadio id="options" value="#{configurationStep1Bean.selectedOption}"
+					layout="pageDirection">
+					<f:selectItem itemLabel="Configurate the rule sets"
+						itemValue="/views/orderRules.xhtml?javax.portlet.faces.PortletMode=view&amp;javax.portlet.faces.WindowState=normal" />
+					<f:selectItem itemLabel="Configurate the knowledge base"
+						itemValue="/views/editViewJSONLD.xhtml?javax.portlet.faces.PortletMode=view&amp;javax.portlet.faces.WindowState=normal" />
+					<!--  <f:selectItem itemLabel=" both options." itemValue="both options" /> -->
+					<p:ajax listener="#{configurationStep1Bean.handleChange}" update=":#{p:component('nextBut')}" />
+				</p:selectOneRadio>
+
+
+				<div align="right">
+					<p:commandButton
+						action="/views/initialMenu.xhtml?javax.portlet.faces.PortletMode=view&amp;javax.portlet.faces.WindowState=normal"
+						title="Go to initial menu" id="prevBut" style="align: right"
+						ajax="false" value="Initial Menu">
+					</p:commandButton>
+					<p:commandButton title="Go to the next step" id="nextBut"
+						disabled="#{configurationStep1Bean.formCompleted}" style="align: right"
+						ajax="false" actionListener="#{configurationStep1Bean.submitOption}"
+						value="Next step">
+					</p:commandButton>
+				</div>
+			</p:panel>
+		</h:form>
+	</h:body>
+</f:view>

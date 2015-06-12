@@ -218,7 +218,7 @@ public class Ontology implements Serializable {
 		List<String> inferredConfiguration = Arrays.asList("id", "name");
 		List<String> configuration = Arrays.asList("id", "name", "isActive",
 				"solutionIsPreferred");
-		List<String> conflict = Arrays.asList("id", "name");
+		List<String> conflict = Arrays.asList("id", "name","class");
 		List<String> conflictResolution = Arrays.asList("id", "name");
 		List<String> preferenceSet = new ArrayList<String>();
 
@@ -246,9 +246,10 @@ public class Ontology implements Serializable {
 			return inferredConfiguration;
 		else if (name.equalsIgnoreCase("Configuration"))
 			return configuration;
-		else if (name.equalsIgnoreCase("Conflict")
-				|| name.equalsIgnoreCase("ConflictResolution"))
-			return conflict;
+		else if (name.equalsIgnoreCase("Conflict"))
+				return conflict;
+		else if(name.equalsIgnoreCase("ConflictResolution"))
+			return conflictResolution;
 		else if (name.equalsIgnoreCase("OperatingSystem"))
 			return operatingSystem;
 		else if (name.equalsIgnoreCase("Devices"))
@@ -268,7 +269,7 @@ public class Ontology implements Serializable {
 				"runsOnPlatform_Platforms");
 		List<String> setting = new ArrayList<String>();
 		List<String> metadata = Arrays.asList("scope_?");
-		List<String> conflict = Arrays.asList("hasResolution_?");
+		List<String> conflict = Arrays.asList("hasResolution_?","refersTo_Solutions");
 		List<String> preferenceSet = Arrays.asList("hasMetadata_Metadata",
 				"hasPreference_Preference");
 		List<String> inferredConfiguration = Arrays.asList(

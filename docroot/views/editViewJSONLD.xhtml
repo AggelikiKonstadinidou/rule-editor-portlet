@@ -1,0 +1,43 @@
+<?xml version="1.0"?>
+
+<f:view xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:c="http://java.sun.com/jsp/jstl/core"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:ui="http://java.sun.com/jsf/facelets">
+	<h:head />
+	<h:body>
+		<h:form id="form">
+			<p:panel id="informationPanel">
+				<f:facet name="header">
+					<h:outputText value="Edit/View Knowledge base" />
+				</f:facet>
+				<p:fileUpload style="width: 600px;" mode="advanced"
+					label="Select configuration file of RBMM"
+					value="#{editKnowledgeBean.fileName}" auto="true"
+					multiple="true"
+					fileUploadListener="#{editKnowledgeBean.onFileUpload}"
+					allowTypes="/(\.|\/)(jsonld)$/" update=":#{p:component('treeTable')}"> 
+				</p:fileUpload>
+
+				<p:treeTable value="#{editKnowledgeBean.root}" var="term" id="treeTable">
+					<f:facet name="header">
+            Json Viewer
+        </f:facet>
+
+					<p:column headerText="Id">
+						<h:outputText value="#{term.id}" />
+					</p:column>
+					<p:column headerText="Value">
+						<h:outputText value="#{term.value}" />
+					</p:column>
+					<p:column headerText="Rating">
+						<h:outputText value="#{term.rating}" />
+					</p:column>
+				</p:treeTable>
+
+			</p:panel>
+		</h:form>
+	</h:body>
+</f:view>

@@ -19,7 +19,6 @@ import org.primefaces.event.ReorderEvent;
 import org.ruleEditor.ontology.Main;
 import org.ruleEditor.utils.FileDownloadController;
 import org.ruleEditor.utils.Rule;
-import org.ruleEditor.utils.RuleFile;
 import org.ruleEditor.utils.Utils;
 
 @ManagedBean(name = "configurateOrderBean")
@@ -27,15 +26,13 @@ import org.ruleEditor.utils.Utils;
 public class ConfigurateOrderBean {
 
 	private Main main;
-	private ArrayList<String> rules;
+	private ArrayList<String> ruleSets;
 	private String propertiesFileName;
 	private InputStream inputStream;
 	private InputStream rulesInputStream;
 	private String inputString;
 	private String ruleFileName;
-	private RuleFile selectedFile;
-	private ArrayList<Rule> objectRules = new ArrayList<Rule>();
-	private ArrayList<RuleFile> listOfFileRules = new ArrayList<RuleFile>();
+	private ArrayList<Rule> objectRules;
 
 	public ConfigurateOrderBean() {
 		super();
@@ -46,13 +43,12 @@ public class ConfigurateOrderBean {
 
 	public void init() {
 		
-		rules = new ArrayList<String>();
-		listOfFileRules = new ArrayList<RuleFile>();
+		ruleSets = new ArrayList<String>();
+		objectRules = new ArrayList<Rule>();
 		propertiesFileName = "";
 		inputStream = null;
 		ruleFileName = "";
 		inputString = "";
-		selectedFile = new RuleFile("", new ArrayList<Rule>());
 
 	}
 	
@@ -60,10 +56,21 @@ public class ConfigurateOrderBean {
 		
 	}
 	
-	public void saveChanges() throws IOException {
+	public void exportRuleFile() throws IOException{
+		String allRuleString = Utils.prefix_c4a + "\n" + Utils.prefix_rdfs
+				+ "\n\n";
+		for (Rule temp : objectRules) {
+			allRuleString = allRuleString.concat(temp.getBody()) + "\n\n";
+		}
+
+		FileDownloadController.writeGsonAndExportFile(ruleFileName,
+				allRuleString);
+	}
+	
+	public void exportPropertyFile() throws IOException {
 		String newRuleString = "rules=";
-		for (String temp : rules) {
-			newRuleString = newRuleString.concat("testData/rules/" + temp
+		for (String s : ruleSets) {
+			newRuleString = newRuleString.concat("testData/rules/" + s
 					+ ".rules;");
 		}
 
@@ -100,34 +107,24 @@ public class ConfigurateOrderBean {
 		FileDownloadController.writeGsonAndExportFile(propertiesFileName, s);
 	}
 	
-	public void onFileUpload(FileUploadEvent event) throws IOException{
+	public void onPropertiesFileUpload(FileUploadEvent event) throws IOException{
 		
 		propertiesFileName = event.getFile().getFileName();
 		inputStream = event.getFile().getInputstream();
-		rules = Utils.getRuleArray(inputStream);
-		inputString = rules.get(rules.size()-1);
-		rules.remove(rules.size()-1);
-		for(String s : rules){
-			listOfFileRules.add(new RuleFile(s, new ArrayList<Rule>()));
-		}
+		ruleSets = Utils.getRuleArray(inputStream);
+		inputString = ruleSets.get(ruleSets.size()-1);
+		ruleSets.remove(ruleSets.size()-1);
 		
 	}
 	
 	public void onRuleFileUpload(FileUploadEvent event) throws IOException{
-		this.ruleFileName = event.getFile().getFileName();
+		this.ruleFileName = event.getFile().getFileName().replace(".rules", "");
 
 		this.rulesInputStream = event.getFile().getInputstream();
 
 		System.out.println(ruleFileName);
 		
 		objectRules = Utils.getRulesFromFile(rulesInputStream);
-		
-		for(RuleFile file : listOfFileRules){
-			if(file.getFileName().equalsIgnoreCase(ruleFileName)){
-				file.setRules(objectRules);
-				break;
-			}
-		}
 	}
 
 	public String getPropertiesFileName() {
@@ -137,13 +134,13 @@ public class ConfigurateOrderBean {
 	public void setPropertiesFileName(String propertiesFileName) {
 		this.propertiesFileName = propertiesFileName;
 	}
-
-	public ArrayList<String> getRules() {
-		return rules;
+	
+	public ArrayList<String> getRuleSets() {
+		return ruleSets;
 	}
 
-	public void setRules(ArrayList<String> rules) {
-		this.rules = rules;
+	public void setRuleSets(ArrayList<String> ruleSets) {
+		this.ruleSets = ruleSets;
 	}
 
 	public String getRuleFileName() {
@@ -154,14 +151,6 @@ public class ConfigurateOrderBean {
 		this.ruleFileName = ruleFileName;
 	}
 
-	public RuleFile getSelectedFile() {
-		return selectedFile;
-	}
-
-	public void setSelectedFile(RuleFile selectedFile) {
-		this.selectedFile = selectedFile;
-	}
-
 	public ArrayList<Rule> getObjectRules() {
 		return objectRules;
 	}
@@ -169,14 +158,5 @@ public class ConfigurateOrderBean {
 	public void setObjectRules(ArrayList<Rule> objectRules) {
 		this.objectRules = objectRules;
 	}
-
-	public ArrayList<RuleFile> getListOfFileRules() {
-		return listOfFileRules;
-	}
-
-	public void setListOfFileRules(ArrayList<RuleFile> listOfFileRules) {
-		this.listOfFileRules = listOfFileRules;
-	}
-	
 
 }

@@ -11,67 +11,71 @@
 		<h:form id="form">
 			<p:panel id="informationPanel">
 				<f:facet name="header">
-					<h:outputText value="Configurate order of rules" />
+					<h:outputText value="Configurations" />
 				</f:facet>
 
 				<br />
- 
-				<p:fileUpload style="width: 600px;" mode="advanced" label="Select configuration file of RBMM"
-					value="#{configurateOrderBean.propertiesFileName}" auto="true" multiple ="true"
-					fileUploadListener="#{configurateOrderBean.onFileUpload}"
-					allowTypes="/(\.|\/)(properties)$/" update=":#{p:component('rules')}" >
-				</p:fileUpload>
 
-				<p:dataTable var="file" value="#{configurateOrderBean.listOfFileRules}"
-					draggableRows="true" id="rules">
-					<p:ajax event="rowReorder" listener="#{configurateOrderBean.onRowReorder}" />
-					<f:facet name="header">
-            Rule Files
-        </f:facet>
-					<p:column headerText="Name">
-						<h:outputText value="#{file.fileName}" />
-					</p:column>
-					<p:column headerText="Upload File">
-						<p:fileUpload style="width: 500px;" mode="advanced"
-							label="Select #{rule} file"
-							value="#{configurateOrderBean.ruleFileName}" auto="true"
-							multiple="true" update=":#{p:component('objectRules')}"
-							fileUploadListener="#{configurateOrderBean.onRuleFileUpload}"
-							allowTypes="/(\.|\/)(rules)$/">
+				<p:panel id="panel1" header="Configurate rules set"
+					style="margin-bottom:20px">
+					<h:panelGrid columns="2" id="grid1">
+						<p:fileUpload style="width: 600px;" mode="advanced"
+							label="Select configuration file of RBMM"
+							value="#{configurateOrderBean.propertiesFileName}" auto="true"
+							multiple="true"
+							fileUploadListener="#{configurateOrderBean.onPropertiesFileUpload}"
+							allowTypes="/(\.|\/)(properties)$/"
+							update=":#{p:component('ruleSet')}">
 						</p:fileUpload>
-					</p:column>
-					<p:column style="width:32px;text-align: center">
-						<p:commandButton
-							oncomplete="PF('rulesDialog').show()" icon="ui-icon-search"
-							title="View/Order Rules">
-							<f:setPropertyActionListener value="#{file.fileName}"
-								target="#{configurateOrderBean.selectedFile}" />
-						</p:commandButton>
-					</p:column>
-				</p:dataTable>
-				<p:commandButton value="Save changes" ajax="false"
-					actionListener="#{configurateOrderBean.saveChanges}"
+
+						<p:dataTable var="file"
+							value="#{configurateOrderBean.ruleSets}"
+							draggableRows="true" id="ruleSet">
+							<p:ajax event="rowReorder"
+								listener="#{configurateOrderBean.onRowReorder}" />
+
+							<p:column headerText="Rule set Name">
+								<h:outputText value="#{file}" />
+							</p:column>
+
+						</p:dataTable>
+
+					</h:panelGrid>
+					<p:commandButton value="Export Properties file" ajax="false"
+					actionListener="#{configurateOrderBean.exportPropertyFile}"
 					title="Save and export the changes that were made in the configuation file" />
+				</p:panel>
+
+				<p:panel id="panel2" header="Configurate order of rules"
+					style="margin-bottom:20px">
+					<h:panelGrid columns="2" id="grid2">
+						<p:fileUpload style="width: 600px;" mode="advanced"
+							label="Select a rule file"
+							value="#{configurateOrderBean.propertiesFileName}" auto="true"
+							multiple="true"
+							fileUploadListener="#{configurateOrderBean.onRuleFileUpload}"
+							allowTypes="/(\.|\/)(rules)$/" update=":#{p:component('rules')}">
+						</p:fileUpload>
+
+						<p:dataTable var="rule"
+							value="#{configurateOrderBean.objectRules}" draggableRows="true"
+							id="rules">
+							<p:ajax event="rowReorder"
+								listener="#{configurateOrderBean.onRowReorder}" />
+
+							<p:column headerText="Rule Name">
+								<h:outputText value="#{rule.name}" />
+							</p:column>
+
+						</p:dataTable>
+
+					</h:panelGrid>
+					<p:commandButton value="Export Rule file" ajax="false"
+					actionListener="#{configurateOrderBean.exportRuleFile}"
+					title="Save and export the changes that were made in the configuation file" />
+				</p:panel>
 
 			</p:panel>
-
-			<p:dialog header="Rules of #{configurateOrderBean.selectedFile.fileName}"
-				widgetVar="rulesDialog" modal="true" showEffect="clip"
-				dynamic="true" hideEffect="fold" position="center,center">
-				<p:panelGrid columns="1" columnClasses="label" styleClass="grid">
-					<p:dataTable var="rule" value="#{configurateOrderBean.selectedFile.rules}"
-						draggableRows="true" id="objectRules" style="height:400px;width:400px;">
-						<p:ajax event="rowReorder"
-							listener="#{configurateOrderBean.onRowReorder}" />
-
-						<p:column headerText="Name">
-							<h:outputText value="#{rule.name}" />
-						</p:column>
-
-					</p:dataTable>
-				</p:panelGrid>
-			</p:dialog>
-
 		</h:form>
 
 	</h:body>

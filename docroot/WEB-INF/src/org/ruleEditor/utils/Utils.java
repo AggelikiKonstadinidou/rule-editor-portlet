@@ -41,6 +41,7 @@ import org.ruleEditor.ontology.OntologyProperty.ObjectProperty;
 import org.ruleEditor.ontology.PointElement;
 import org.ruleEditor.utils.MessageForJson.Group;
 import org.ruleEditor.utils.MessageForJson.Group.TextMessage;
+import org.ruleEditor.utils.RecommendationForJson.Term;
 import org.ruleEditor.utils.Rule.RuleType;
 
 import com.google.gson.FieldNamingPolicy;
@@ -231,24 +232,12 @@ public class Utils {
 			List<Message> list) throws IOException {
 
 		String json = "";
-		BufferedReader reader = new BufferedReader(new InputStreamReader(
-				inputStream));
-		StringBuilder out = new StringBuilder();
-		String line;
-		while ((line = reader.readLine()) != null) {
-			out.append(line);
-		}
-
-		String result = out.toString();
-		System.out.println(result);
-		reader.close();
-
 		Gson gson = new Gson();
+
 		Type type = new TypeToken<MessageForJson>() {
 		}.getType();
 
-		result = result.replace("c4a:", "").replace("@type", "type")
-				.replace("@id", "id");
+		String result = readJsonLd(inputStream);
 
 		// System.out.println(result);
 		MessageForJson test = (MessageForJson) gson.fromJson(result, type);
@@ -318,6 +307,49 @@ public class Utils {
 
 		return s;
 	}
+	
+	public static String readJsonLd(InputStream inputStream) throws IOException {
+		BufferedReader reader = new BufferedReader(new InputStreamReader(
+				inputStream));
+		StringBuilder out = new StringBuilder();
+		String line;
+		while ((line = reader.readLine()) != null) {
+			out.append(line);
+		}
+		String result = out.toString();
+		System.out.println(result);
+		reader.close();
+
+		result = result.replace("c4a:", "").replace("@type", "type")
+				.replace("@id", "id");
+
+		return result;
+
+	}
+	
+	public static ArrayList<Term> getObjectsFromJsonLd(InputStream inputStream)
+			throws IOException {
+		Gson gson = new Gson();
+
+		Type type = new TypeToken<RecommendationForJson>() {
+		}.getType();
+
+		String result = readJsonLd(inputStream);
+		
+		result = result.replace("@","").replace("c4a:", "");
+
+		RecommendationForJson test = (RecommendationForJson) gson.fromJson(
+				result, type);
+		
+		ArrayList<Term> terms = new ArrayList<Term>();
+		for(Term temp : test.getGraph()){
+			terms.add(temp);
+		}
+		
+		return terms;
+		
+	}
+	
 
 	static public String splitCamelCase(String s) {
 		return s.replaceAll(String.format("%s|%s|%s",
