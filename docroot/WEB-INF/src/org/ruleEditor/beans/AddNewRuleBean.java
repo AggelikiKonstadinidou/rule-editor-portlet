@@ -75,7 +75,7 @@ public class AddNewRuleBean {
 	private Main main;
 	private DefaultTreeNode root;
 	private TreeNode selectedNode = null;
-	private String ruleName = "", newFileName = "", oldFileName = "", feedbackFile="";
+	//private String ruleName = "", newFileName = "", oldFileName = "", feedbackFile="";
 	private InputStream fileStream;
 	private DefaultDiagramModel conditionsModel;
 	private DefaultDiagramModel conclusionsModel;
@@ -98,15 +98,9 @@ public class AddNewRuleBean {
 	private PointElement clonedOriginalTargetElement = null;
 	private PointElement cloneSelectedNode = null;
 	private BuiltinMethod selectedMethod = null;
-	private List<Message> messages = null;
-	private Message messageForRemove = new Message();
 	private boolean flag = false;// false : for simple rule
 	                             // true : for feedback rule
-	private String jsonString = "";
 	private String selectedInstance = "";
-    private String feedbackClass = "";
-    private String feedbackScope = "";
-    private String feedbackId = "";
     private Rule  rule = null;
     private ArrayList<Rule> existingRules = new ArrayList<Rule>();
     private boolean feedback = true;
@@ -124,10 +118,6 @@ public class AddNewRuleBean {
 	public void init(boolean tempFlag) {
 
 		flag = tempFlag;
-		ruleName = "";
-		newFileName = "";
-		oldFileName = "";
-		feedbackFile="";
 		datatypes = new ArrayList<DataProperty>();
 		objects = new ArrayList<ObjectProperty>();
 		instances = new ArrayList<String>();
@@ -146,15 +136,15 @@ public class AddNewRuleBean {
 		sourceElement= new PointElement();
 		originalTargetElement = new PointElement();
 		clonedOriginalTargetElement = new PointElement();
-		selectedInstance = "";
-		feedbackClass = "";
-	    feedbackScope = "";
-	    feedbackId = "";
-		
-		Message emptyMessage = new Message();
-		emptyMessage.setLanguage("English");
-		messages = new ArrayList<Message>();
-		messages.add(emptyMessage);
+//		selectedInstance = "";
+//		feedbackClass = "";
+//	    feedbackScope = "";
+//	    feedbackId = "";
+//		
+//		Message emptyMessage = new Message();
+//		emptyMessage.setLanguage("English");
+//		messages = new ArrayList<Message>();
+//		messages.add(emptyMessage);
 
 		// Initialization of conditions model
 		conditionsModel = new DefaultDiagramModel();
@@ -190,11 +180,9 @@ public class AddNewRuleBean {
 		} else
 			feedback = false;
 		
-		ruleName = rule.getName();
+		
 		existingRules = rulesList;
-		newFileName = "";
-		oldFileName = "";
-		feedbackFile = "";
+		
 		datatypes = new ArrayList<DataProperty>();
 		objects = new ArrayList<ObjectProperty>();
 		instances = new ArrayList<String>();
@@ -213,15 +201,15 @@ public class AddNewRuleBean {
 		sourceElement = new PointElement();
 		originalTargetElement = new PointElement();
 		clonedOriginalTargetElement = new PointElement();
-		selectedInstance = "";
-		feedbackClass = "";
-		feedbackScope = "";
-		feedbackId = "";
-
-		Message emptyMessage = new Message();
-		emptyMessage.setLanguage("English");
-		messages = new ArrayList<Message>();
-		messages.add(emptyMessage);
+//		selectedInstance = "";
+//		feedbackClass = "";
+//		feedbackScope = "";
+//		feedbackId = "";
+//
+//		Message emptyMessage = new Message();
+//		emptyMessage.setLanguage("English");
+//		messages = new ArrayList<Message>();
+//		messages.add(emptyMessage);
 
 		// Initialization of conditions model
 		conditionsModel = new DefaultDiagramModel();
@@ -859,80 +847,6 @@ public class AddNewRuleBean {
 		return node;
 
 	}
-	
-	public void saveRule() throws IOException{
-		
-		if (ruleName.trim().equals("")) {
-			FacesContext.getCurrentInstance().addMessage(
-					"msgs",
-					new FacesMessage(FacesMessage.SEVERITY_ERROR,
-							"Please provide a rule name", ""));
-
-			return;
-		}
-
-		String finalFileName = newFileName.trim();
-		if (newFileName.isEmpty() && !oldFileName.trim().isEmpty())
-			finalFileName = oldFileName;
-
-		if (finalFileName.trim().equals("")) {
-			FacesContext.getCurrentInstance().addMessage(
-					"msgs",
-					new FacesMessage(FacesMessage.SEVERITY_ERROR,
-							"Please create a new file or select an existing",
-							""));
-			return;
-		}
-
-		//create the rule string
-		String rule = "";
-		if (!flag)
-			rule = Utils.createRule(conditions, conclusions, ruleName);
-		else
-			rule = Utils.createFeedBackRule(feedbackClass, feedbackScope,
-					feedbackId, conditions,ruleName);
-		
-		// export the rule
-		if (!rule.isEmpty() && !newFileName.isEmpty())
-			FileDownloadController.writeGsonAndExportFile(finalFileName, rule);
-		else {
-			existingRules = Utils.getRulesFromFile(fileStream);
-			String allRuleString = Utils.prefix_c4a + "\n" + Utils.prefix_rdfs
-					+ "\n";
-			for (Rule temp : existingRules) {
-				allRuleString = allRuleString.concat(temp.getBody()) + "\n";
-			}
-
-			allRuleString = allRuleString.concat(rule
-					.replace(Utils.prefix_c4a, "")
-					.replace(Utils.prefix_rdfs, "").trim());
-			FileDownloadController.writeGsonAndExportFile(finalFileName,
-					allRuleString);
-		}
-		
-	}
-	
-	public void uploadFileForSaveAs(FileUploadEvent event) throws IOException{
-		oldFileName = event.getFile().getFileName();
-		fileStream = event.getFile().getInputstream();
-	}
-	
-	public void onFileUpload(FileUploadEvent event) throws IOException {
-
-		feedbackFile = event.getFile().getFileName();
-
-		fileStream = event.getFile().getInputstream();
-		
-		System.out.println(feedbackFile);
-
-	}
-	
-	public void exportJsonLdFile() throws IOException{
-		if (!feedbackFile.isEmpty())
-			jsonString = Utils.writeMessagesInJsonLdFile(fileStream, messages);
-
-		FileDownloadController.writeGsonAndExportFile(feedbackFile, jsonString);
-	}
 
 	public void onNodeSelect() {
 
@@ -1077,16 +991,6 @@ public class AddNewRuleBean {
 			conclusions = new ArrayList<PointElement>();
 		}
 	}
-	
-	public void removeMessageFromList() {
-		messages.remove(messageForRemove);
-	}
-
-	public void addMessageToList() {
-		Message newMessage = new Message();
-		messages.add(newMessage);
-	}
-	
 
 	public String setVariableName(){
 		return "X_"+counter++;
@@ -1116,30 +1020,6 @@ public class AddNewRuleBean {
 
 	public void setSelectedNode(TreeNode selectedNode) {
 		this.selectedNode = selectedNode;
-	}
-
-	public String getRuleName() {
-		return ruleName;
-	}
-
-	public void setRuleName(String ruleName) {
-		this.ruleName = ruleName;
-	}
-
-	public String getNewFileName() {
-		return newFileName;
-	}
-
-	public void setNewFileName(String newFileName) {
-		this.newFileName = newFileName;
-	}
-
-	public String getOldFileName() {
-		return oldFileName;
-	}
-
-	public void setOldFileName(String oldFileName) {
-		this.oldFileName = oldFileName;
 	}
 
 	public List<DataProperty> getDatatypes() {
@@ -1207,60 +1087,12 @@ public class AddNewRuleBean {
 		this.selectedMethod = selectedMethod;
 	}
 
-	public List<Message> getMessages() {
-		return messages;
-	}
-
-	public void setMessages(List<Message> messages) {
-		this.messages = messages;
-	}
-
-	public Message getMessageForRemove() {
-		return messageForRemove;
-	}
-
-	public void setMessageForRemove(Message messageForRemove) {
-		this.messageForRemove = messageForRemove;
-	}
-
-	public String getFeedbackFile() {
-		return feedbackFile;
-	}
-
-	public void setFeedbackFile(String feedbackFile) {
-		this.feedbackFile = feedbackFile;
-	}
-
 	public String getSelectedInstance() {
 		return selectedInstance;
 	}
 
 	public void setSelectedInstance(String selectedInstance) {
 		this.selectedInstance = selectedInstance;
-	}
-
-	public String getFeedbackClass() {
-		return feedbackClass;
-	}
-
-	public void setFeedbackClass(String feedbackClass) {
-		this.feedbackClass = feedbackClass;
-	}
-
-	public String getFeedbackScope() {
-		return feedbackScope;
-	}
-
-	public void setFeedbackScope(String feedbackScope) {
-		this.feedbackScope = feedbackScope;
-	}
-
-	public String getFeedbackId() {
-		return feedbackId;
-	}
-
-	public void setFeedbackId(String feedbackId) {
-		this.feedbackId = feedbackId;
 	}
 
 	public boolean isFlag() {
@@ -1285,6 +1117,14 @@ public class AddNewRuleBean {
 
 	public void setRule(Rule rule) {
 		this.rule = rule;
+	}
+
+	public ArrayList<Rule> getExistingRules() {
+		return existingRules;
+	}
+
+	public void setExistingRules(ArrayList<Rule> existingRules) {
+		this.existingRules = existingRules;
 	}
 	
 	
