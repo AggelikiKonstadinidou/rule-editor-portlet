@@ -65,87 +65,9 @@ public class Utils {
 	private static List<PointElement> conditions = new ArrayList<PointElement>();
 	private static List<PointElement> conclusions = new ArrayList<PointElement>();
 
-	public static String createRule(ArrayList<PointElement> conditions,
-			ArrayList<PointElement> conclusions, String ruleName) {
+	
 
-		String rule = prefix_c4a + "\n" + prefix_rdfs + "\n\n" + "[" + ruleName
-				+ "\n";
-
-		rule = rule + convertListToRule(conditions);
-
-		rule = rule + "->\n";
-
-		rule = rule + convertListToRule(conclusions);
-
-		rule = rule + "]";
-
-		return rule;
-	}
-
-	public static String createFeedBackRule(String className, String scope,
-			String id, ArrayList<PointElement> conditions, String ruleName) {
-
-		String rule = prefix_c4a + "\n" + prefix_rdfs + "\n\n" + "[" + ruleName
-				+ "\n";
-
-		rule = rule + convertListToRule(conditions);
-
-		rule = rule + "makeSkolem(?newMetaData, ?" + className + ", ?" + scope
-				+ ")\n" + "->\n" + "(?newMetaData rdf:type c4a:Metadata)\n"
-				+ "(?newMetaData c4a:scope ?" + scope + ")\n"
-				+ "(?newMetaData c4a:messageType \"helpMessage\")\n"
-				+ "(?newMetaData c4a:refersTo c4a:" + id + ")\n" + "(?"
-				+ className + " c4a:hasMetadata ?newMetaData)\n]";
-
-		return rule;
-	}
-
-	public static String convertListToRule(ArrayList<PointElement> list) {
-		String rule = "";
-
-		// work on conditions
-		for (PointElement el : list) {
-			if (el.getType() == PointElement.Type.CLASS) {
-
-				rule = rule + "(" + el.getVarName() + " rdf:type " + "c4a:"
-						+ el.getElementName() + ")\n";
-
-			} else if (el.getType() == PointElement.Type.DATA_PROPERTY) {
-
-				OntologyProperty property = (DataProperty) el.getProperty();
-				if (el.getConnections().size() > 0)
-					rule = rule + "(" + el.getConnections().get(0).getVarName()
-							+ " c4a:" + el.getElementName() + " "
-							+ ((DataProperty) property).getValue() + ")\n";
-
-			} else if (el.getType() == PointElement.Type.OBJECT_PROPERTY) {
-
-				// TODO: check that there are two connections
-				// and define the correct order
-				// in case that something is missing, throw away
-				// the property node
-				if (el.getConnections().size() > 1)
-					rule = rule + "(" + el.getConnections().get(0).getVarName()
-							+ " c4a:" + el.getElementName() + " "
-							+ el.getConnections().get(1).getVarName() + ")\n";
-
-			} else if (el.getType() == PointElement.Type.BUILTIN_METHOD) {
-
-				rule = rule + el.getMethod().getOriginalName() + "(";
-				for (PointElement temp : el.getConnections()) {
-					DataProperty property = (DataProperty) temp.getProperty();
-					rule = rule + property.getValue() + ",";
-				}
-
-				rule = rule.substring(0, rule.length() - 1);
-				rule = rule + ")\n";
-			}
-
-		}
-
-		return rule;
-	}
-
+	
 	public UIComponent findComponent(final String id) {
 
 		FacesContext context = FacesContext.getCurrentInstance();

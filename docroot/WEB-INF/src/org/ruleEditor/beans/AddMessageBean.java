@@ -88,17 +88,37 @@ public class AddMessageBean {
 	}
 	
 	//TODO finish the part of saving the rule
-	public void saveRule() throws IOException{
-		
-		//if it is a feedback rule
-		if(isFeedback)
-		RuleCreationUtilities.saveRule(ruleName, newFileName,
-				oldFileName, 
+	public void saveRule() throws IOException {
+
+		if (ruleName.trim().equals("")) {
+			FacesContext.getCurrentInstance().addMessage(
+					"msgs",
+					new FacesMessage(FacesMessage.SEVERITY_ERROR,
+							"Please provide a rule name", ""));
+
+			return;
+		}
+
+		String finalFileName = newFileName.trim();
+		boolean createNewFile = true;
+		if (newFileName.isEmpty() && !oldFileName.trim().isEmpty()) {
+			createNewFile = false;
+			finalFileName = oldFileName;
+		}
+		if (finalFileName.trim().equals("")) {
+			FacesContext.getCurrentInstance().addMessage(
+					"msgs",
+					new FacesMessage(FacesMessage.SEVERITY_ERROR,
+							"Please create a new file or select an existing",
+							""));
+			return;
+		}
+
+		RuleCreationUtilities.saveRule(ruleName, finalFileName,
 				addNewRuleBean.getConditions(), new ArrayList<PointElement>(),
-				true, feedbackClass, feedbackScope, 
+				isFeedback, createNewFile, feedbackClass, feedbackScope,
 				feedbackId, addNewRuleBean.getExistingRules(), fileStream);
-		
-		
+
 	}
 	
 	public void removeMessageFromList() {

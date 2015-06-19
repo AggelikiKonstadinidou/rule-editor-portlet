@@ -73,7 +73,7 @@
 							scrollable="true" scrollHeight="50">
 
 							<p:column headerText="Instances">
-								<h:outputText value="#{data}" />
+								<h:outputText value="#{data.instanceName}" />
 							</p:column>
 
 						</p:dataTable>
@@ -83,7 +83,10 @@
 							selection="#{addNewRuleBean.selectedMethod}"
 							scrollable="true" scrollHeight="100">
 							<p:column headerText="Primitive Methods">
-								<h:outputText value="#{method.usingName}" />
+								<h:outputText value="#{method.usingName}"
+									id="method" />
+								<p:tooltip id="toolTipGrow" for="method" value="#{method.description}"
+                                showEffect="clip" hideEffect="explode" />
 							</p:column>
 						</p:dataTable>
 

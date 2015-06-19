@@ -11,7 +11,7 @@ public class OntologyClass {
 	private List<OntologyClass> children;
 	private List<DataProperty> dataProperties;
 	private List<ObjectProperty> objectProperties;
-	private List<String> instances;
+	private List<Instance> instances;
 	
 	public OntologyClass() {
 		super();
@@ -19,7 +19,7 @@ public class OntologyClass {
 		this.children = new ArrayList<OntologyClass>();
 		this.dataProperties = new ArrayList<DataProperty>();
 		this.objectProperties = new ArrayList<ObjectProperty>();
-		this.instances = new ArrayList<String>();
+		this.instances = new ArrayList<Instance>();
 	}
 
 	public List<OntologyClass> getChildren() {
@@ -54,11 +54,11 @@ public class OntologyClass {
 		this.objectProperties = objectProperties;
 	}
 
-	public List<String> getInstances() {
+	public List<Instance> getInstances() {
 		return instances;
 	}
 
-	public void setInstances(List<String> instances) {
+	public void setInstances(List<Instance> instances) {
 		this.instances = instances;
 	}
 

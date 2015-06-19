@@ -15,6 +15,7 @@ import org.primefaces.event.FileUploadEvent;
 import org.ruleEditor.ontology.Main;
 import org.ruleEditor.ontology.PointElement;
 import org.ruleEditor.utils.Rule;
+import org.ruleEditor.utils.RuleCreationUtilities;
 import org.ruleEditor.utils.Utils;
 
 @ManagedBean(name = "editRuleStep1Bean")
@@ -58,16 +59,16 @@ public class EditRuleStep1Bean {
 		System.out.println(fileName);
 
 		this.formCompleted = false;
-		
+
 		rulesList = Utils.getRulesFromFile(fileStream);
-		
 
 	}
 
-	public void reload(){
+	public void reload() {
 		selectedRule = null;
 		formCompleted = true;
 	}
+
 	public void submitOption() throws IOException {
 
 		if (counter == 0) {
@@ -76,7 +77,8 @@ public class EditRuleStep1Bean {
 			conditions = (ArrayList<PointElement>) list.get(0);
 			conclusions = (ArrayList<PointElement>) list.get(1);
 
-			rule = Utils.createRule(conditions, conclusions, selectedRule.getName());
+			rule = RuleCreationUtilities.createRule(conditions, conclusions,
+					selectedRule.getName());
 			System.out.println(rule);
 			counter++;
 		}
@@ -90,7 +92,8 @@ public class EditRuleStep1Bean {
 		if (rule.contains("message"))
 			flag = true;
 
-		addNewRuleBean.editRule(flag, conditions, conclusions,selectedRule, rulesList);
+		addNewRuleBean.editRule(flag, conditions, conclusions, selectedRule,
+				rulesList);
 
 	}
 
@@ -130,7 +133,7 @@ public class EditRuleStep1Bean {
 		return selectedRule;
 	}
 
-	public void setSelectedRule(Rule selectedRule){
+	public void setSelectedRule(Rule selectedRule) {
 		this.selectedRule = selectedRule;
 		counter = 0;
 	}

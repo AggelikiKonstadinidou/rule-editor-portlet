@@ -72,17 +72,20 @@
 							scrollable="true" scrollHeight="50">
 
 							<p:column headerText="Instances">
-								<h:outputText value="#{data}" />
+								<h:outputText value="#{data.instanceName}" />
 							</p:column>
 
 						</p:dataTable>
 
 						<p:dataTable id="methods" var="method" value="#{main.methods}"
 							rowKey="#{method.originalName}" selectionMode="single"
-							selection="#{addNewRuleBean.selectedMethod}"
-							scrollable="true" scrollHeight="100">
+							selection="#{addNewRuleBean.selectedMethod}" scrollable="true"
+							scrollHeight="100">
 							<p:column headerText="Primitive Methods">
-								<h:outputText value="#{method.usingName}" />
+								<h:outputText value="#{method.usingName}"
+									id="method" />
+								<p:tooltip id="toolTipGrow" for="method" value="#{method.description}"
+                                showEffect="clip" hideEffect="explode" />
 							</p:column>
 						</p:dataTable>
 
@@ -285,13 +288,13 @@
 				<h:panelGrid columns="2" columnClasses="label,value"
 					styleClass="grid">
 					<p:commandButton actionListener="#{addMessageBean.init(false)}"
-						icon="ui-icon-save" title="Yes" ajax="false"
+						icon="ui-icon-save" title="Move to next step to add a message" ajax="false"
 						action="/views/addMessage.xhtml?javax.portlet.faces.PortletMode=view&amp;javax.portlet.faces.WindowState=normal"
 						value="Yes">
 					</p:commandButton>
 					<p:commandButton action="#{addNewRuleBean.removeNode}"
-						icon="ui-icon-close" title="No"
-						update=":#{p:component('pan1')},:#{p:component('pan2')}"
+						icon="ui-icon-close" title="Save the rule withount adding a message"
+						actionListener="#{addMessageBean.saveRule}"
 						value="No" oncomplete="PF('addMessageDialog').hide()">
 					</p:commandButton>
 				</h:panelGrid>

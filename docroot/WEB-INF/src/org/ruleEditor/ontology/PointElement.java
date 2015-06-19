@@ -9,7 +9,6 @@ public class PointElement {
 	private String varName;
 	private double x;
 	private double y;
-//	private boolean renderEditText;
 	private boolean editVar;
 	private boolean editValue;
 	private OntologyProperty property;
@@ -17,6 +16,7 @@ public class PointElement {
 	private String panel;
 	private String id;
 	private BuiltinMethod method;
+	private Instance instance;
 	private boolean enableEdit;
 
 	public PointElement() {
@@ -33,6 +33,7 @@ public class PointElement {
 		this.panel = "";
 		this.id = "";
 		this.method = new BuiltinMethod("", "", "", 0, Type.BUILTIN_METHOD);
+		this.instance = new Instance("", "", "");
 		this.enableEdit = false;
 	}
 	
@@ -86,6 +87,14 @@ public class PointElement {
 
 	public Type getType() {
 		return type;
+	}
+
+	public Instance getInstance() {
+		return instance;
+	}
+
+	public void setInstance(Instance instance) {
+		this.instance = instance;
 	}
 
 	public void setType(Type type) {
@@ -152,7 +161,7 @@ public class PointElement {
 		CLASS, DATA_PROPERTY, OBJECT_PROPERTY, INSTANCE, BUILTIN_METHOD;
 
 	}
-
+	
 	@Override
 	public boolean equals(Object obj) {
 		if (this.getElementName().equals(((PointElement) obj).getElementName())
@@ -180,6 +189,9 @@ public class PointElement {
 		el.setPanel(this.getPanel());
 		el.setId(this.getId());
 		el.setMethod(this.getMethod().clone());
+		el.setInstance(this.getInstance().clone());
+		el.setEnableEdit(this.isEnableEdit());
+		
 
 		return el;
 	}

@@ -50,6 +50,7 @@ import org.primefaces.model.diagram.overlay.ArrowOverlay;
 import org.primefaces.model.mindmap.DefaultMindmapNode;
 import org.primefaces.model.mindmap.MindmapNode;
 import org.ruleEditor.ontology.BuiltinMethod;
+import org.ruleEditor.ontology.Instance;
 import org.ruleEditor.ontology.Main;
 import org.ruleEditor.ontology.Message;
 import org.ruleEditor.ontology.Ontology;
@@ -81,7 +82,7 @@ public class AddNewRuleBean {
 	private DefaultDiagramModel conclusionsModel;
 	private List<DataProperty> datatypes = null;
 	private List<ObjectProperty> objects = null;
-	private List<String> instances = null;
+	private List<Instance> instances = null;
 	private OntologyProperty selectedDataProperty = new OntologyProperty("","");
 	private OntologyProperty selectedObjectProperty = new OntologyProperty("","");
 	private ArrayList<PointElement> conditions;
@@ -100,7 +101,7 @@ public class AddNewRuleBean {
 	private BuiltinMethod selectedMethod = null;
 	private boolean flag = false;// false : for simple rule
 	                             // true : for feedback rule
-	private String selectedInstance = "";
+	private Instance selectedInstance = null;
     private Rule  rule = null;
     private ArrayList<Rule> existingRules = new ArrayList<Rule>();
     private boolean feedback = true;
@@ -120,7 +121,7 @@ public class AddNewRuleBean {
 		flag = tempFlag;
 		datatypes = new ArrayList<DataProperty>();
 		objects = new ArrayList<ObjectProperty>();
-		instances = new ArrayList<String>();
+		instances = new ArrayList<Instance>();
 		conditions = new ArrayList<PointElement>();
 		conclusions = new ArrayList<PointElement>();
 		counter = 0;
@@ -185,7 +186,7 @@ public class AddNewRuleBean {
 		
 		datatypes = new ArrayList<DataProperty>();
 		objects = new ArrayList<ObjectProperty>();
-		instances = new ArrayList<String>();
+		instances = new ArrayList<Instance>();
 		conditions = (ArrayList<PointElement>) conditionsList.clone();
 		conclusions =(ArrayList<PointElement>) conclusionsList.clone();
 		counter = 0;
@@ -618,14 +619,71 @@ public class AddNewRuleBean {
 		int maxConns = 2;
 		String name = sourceElement.getElementName();
 		
+		if(sourceElement.getType()==Type.INSTANCE)
+		   name = sourceElement.getInstance().getClassName();
+		
 		if (clonedTargetElement.getConnections().size() < maxConns
 				&& (className.equalsIgnoreCase(name)||
 						rangeClass.equalsIgnoreCase(name))) {
 			clonedTargetElement.getConnections().add(sourceElement);
 			return 1;
 		}
+	
 		
 		return 0;
+	}
+	
+	public int connectInstanceWithObjectProperty(PointElement sourceElement,
+			PointElement targetElement) {
+		
+		// update the list with the connections for the target element
+		for (PointElement el : conditions) {
+			if (el.getId().equalsIgnoreCase(targetElement.getId())) {
+				targetElement.setConnections(el.getConnections());
+				break;
+			}
+		}
+
+		for (PointElement el : conclusions) {
+			if (el.getId().equalsIgnoreCase(targetElement.getId())) {
+				targetElement.setConnections(el.getConnections());
+				break;
+			}
+		}
+		// clone the old target element in order to make the changes
+		clonedTargetElement = targetElement.clone();
+		int result = 0;
+		if (clonedTargetElement.getProperty() instanceof ObjectProperty) {
+			// add element to object property connections
+			result = addElementForObjectProperty(sourceElement);
+		}
+
+		if (result == 1) {
+			int index = -1;
+			if (sourceElement.getPanel().equals("conditions")) {
+				// remove old object from the list
+				// add the updated one
+
+				index = this.conditions.indexOf(targetElement);
+				if (index != -1) {
+					this.conditions.remove(index);
+					this.conditions.add(index, clonedTargetElement);
+				}
+
+			} else {
+				index = this.conclusions.indexOf(targetElement);
+				if (index != -1) {
+					this.conclusions.remove(index);
+					this.conclusions.add(index, clonedTargetElement);
+				}
+			}
+			return 1;
+		} else {
+			System.out.println("connection failed");
+		}
+		
+
+		return result;
 	}
 
 	public int connectBuiltinMethodWithProperty(PointElement sourceElement,
@@ -688,6 +746,8 @@ public class AddNewRuleBean {
 		// 2nd case, connect a built in method with a property
 		else if (sourceElement.getType() == Type.BUILTIN_METHOD)
 			result = connectBuiltinMethodWithProperty(sourceElement, targetElement);
+		else if(sourceElement.getType() == Type.INSTANCE)
+	        result = connectInstanceWithObjectProperty(sourceElement,targetElement);
 		
 		if (result == 0) {
 			if (conditionsModel.getConnections().size() > 0)
@@ -915,10 +975,13 @@ public class AddNewRuleBean {
 	
 	public void createInstanceElement(String panelID){
 		PointElement networkElement = new PointElement();
-		networkElement.setElementName(this.selectedInstance.toString());
+		networkElement.setElementName(this.selectedInstance.getInstanceName());
 		networkElement.setType(Type.INSTANCE);
-		networkElement.setVarName(setVariableName());
-		networkElement.setId(networkElement.getVarName());
+		networkElement.setInstance(this.selectedInstance);
+		//TODO na parei san id to swsto id to individual
+		//to var name den xreiazetai
+		networkElement.setVarName(this.selectedInstance.getInstanceName());
+		networkElement.setId(this.selectedInstance.getInstanceName());
 		networkElement = setPosition(networkElement);
 		Element element = new Element(networkElement,
 				String.valueOf(networkElement.getX() + "em"),
@@ -1038,11 +1101,11 @@ public class AddNewRuleBean {
 		this.objects = objects;
 	}
 
-	public List<String> getInstances() {
+	public List<Instance> getInstances() {
 		return instances;
 	}
 
-	public void setInstances(List<String> instances) {
+	public void setInstances(List<Instance> instances) {
 		this.instances = instances;
 	}
 
@@ -1087,11 +1150,11 @@ public class AddNewRuleBean {
 		this.selectedMethod = selectedMethod;
 	}
 
-	public String getSelectedInstance() {
+	public Instance getSelectedInstance() {
 		return selectedInstance;
 	}
 
-	public void setSelectedInstance(String selectedInstance) {
+	public void setSelectedInstance(Instance selectedInstance) {
 		this.selectedInstance = selectedInstance;
 	}
 
