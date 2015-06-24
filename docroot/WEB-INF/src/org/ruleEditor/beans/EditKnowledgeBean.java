@@ -15,9 +15,12 @@ import org.primefaces.model.TreeNode;
 import org.ruleEditor.ontology.Main;
 import org.ruleEditor.ontology.Ontology;
 import org.ruleEditor.ontology.OntologyClass;
-import org.ruleEditor.utils.RecommendationForJson.Term;
-import org.ruleEditor.utils.RecommendationForJson.Term.Recommendation;
+import org.ruleEditor.utils.RecommendationForJson;
+import org.ruleEditor.utils.RecommendationForJson.Recommendation;
+import org.ruleEditor.utils.Term;
 import org.ruleEditor.utils.Utils;
+
+import com.github.jsonldjava.core.JsonLdError;
 
 @ManagedBean(name = "editKnowledgeBean")
 @SessionScoped
@@ -25,8 +28,9 @@ public class EditKnowledgeBean {
 	private Main main;
 	private String fileName;
 	private InputStream inputStream;
-	private ArrayList<Term> terms;
+	private ArrayList<RecommendationForJson> terms;
 	private DefaultTreeNode root;
+	private Term selectedTerm;
 
 	public EditKnowledgeBean() {
 		super();
@@ -39,28 +43,38 @@ public class EditKnowledgeBean {
 
 		fileName = "";
 		inputStream = null;
-		terms = new ArrayList<Term>();
+		terms = new ArrayList<RecommendationForJson>();
 		root = new DefaultTreeNode("Json-ld", null);
+		selectedTerm = null;
 		
 	}
 
-	public void onFileUpload(FileUploadEvent event) throws IOException {
+	public void onFileUpload(FileUploadEvent event) throws IOException, JsonLdError {
 		fileName = event.getFile().getFileName();
 		inputStream = event.getFile().getInputstream();
-		//parse json and get terms as objects
-		terms = Utils.getObjectsFromJsonLd(inputStream);
+		String result = Utils.readJsonLd(inputStream);
+		terms = Utils.getObjectsFromJsonLd(inputStream,result);
 		createJsonTree();
 	}
 	
-	private void createJsonTree() {
-
+	private void createJsonTree() throws IOException {
+		
 		new DefaultTreeNode("Json-ld", null);
 		TreeNode node1 = null;
 		TreeNode node2 = null;
-		for (Term temp : terms) {
-			node1 = new DefaultTreeNode(temp, root);
+		Term term = null;
+		for (RecommendationForJson temp : terms) {
+
+			term = new Term(temp.getType(), temp.getId(), "" + temp.isValue(),
+					"" + temp.getRating(), "-");
+
+			node1 = new DefaultTreeNode(term, root);
 			for (Recommendation temp2 : temp.getHasRecommendation()) {
-				node2 = new DefaultTreeNode(temp2, node1);
+
+				term = new Term(temp2.getType(), temp2.getId(),
+						temp2.getValue(), "-", temp2.getName());
+
+				node2 = new DefaultTreeNode(term, node1);
 			}
 		}
 
@@ -82,11 +96,11 @@ public class EditKnowledgeBean {
 		this.inputStream = inputStream;
 	}
 
-	public ArrayList<Term> getTerms() {
+	public ArrayList<RecommendationForJson> getTerms() {
 		return terms;
 	}
 
-	public void setTerms(ArrayList<Term> terms) {
+	public void setTerms(ArrayList<RecommendationForJson> terms) {
 		this.terms = terms;
 	}
 
@@ -97,7 +111,13 @@ public class EditKnowledgeBean {
 	public void setRoot(DefaultTreeNode root) {
 		this.root = root;
 	}
-	
-	
 
+	public Term getSelectedTerm() {
+		return selectedTerm;
+	}
+
+	public void setSelectedTerm(Term selectedTerm) {
+		this.selectedTerm = selectedTerm;
+	}
+	
 }

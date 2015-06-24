@@ -87,7 +87,7 @@ public class AddMessageBean {
 		fileStream = event.getFile().getInputstream();
 	}
 	
-	//TODO finish the part of saving the rule
+	
 	public void saveRule() throws IOException {
 
 		if (ruleName.trim().equals("")) {
@@ -115,7 +115,7 @@ public class AddMessageBean {
 		}
 
 		RuleCreationUtilities.saveRule(ruleName, finalFileName,
-				addNewRuleBean.getConditions(), new ArrayList<PointElement>(),
+				addNewRuleBean.getConditions(), addNewRuleBean.getConclusions(),
 				isFeedback, createNewFile, feedbackClass, feedbackScope,
 				feedbackId, addNewRuleBean.getExistingRules(), fileStream);
 

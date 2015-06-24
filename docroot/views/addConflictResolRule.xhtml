@@ -18,7 +18,7 @@
 					<p:scrollPanel style="width:535px;height:800px;" mode="native">
 						<p:tree id="tree" value="#{addNewRuleBean.root}" var="node"
 							orientation="horizontal" selectionMode="single"
-							selection="#{addNewRuleBean.selectedNode}"  >
+							selection="#{addNewRuleBean.selectedNode}">
 							<p:ajax event="select" listener="#{addNewRuleBean.onNodeSelect}"
 								update=":#{p:component('dataProperties')},
 								:#{p:component('objectProperties')},:#{p:component('instances')}" />
@@ -68,8 +68,8 @@
 						<p:dataTable id="instances" var="data"
 							value="#{addNewRuleBean.instances}" rowKey="#{data}"
 							selectionMode="single"
-							selection="#{addNewRuleBean.selectedInstance}"
-							scrollable="true" scrollHeight="50">
+							selection="#{addNewRuleBean.selectedInstance}" scrollable="true"
+							scrollHeight="50">
 
 							<p:column headerText="Instances">
 								<h:outputText value="#{data.instanceName}" />
@@ -82,10 +82,10 @@
 							selection="#{addNewRuleBean.selectedMethod}" scrollable="true"
 							scrollHeight="100">
 							<p:column headerText="Primitive Methods">
-								<h:outputText value="#{method.usingName}"
-									id="method" />
-								<p:tooltip id="toolTipGrow" for="method" value="#{method.description}"
-                                showEffect="clip" hideEffect="explode" />
+								<h:outputText value="#{method.usingName}" id="method" />
+								<p:tooltip id="toolTipGrow" for="method"
+									value="#{method.description}" showEffect="clip"
+									hideEffect="explode" />
 							</p:column>
 						</p:dataTable>
 
@@ -231,7 +231,8 @@
 					value="Clear conclusions" title="Clear conclusions panel">
 				</p:commandButton>
 				<p:commandButton oncomplete="PF('addMessageDialog').show()"
-					title="Go to next step of the creation of the rule" value="Next step">
+					title="Go to next step of the creation of the rule"
+					value="Next step">
 				</p:commandButton>
 			</p:panel>
 
@@ -288,15 +289,50 @@
 				<h:panelGrid columns="2" columnClasses="label,value"
 					styleClass="grid">
 					<p:commandButton actionListener="#{addMessageBean.init(false)}"
-						icon="ui-icon-save" title="Move to next step to add a message" ajax="false"
+						icon="ui-icon-save" title="Move to next step to add a message"
+						ajax="false"
 						action="/views/addMessage.xhtml?javax.portlet.faces.PortletMode=view&amp;javax.portlet.faces.WindowState=normal"
 						value="Yes">
 					</p:commandButton>
-					<p:commandButton action="#{addNewRuleBean.removeNode}"
-						icon="ui-icon-close" title="Save the rule withount adding a message"
-						actionListener="#{addMessageBean.saveRule}"
-						value="No" oncomplete="PF('addMessageDialog').hide()">
+					<p:commandButton icon="ui-icon-close"
+						title="Save the rule withount adding a message" value="No"
+						oncomplete="PF('addMessageDialog').hide();PF('newRuleDialog').show()">
 					</p:commandButton>
+				</h:panelGrid>
+			</p:dialog>
+
+			<p:dialog widgetVar="newRuleDialog" id="newRuleDialog" modal="true"
+				header="Save rule configuration" resizable="false" showEffect="clip"
+				dynamic="true" hideEffect="fold" position="center,center">
+				<p:messages for="msgs" showDetail="true" autoUpdate="true"
+					closable="true" />
+				<h:panelGrid columns="2" columnClasses="label,value"
+					styleClass="grid">
+					<h:outputText value="Rule name: " id="ruleName" />
+					<p:inputText label="Rule name" style="width: 300px;"
+						id="newRuleName" autocomplete="off"
+						value="#{addNewRuleBean.ruleName}" required="true">
+					</p:inputText>
+				</h:panelGrid>
+				<p:fileUpload style="width: 600px;" mode="advanced"
+					label="Select an existing rule file"
+					value="#{addNewRuleBean.oldFileName}" auto="true"
+					fileUploadListener="#{addNewRuleBean.uploadFileForSaveAs}"
+					allowTypes="/(\.|\/)(rules)$/">
+				</p:fileUpload>
+				<h:panelGrid columns="2" columnClasses="label,value"
+					styleClass="grid">
+					<h:outputText value="Or create a new file " id="FileName"
+						required="false" />
+					<p:inputText label="File Name" style="width: 300px;"
+						id="newFileName" autocomplete="off"
+						value="#{addNewRuleBean.newFileName}">
+					</p:inputText>
+					<p:commandButton value="OK" id="okBut" ajax="false"
+						oncomplete="PF('newRuleDialog').hide()"
+						actionListener="#{addNewRuleBean.saveRule}" />
+					<p:commandButton value="Cancel" id="cancelBut"
+						oncomplete="PF('newRuleDialog').hide()" />
 				</h:panelGrid>
 			</p:dialog>
 

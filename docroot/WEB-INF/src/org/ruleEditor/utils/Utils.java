@@ -13,7 +13,11 @@ import java.io.OutputStream;
 import java.lang.reflect.Type;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.faces.component.UIComponent;
 import javax.faces.component.UIViewRoot;
@@ -41,9 +45,14 @@ import org.ruleEditor.ontology.OntologyProperty.ObjectProperty;
 import org.ruleEditor.ontology.PointElement;
 import org.ruleEditor.utils.MessageForJson.Group;
 import org.ruleEditor.utils.MessageForJson.Group.TextMessage;
-import org.ruleEditor.utils.RecommendationForJson.Term;
 import org.ruleEditor.utils.Rule.RuleType;
 
+import com.github.jsonldjava.core.JsonLdApi;
+import com.github.jsonldjava.core.JsonLdError;
+import com.github.jsonldjava.core.JsonLdOptions;
+import com.github.jsonldjava.core.JsonLdProcessor;
+import com.github.jsonldjava.core.RDFDatasetUtils;
+import com.github.jsonldjava.utils.JSONUtils;
 import com.google.gson.FieldNamingPolicy;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -64,30 +73,6 @@ public class Utils {
 	private static int counter = 0;
 	private static List<PointElement> conditions = new ArrayList<PointElement>();
 	private static List<PointElement> conclusions = new ArrayList<PointElement>();
-
-	
-
-	
-	public UIComponent findComponent(final String id) {
-
-		FacesContext context = FacesContext.getCurrentInstance();
-		UIViewRoot root = context.getViewRoot();
-		final UIComponent[] found = new UIComponent[1];
-
-		root.visitTree(new FullVisitContext(context), new VisitCallback() {
-			@Override
-			public VisitResult visit(VisitContext context, UIComponent component) {
-				if (component.getId().equals(id)) {
-					found[0] = component;
-					return VisitResult.COMPLETE;
-				}
-				return VisitResult.ACCEPT;
-			}
-		});
-
-		return found[0];
-
-	}
 
 	public static EndPoint createDotEndPoint(EndPointAnchor anchor) {
 		DotEndPoint endPoint = new DotEndPoint(anchor);
@@ -249,27 +234,32 @@ public class Utils {
 
 	}
 	
-	public static ArrayList<Term> getObjectsFromJsonLd(InputStream inputStream)
-			throws IOException {
+	public static ArrayList<RecommendationForJson> getObjectsFromJsonLd(
+			InputStream inputStream, String result) throws IOException,
+			JsonLdError {
+
+		LinkedHashMap<String, Object> hashmap = (LinkedHashMap<String, Object>) JSONUtils
+				.fromString(result);
+		Iterator it = hashmap.entrySet().iterator();
+		while (it.hasNext()) {
+			Map.Entry pair = (Map.Entry) it.next();
+			System.out.println(pair.getKey() + " = "
+					+ JSONUtils.toPrettyString(pair.getValue()));
+			if (pair.getKey().toString().contains("graph")) {
+				result = JSONUtils.toPrettyString(pair.getValue());
+			}
+		}
+
 		Gson gson = new Gson();
 
-		Type type = new TypeToken<RecommendationForJson>() {
+		Type type = new TypeToken<ArrayList<RecommendationForJson>>() {
 		}.getType();
 
-		String result = readJsonLd(inputStream);
-		
-		result = result.replace("@","").replace("c4a:", "");
+		ArrayList<RecommendationForJson> list = (ArrayList<RecommendationForJson>) gson
+				.fromJson(result, type);
 
-		RecommendationForJson test = (RecommendationForJson) gson.fromJson(
-				result, type);
-		
-		ArrayList<Term> terms = new ArrayList<Term>();
-		for(Term temp : test.getGraph()){
-			terms.add(temp);
-		}
-		
-		return terms;
-		
+		return list;
+
 	}
 	
 

@@ -27,11 +27,11 @@ public class RuleCreationUtilities {
 
 		// create the rule string
 		String rule = "";
-		if (!flag)
+		if (feedbackClass.isEmpty())
 			rule = createRule(conditions, conclusions, ruleName);
 		else
 			rule = createFeedBackRule(feedbackClass, feedbackScope, feedbackId,
-					conditions, ruleName);
+					conditions, conclusions, ruleName);
 
 		// export the rule
 		if (!rule.isEmpty()) {
@@ -71,18 +71,25 @@ public class RuleCreationUtilities {
 	}
 
 	public static String createFeedBackRule(String className, String scope,
-			String id, ArrayList<PointElement> conditions, String ruleName) {
+			String id, ArrayList<PointElement> conditions, ArrayList<PointElement> conclusions,String ruleName) {
 
 		String rule = prefix_c4a + "\n" + prefix_rdfs + "\n\n" + "[" + ruleName
 				+ "\n";
 
 		rule = rule + convertListToRule(conditions);
 
-		rule = rule + "makeSkolem(?newMetaData, ?" + className + ", ?" + scope
-				+ ")\n" + "->\n" + "(?newMetaData rdf:type c4a:Metadata)\n"
-				+ "(?newMetaData c4a:scope ?" + scope + ")\n"
+		rule = rule + "makeSkolem(?newMetaData, " + className + ", " + scope
+				+ ")\n";
+
+		rule = rule + "->\n";
+
+		if (!conclusions.isEmpty())
+			rule = rule + convertListToRule(conclusions);
+
+		rule = rule + "(?newMetaData rdf:type c4a:Metadata)\n"
+				+ "(?newMetaData c4a:scope " + scope + ")\n"
 				+ "(?newMetaData c4a:messageType \"helpMessage\")\n"
-				+ "(?newMetaData c4a:refersTo c4a:" + id + ")\n" + "(?"
+				+ "(?newMetaData c4a:refersTo c4a:" + id + ")\n" + "("
 				+ className + " c4a:hasMetadata ?newMetaData)\n]";
 
 		return rule;
@@ -101,10 +108,14 @@ public class RuleCreationUtilities {
 			} else if (el.getType() == PointElement.Type.DATA_PROPERTY) {
 
 				OntologyProperty property = (DataProperty) el.getProperty();
+				String value = ((DataProperty) property).getValue();
+				if(!value.contains("?"))
+					value = "\""+value+"\"";
+				
 				if (el.getConnections().size() > 0)
 					rule = rule + "(" + el.getConnections().get(0).getVarName()
 							+ " c4a:" + el.getElementName() + " "
-							+ ((DataProperty) property).getValue() + ")\n";
+							+ value + ")\n";
 
 			} else if (el.getType() == PointElement.Type.OBJECT_PROPERTY) {
 

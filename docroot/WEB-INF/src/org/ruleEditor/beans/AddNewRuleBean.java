@@ -63,6 +63,7 @@ import org.ruleEditor.ontology.PointElement.Type;
 import org.ruleEditor.utils.FileDownloadController;
 import org.ruleEditor.utils.FileUploadController;
 import org.ruleEditor.utils.Rule;
+import org.ruleEditor.utils.RuleCreationUtilities;
 import org.ruleEditor.utils.Utils;
 
 import sun.rmi.runtime.NewThreadAction;
@@ -76,7 +77,7 @@ public class AddNewRuleBean {
 	private Main main;
 	private DefaultTreeNode root;
 	private TreeNode selectedNode = null;
-	//private String ruleName = "", newFileName = "", oldFileName = "", feedbackFile="";
+	private String ruleName = "", newFileName = "", oldFileName = "";
 	private InputStream fileStream;
 	private DefaultDiagramModel conditionsModel;
 	private DefaultDiagramModel conclusionsModel;
@@ -137,15 +138,9 @@ public class AddNewRuleBean {
 		sourceElement= new PointElement();
 		originalTargetElement = new PointElement();
 		clonedOriginalTargetElement = new PointElement();
-//		selectedInstance = "";
-//		feedbackClass = "";
-//	    feedbackScope = "";
-//	    feedbackId = "";
-//		
-//		Message emptyMessage = new Message();
-//		emptyMessage.setLanguage("English");
-//		messages = new ArrayList<Message>();
-//		messages.add(emptyMessage);
+		ruleName = "";
+		oldFileName = "";
+		newFileName = "";
 
 		// Initialization of conditions model
 		conditionsModel = new DefaultDiagramModel();
@@ -202,15 +197,6 @@ public class AddNewRuleBean {
 		sourceElement = new PointElement();
 		originalTargetElement = new PointElement();
 		clonedOriginalTargetElement = new PointElement();
-//		selectedInstance = "";
-//		feedbackClass = "";
-//		feedbackScope = "";
-//		feedbackId = "";
-//
-//		Message emptyMessage = new Message();
-//		emptyMessage.setLanguage("English");
-//		messages = new ArrayList<Message>();
-//		messages.add(emptyMessage);
 
 		// Initialization of conditions model
 		conditionsModel = new DefaultDiagramModel();
@@ -351,6 +337,44 @@ public class AddNewRuleBean {
 
 	}
 	
+	public void uploadFileForSaveAs(FileUploadEvent event) throws IOException{
+		oldFileName = event.getFile().getFileName();
+		fileStream = event.getFile().getInputstream();
+	}
+	
+	public void saveRule() throws IOException {
+
+		if (ruleName.trim().equals("")) {
+			FacesContext.getCurrentInstance().addMessage(
+					"msgs",
+					new FacesMessage(FacesMessage.SEVERITY_ERROR,
+							"Please provide a rule name", ""));
+
+			return;
+		}
+
+		String finalFileName = newFileName.trim();
+		boolean createNewFile = true;
+		if (newFileName.isEmpty() && !oldFileName.trim().isEmpty()) {
+			createNewFile = false;
+			finalFileName = oldFileName;
+		}
+		if (finalFileName.trim().equals("")) {
+			FacesContext.getCurrentInstance().addMessage(
+					"msgs",
+					new FacesMessage(FacesMessage.SEVERITY_ERROR,
+							"Please create a new file or select an existing",
+							""));
+			return;
+		}
+
+		RuleCreationUtilities.saveRule(ruleName, finalFileName,
+				conditions, conclusions,
+				false, createNewFile, "", "",
+				"", existingRules, fileStream);
+
+	}
+	
 	public void saveEditOfNode() {
 		
 		if (cloneSelectedNode.getType() == Type.DATA_PROPERTY) {
@@ -368,7 +392,7 @@ public class AddNewRuleBean {
 
 			if (property.getDataRange().equalsIgnoreCase("boolean"))
 				if (!property.getValue().trim().equals("true")
-						|| !property.getValue().trim().equals("false")) {
+						&& !property.getValue().trim().equals("false")) {
 					FacesContext
 							.getCurrentInstance()
 							.addMessage(
@@ -960,7 +984,7 @@ public class AddNewRuleBean {
 		PointElement networkElement = new PointElement();
 		networkElement.setElementName(this.selectedNode.getData().toString());
 		networkElement.setType(Type.CLASS);
-		networkElement.setVarName(setVariableName());
+		networkElement.setVarName("?"+setVariableName());
 		networkElement.setId(networkElement.getVarName());
 		networkElement = setPosition(networkElement);
 		Element element = new Element(networkElement,
@@ -1188,6 +1212,38 @@ public class AddNewRuleBean {
 
 	public void setExistingRules(ArrayList<Rule> existingRules) {
 		this.existingRules = existingRules;
+	}
+
+	public ArrayList<PointElement> getConclusions() {
+		return conclusions;
+	}
+
+	public void setConclusions(ArrayList<PointElement> conclusions) {
+		this.conclusions = conclusions;
+	}
+
+	public String getRuleName() {
+		return ruleName;
+	}
+
+	public void setRuleName(String ruleName) {
+		this.ruleName = ruleName;
+	}
+
+	public String getNewFileName() {
+		return newFileName;
+	}
+
+	public void setNewFileName(String newFileName) {
+		this.newFileName = newFileName;
+	}
+
+	public String getOldFileName() {
+		return oldFileName;
+	}
+
+	public void setOldFileName(String oldFileName) {
+		this.oldFileName = oldFileName;
 	}
 	
 	

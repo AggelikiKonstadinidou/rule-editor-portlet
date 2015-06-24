@@ -5,32 +5,7 @@ import java.util.ArrayList;
 import org.ruleEditor.utils.MessageForJson.Context;
 
 public class RecommendationForJson {
-	
-	private Context context;
-	private ArrayList<Term> graph;
-	
-	public RecommendationForJson(Context context, ArrayList<Term> graph) {
-		super();
-		this.context = context;
-		this.graph = graph;
-	}
-	
-	public ArrayList<Term> getGraph() {
-		return graph;
-	}
-	public void setGraph(ArrayList<Term> graph) {
-		this.graph = graph;
-	}
 
-	public Context getContext() {
-		return context;
-	}
-	public void setContext(Context context) {
-		this.context = context;
-	}
-	
-	
-	public class Term{
 		private String type;
 		private String id;
 		private boolean value;
@@ -67,7 +42,9 @@ public class RecommendationForJson {
 		public void setRating(int rating) {
 			this.rating = rating;
 		}
-		public Term(String type, String id, boolean value, int rating, ArrayList<Recommendation> hasRecommendation) {
+		
+		public RecommendationForJson(String type, String id, boolean value,
+				int rating, ArrayList<Recommendation> hasRecommendation) {
 			super();
 			this.type = type;
 			this.id = id;
@@ -75,7 +52,8 @@ public class RecommendationForJson {
 			this.rating = rating;
 			this.hasRecommendation = hasRecommendation;
 		}
-		
+
+
 		public class Recommendation{
 			private String type;
 			private String id;
@@ -116,6 +94,6 @@ public class RecommendationForJson {
 			
 		}
 		
-	}
+	
 	
 }

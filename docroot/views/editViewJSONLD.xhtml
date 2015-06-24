@@ -29,13 +29,43 @@
 					<p:column headerText="Id">
 						<h:outputText value="#{term.id}" />
 					</p:column>
+					<p:column headerText="Type">
+						<h:outputText value="#{term.type}" />
+					</p:column>
 					<p:column headerText="Value">
 						<h:outputText value="#{term.value}" />
+					</p:column>
+					<p:column headerText="Name">
+						<h:outputText value="#{term.name}" />
 					</p:column>
 					<p:column headerText="Rating">
 						<h:outputText value="#{term.rating}" />
 					</p:column>
+					<p:column style="width:24px">
+						<p:commandLink update=":#{p:component('informationPanel')}"
+							oncomplete="PF('editTermDialog').show()" title="Edit"
+							styleClass="ui-icon ui-icon-search">
+							<f:setPropertyActionListener value="#{term}"
+								target="#{editKnowledgeBean.selectedTerm}" />
+						</p:commandLink>
+					</p:column>
 				</p:treeTable>
+
+				<p:dialog id="dialog" header="Edit Term" showEffect="fade"
+					widgetVar="editTermDialog" modal="true" resizable="false">
+					<p:outputPanel id="editTerm">
+						<p:panelGrid columns="2" columnClasses="label,value"
+							rendered="#{not empty editKnowledgeBean.selectedTerm}">
+							<h:outputLabel for="id" value="ID: " />
+							<h:outputText id="id"
+								value="#{editKnowledgeBean.selectedTerm.id}" />
+
+							<h:outputLabel for="type" value="Type " />
+							<h:outputText id="type"
+								value="#{editKnowledgeBean.selectedTerm.type}"/>
+						</p:panelGrid>
+					</p:outputPanel>
+				</p:dialog>
 
 			</p:panel>
 		</h:form>
