@@ -15,13 +15,14 @@
 				</f:facet>
 				<p:fileUpload style="width: 600px;" mode="advanced"
 					label="Select configuration file of RBMM"
-					value="#{editKnowledgeBean.fileName}" auto="true"
-					multiple="true"
+					value="#{editKnowledgeBean.fileName}" auto="true" multiple="true"
 					fileUploadListener="#{editKnowledgeBean.onFileUpload}"
-					allowTypes="/(\.|\/)(jsonld)$/" update=":#{p:component('treeTable')}"> 
+					allowTypes="/(\.|\/)(jsonld)$/"
+					update=":#{p:component('treeTable')}">
 				</p:fileUpload>
 
-				<p:treeTable value="#{editKnowledgeBean.root}" var="term" id="treeTable">
+				<p:treeTable value="#{editKnowledgeBean.root}" var="term"
+					id="treeTable">
 					<f:facet name="header">
             Json Viewer
         </f:facet>
@@ -50,22 +51,144 @@
 						</p:commandLink>
 					</p:column>
 				</p:treeTable>
+				<p:commandButton value="Add new Abstract Term" id="addNode"
+					oncomplete="PF('addNewTermDialog').show()"
+					update=":#{p:component('treeTable')}" />
+				<p:commandButton value="Export changes"
+					id="export" ajax="false" actionListener="#{editKnowledgeBean.exportJsonLdFile}"
+					title="Export the changes in a new file" />
+
 
 				<p:dialog id="dialog" header="Edit Term" showEffect="fade"
 					widgetVar="editTermDialog" modal="true" resizable="false">
 					<p:outputPanel id="editTerm">
 						<p:panelGrid columns="2" columnClasses="label,value"
-							rendered="#{not empty editKnowledgeBean.selectedTerm}">
+							rendered="#{not empty editKnowledgeBean.clonedSelectedTerm}">
 							<h:outputLabel for="id" value="ID: " />
-							<h:outputText id="id"
-								value="#{editKnowledgeBean.selectedTerm.id}" />
+							<p:inputText label="Id" style="width: 300px;" id="id"
+								autocomplete="off" value="#{editKnowledgeBean.clonedSelectedTerm.id}">
+							</p:inputText>
 
 							<h:outputLabel for="type" value="Type " />
-							<h:outputText id="type"
-								value="#{editKnowledgeBean.selectedTerm.type}"/>
+							<p:selectOneMenu value="#{editKnowledgeBean.clonedSelectedTerm.type}"
+								id="type" disabled="true">
+								<f:selectItem id="abstractTerm" itemLabel="AbstractTerm"
+									itemValue="AbstractTerm" />
+								<f:selectItem id="recommendation" itemLabel="Recommendation"
+									itemValue="Recommendation" />
+							</p:selectOneMenu>
+							<h:outputLabel for="value" value="Value " />
+							<p:inputText label="value" style="width: 300px;" id="value"
+								autocomplete="off"
+								value="#{editKnowledgeBean.clonedSelectedTerm.value}">
+							</p:inputText>
+
+							<h:outputLabel for="name" value="Name "
+								rendered="#{!editKnowledgeBean.clonedSelectedTerm.abstractTerm}" />
+							<p:inputText label="name" style="width: 300px;" id="name"
+								autocomplete="off"
+								rendered="#{!editKnowledgeBean.clonedSelectedTerm.abstractTerm}"
+								value="#{editKnowledgeBean.clonedSelectedTerm.name}">
+							</p:inputText>
+
+							<h:outputLabel for="rating" value="Rating "
+								rendered="#{editKnowledgeBean.clonedSelectedTerm.abstractTerm}" />
+							<p:inputText label="rating" style="width: 300px;" id="rating"
+								autocomplete="off"
+								rendered="#{editKnowledgeBean.clonedSelectedTerm.abstractTerm}"
+								value="#{editKnowledgeBean.clonedSelectedTerm.rating}">
+							</p:inputText>
 						</p:panelGrid>
+						<p:commandButton value="Save edit" id="save" ajax="false"
+							oncomplete="PF('editTermDialog').hide()"
+							update=":#{p:component('treeTable')}"
+							actionListener="#{editKnowledgeBean.saveEditedTerm}" />
+						<p:commandButton value="Delete" id="delete" ajax="false"
+							oncomplete="PF('editTermDialog').hide()"
+							update=":#{p:component('treeTable')}"
+							actionListener="#{editKnowledgeBean.removeExistingTerm}" />
+						<p:commandButton value="Cancel" id="cancel" ajax="false"
+							oncomplete="PF('editTermDialog').hide()" />
+						<p:commandButton value="Add Recommendation" id="addRecommendation"
+							rendered="#{editKnowledgeBean.clonedSelectedTerm.abstractTerm}"
+							ajax="false" oncomplete="PF('editTermDialog').hide()"
+							actionListener="#{addNewRuleBean.saveRule}" />
 					</p:outputPanel>
 				</p:dialog>
+
+				<p:dialog id="addNewTermDialog" header="Add New Abstract Term"
+					showEffect="fade" widgetVar="addNewTermDialog" modal="true"
+					resizable="false">
+					<p:outputPanel id="addTerm">
+						<p:panelGrid columns="2" columnClasses="label,value">
+							<h:outputLabel for="idTerm" value="ID: " />
+							<p:inputText label="Id" style="width: 120px;" id="idTerm"
+								autocomplete="off" value="#{editKnowledgeBean.abstractTerm.id}">
+							</p:inputText>
+
+							<h:outputLabel for="valueTerm" value="Value " />
+							<p:inputText label="value" style="width: 120px;" id="valueTerm"
+								autocomplete="off"
+								value="#{editKnowledgeBean.abstractTerm.value}">
+							</p:inputText>
+
+							<h:outputLabel for="ratingTerm" value="Rating " />
+							<p:inputText label="rating" style="width: 120px;" id="ratingTerm"
+								autocomplete="off"
+								value="#{editKnowledgeBean.abstractTerm.rating}">
+							</p:inputText>
+							<!--  -->
+							</p:panelGrid>
+
+						<p:panel>
+							<f:facet name="header">
+								<h:outputText value="Recommendations for the Abstract Term" />
+							</f:facet>
+							<c:forEach
+								items="#{editKnowledgeBean.abstractTerm.hasRecommendation}"
+								var="item" varStatus="status">
+
+								<p:panelGrid style="width:100%;margin-bottom:5px">
+
+									<p:row>
+										<p:column style="font-weight: bold;">Id
+									<p:inputText value="#{item.id}" style="width: 120px;" />
+										</p:column>
+										<p:column style="font-weight: bold;">Name
+									<p:inputText value="#{item.name}" style="width: 120px;" />
+										</p:column>
+										<p:column style="font-weight: bold;">Value
+									<p:inputText value="#{item.value}" style="width: 120px;" />
+										</p:column>
+										<p:column style="font-weight: bold;">
+											<p:commandButton value="Remove recommendation"
+												rendered="#{editKnowledgeBean.abstractTerm.hasRecommendation.size() > 1}"
+												update="addTerm"
+												action="#{editKnowledgeBean.removeRecommendation}">
+												<f:setPropertyActionListener value="#{item}"
+													target="#{editKnowledgeBean.recommendationForRemove}" />
+											</p:commandButton>
+										</p:column>
+									</p:row>
+								</p:panelGrid>
+
+							</c:forEach>
+
+							<p:commandButton value="Add Recommendation"
+								actionListener="#{editKnowledgeBean.addRecommendation}"
+								update=":#{p:component('addTerm')}"
+								title="Add a recommendation for the abstract term" />
+						</p:panel>
+						<p:commandButton value="Save"
+								actionListener="#{editKnowledgeBean.saveNewAbstractTerm}"
+								update=":#{p:component('form')}"
+								title="Save the abtract term and its recommendations" />
+						<p:commandButton value="Cancel" ajax="false"
+							oncomplete="PF('addNewTermDialog').hide()" />
+
+					</p:outputPanel>
+				</p:dialog>
+
 
 			</p:panel>
 		</h:form>

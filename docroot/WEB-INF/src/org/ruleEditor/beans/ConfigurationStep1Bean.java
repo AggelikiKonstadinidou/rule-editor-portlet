@@ -63,6 +63,7 @@ public class ConfigurationStep1Bean {
 				.evaluateExpressionGet(context, "#{editKnowledgeBean}",
 						EditKnowledgeBean.class);
 		editKnowledgeBean.setRoot(new DefaultTreeNode("Json-ld",null));
+		editKnowledgeBean.init();
 //		if (selectedOption.contains("Feedback"))
 //			flag = true;
 //

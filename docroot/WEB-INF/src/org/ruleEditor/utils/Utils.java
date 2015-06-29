@@ -28,6 +28,7 @@ import javax.faces.context.FacesContext;
 import javax.portlet.PortletResponse;
 import javax.servlet.http.HttpServletResponse;
 
+import org.coode.owlapi.owlxml.renderer.OWLXMLOntologyStorer;
 import org.primefaces.model.DefaultStreamedContent;
 import org.primefaces.model.StreamedContent;
 import org.primefaces.model.diagram.DefaultDiagramModel;
@@ -45,6 +46,7 @@ import org.ruleEditor.ontology.OntologyProperty.ObjectProperty;
 import org.ruleEditor.ontology.PointElement;
 import org.ruleEditor.utils.MessageForJson.Group;
 import org.ruleEditor.utils.MessageForJson.Group.TextMessage;
+import org.ruleEditor.utils.RecommendationForJson.Recommendation;
 import org.ruleEditor.utils.Rule.RuleType;
 
 import com.github.jsonldjava.core.JsonLdApi;
@@ -155,6 +157,57 @@ public class Utils {
 
 		return json;
 
+	}
+	
+	public static String createJsonLdKnowledge(ArrayList<RecommendationForJson> terms){
+		
+		String jsonString = "";
+		JsonObject json = new JsonObject();
+		JsonObject context = new JsonObject();
+		JsonArray graph = new JsonArray();
+
+		context.add("c4a", new JsonPrimitive(Utils.prefix_c4a));
+		context.add("rdfs", new JsonPrimitive(Utils.prefix_rdfs));
+		
+		JsonObject abstractTerm = null;
+		JsonObject recommendation = null;
+		JsonArray recommendations = null;
+		
+		for(RecommendationForJson temp : terms){
+			abstractTerm = new JsonObject();
+			abstractTerm.add("@type", new JsonPrimitive("c4a:AbstractTerm"));
+			abstractTerm.add("c4a:id", new JsonPrimitive(temp.getId()));
+			abstractTerm.add("c4a:value", new JsonPrimitive(temp.isValue()));
+			abstractTerm.add("c4a:rating", new JsonPrimitive(temp.getRating()));
+			
+			recommendations = new JsonArray();
+			for(Recommendation temp2 : temp.getHasRecommendation()){
+				recommendation = new JsonObject();
+				recommendation.add("@type", new JsonPrimitive("Recommendation"));
+				recommendation.add("c4a:id", new JsonPrimitive(temp2.getId()));
+				recommendation.add("c4a:name", new JsonPrimitive(temp2.getName()));
+				recommendation.add("c4a:value", new JsonPrimitive(temp2.getValue()));
+				recommendations.add(recommendation);
+				
+			}
+			
+			abstractTerm.add("c4a:hasRecommendation", recommendations);
+			graph.add(abstractTerm);
+		}
+		
+
+		json.add("@context", context);
+		json.add("@graph", graph);
+		
+		Gson gson = new GsonBuilder().setPrettyPrinting().disableHtmlEscaping()
+				.serializeNulls()
+				.setFieldNamingPolicy(FieldNamingPolicy.UPPER_CAMEL_CASE)
+				.create();
+
+		jsonString = gson.toJson(json);
+		
+		
+		return jsonString;
 	}
 
 	public static String appendMessages(List<Message> list,
@@ -716,6 +769,12 @@ public class Utils {
 		}
 
 		return out.toString();
+	}
+	
+	public static void main(String args[]){
+		
+		
+		
 	}
 
 }
