@@ -54,8 +54,8 @@
 				<p:commandButton value="Add new Abstract Term" id="addNode"
 					oncomplete="PF('addNewTermDialog').show()"
 					update=":#{p:component('treeTable')}" />
-				<p:commandButton value="Export changes"
-					id="export" ajax="false" actionListener="#{editKnowledgeBean.exportJsonLdFile}"
+				<p:commandButton value="Export changes" id="export" ajax="false"
+					actionListener="#{editKnowledgeBean.exportJsonLdFile}"
 					title="Export the changes in a new file" />
 
 
@@ -66,12 +66,14 @@
 							rendered="#{not empty editKnowledgeBean.clonedSelectedTerm}">
 							<h:outputLabel for="id" value="ID: " />
 							<p:inputText label="Id" style="width: 300px;" id="id"
-								autocomplete="off" value="#{editKnowledgeBean.clonedSelectedTerm.id}">
+								autocomplete="off"
+								value="#{editKnowledgeBean.clonedSelectedTerm.id}">
 							</p:inputText>
 
 							<h:outputLabel for="type" value="Type " />
-							<p:selectOneMenu value="#{editKnowledgeBean.clonedSelectedTerm.type}"
-								id="type" disabled="true">
+							<p:selectOneMenu
+								value="#{editKnowledgeBean.clonedSelectedTerm.type}" id="type"
+								disabled="true">
 								<f:selectItem id="abstractTerm" itemLabel="AbstractTerm"
 									itemValue="AbstractTerm" />
 								<f:selectItem id="recommendation" itemLabel="Recommendation"
@@ -99,7 +101,46 @@
 								value="#{editKnowledgeBean.clonedSelectedTerm.rating}">
 							</p:inputText>
 						</p:panelGrid>
-						<p:commandButton value="Save edit" id="save" ajax="false"
+						<p:panel
+							rendered="#{editKnowledgeBean.clonedSelectedTerm.abstractTerm}">
+							<f:facet name="header">
+								<h:outputText value="Recommendations for the Abstract Term" />
+							</f:facet>
+							<c:forEach items="#{editKnowledgeBean.newRecommendations}"
+								var="item" varStatus="status1">
+
+								<p:panelGrid style="width:100%;margin-bottom:5px">
+
+									<p:row>
+										<p:column style="font-weight: bold;">Id
+									<p:inputText value="#{item.id}" style="width: 120px;" />
+										</p:column>
+										<p:column style="font-weight: bold;">Name
+									<p:inputText value="#{item.name}" style="width: 120px;" />
+										</p:column>
+										<p:column style="font-weight: bold;">Value
+									<p:inputText value="#{item.value}" style="width: 120px;" />
+										</p:column>
+										<p:column style="font-weight: bold;">
+											<p:commandButton value="Remove recommendation"
+												rendered="#{editKnowledgeBean.newRecommendations.size() > 1}"
+												update="editTerm"
+												action="#{editKnowledgeBean.removeNewRecommendation}">
+												<f:setPropertyActionListener value="#{item}"
+													target="#{editKnowledgeBean.recommendationForRemove}" />
+											</p:commandButton>
+										</p:column>
+									</p:row>
+								</p:panelGrid>
+
+							</c:forEach>
+
+							<p:commandButton value="Add Recommendation"
+								actionListener="#{editKnowledgeBean.addNewRecommendation}"
+								update=":#{p:component('editTerm')}"
+								title="Add a recommendation for the abstract term" />
+						</p:panel>
+						<p:commandButton value="Save edit" id="save"
 							oncomplete="PF('editTermDialog').hide()"
 							update=":#{p:component('treeTable')}"
 							actionListener="#{editKnowledgeBean.saveEditedTerm}" />
@@ -138,7 +179,7 @@
 								value="#{editKnowledgeBean.abstractTerm.rating}">
 							</p:inputText>
 							<!--  -->
-							</p:panelGrid>
+						</p:panelGrid>
 
 						<p:panel>
 							<f:facet name="header">
@@ -180,9 +221,9 @@
 								title="Add a recommendation for the abstract term" />
 						</p:panel>
 						<p:commandButton value="Save"
-								actionListener="#{editKnowledgeBean.saveNewAbstractTerm}"
-								update=":#{p:component('form')}"
-								title="Save the abtract term and its recommendations" />
+							actionListener="#{editKnowledgeBean.saveNewAbstractTerm}"
+							update=":#{p:component('form')}"
+							title="Save the abtract term and its recommendations" />
 						<p:commandButton value="Cancel" ajax="false"
 							oncomplete="PF('addNewTermDialog').hide()" />
 

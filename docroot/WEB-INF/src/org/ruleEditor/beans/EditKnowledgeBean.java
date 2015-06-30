@@ -42,6 +42,8 @@ public class EditKnowledgeBean {
 	private Term clonedSelectedTerm;
 	private RecommendationForJson abstractTerm;
 	private Recommendation recommendationForRemove;
+	private ArrayList<Recommendation> newRecommendations;
+	private Recommendation testRec;
 
 	public EditKnowledgeBean() {
 		super();
@@ -63,6 +65,9 @@ public class EditKnowledgeBean {
 		recommendationForRemove = abstractTerm.new Recommendation("", "", "",
 				"");
 		abstractTerm.getHasRecommendation().add(recommendationForRemove);
+		newRecommendations = new ArrayList<Recommendation>();
+		newRecommendations.add(recommendationForRemove);
+		testRec = abstractTerm.new Recommendation("Recommendation", "", "", "");
 
 	}
 
@@ -101,13 +106,15 @@ public class EditKnowledgeBean {
 
 	}
 
-	// TODO, save / remove the terms from the json ld
+	// save the terms that have been edited to the json ld
 	public void saveEditedTerm() throws IOException {
 
 		if (clonedSelectedTerm.getType().equalsIgnoreCase("AbstractTerm")) {
 
-			if (!clonedSelectedTerm.equals(selectedTerm)) {
+			if (!clonedSelectedTerm.equals(selectedTerm) || 
+					(newRecommendations.size()>=1 && !newRecommendations.contains(testRec) )) {
 
+			//make any updates in the original term
 				for (RecommendationForJson temp : terms) {
 					if (temp.getId().equalsIgnoreCase(selectedTerm.getId())
 							&& temp.getRating() == Integer
@@ -115,13 +122,31 @@ public class EditKnowledgeBean {
 							&& temp.isValue() == Boolean
 									.parseBoolean(selectedTerm.getValue())) {
 						temp.setId(clonedSelectedTerm.getId());
+						temp.setValue(Boolean.parseBoolean(clonedSelectedTerm.getValue()));
 						temp.setRating(Integer.parseInt(clonedSelectedTerm
 								.getRating()));
+
+						//add new recommendation to the list of recommendations
+						//of the abstract term
+						if (newRecommendations.size() >= 1) {
+							for (Recommendation rec : newRecommendations) {
+								if (!rec.getId().isEmpty()
+										&& !rec.getName().isEmpty()
+										&& !rec.getValue().isEmpty()) {
+									temp.getHasRecommendation().add(rec);
+								}
+							}
+						}
+						
+						// clear list of new recommendations
+						newRecommendations = new ArrayList<Recommendation>();
+						newRecommendations.add(testRec);
 						break;
 					}
 				}
 			}
 
+		//make any updates in the original recommendation term
 		} else if (clonedSelectedTerm.getType().equalsIgnoreCase(
 				"Recommendation")) {
 
@@ -156,7 +181,7 @@ public class EditKnowledgeBean {
 
 	}
 
-	// TODO, save / remove the terms from the json ld
+	// remove the terms from the json ld
 	public void removeExistingTerm() throws IOException {
 
 		int indexForRemove = -1;
@@ -200,14 +225,15 @@ public class EditKnowledgeBean {
 			}
 
 		}
-		
+
 		createJsonTree();
 	}
 
 	public void exportJsonLdFile() throws IOException {
 
 		String jsonString = Utils.createJsonLdKnowledge(terms);
-		FileDownloadController.writeGsonAndExportFile("JsonLd", jsonString);
+		FileDownloadController.writeGsonAndExportFile(
+				"explodePreferenceTerms.jsonld", jsonString);
 	}
 
 	public void saveNewAbstractTerm() throws IOException {
@@ -220,6 +246,16 @@ public class EditKnowledgeBean {
 				new ArrayList<Recommendation>());
 		addRecommendation();
 
+	}
+
+	public void addNewRecommendation() {
+		Recommendation recommendation = abstractTerm.new Recommendation(
+				"Recommendation", "", "", "");
+		newRecommendations.add(recommendation);
+	}
+
+	public void removeNewRecommendation() {
+		newRecommendations.remove(recommendationForRemove);
 	}
 
 	public void addRecommendation() {
@@ -265,12 +301,12 @@ public class EditKnowledgeBean {
 	}
 
 	public Term getSelectedTerm() {
-		clonedSelectedTerm = selectedTerm.clone();
 		return selectedTerm;
 	}
 
 	public void setSelectedTerm(Term selectedTerm) {
 		this.selectedTerm = selectedTerm;
+		this.clonedSelectedTerm = selectedTerm.clone();
 	}
 
 	public RecommendationForJson getAbstractTerm() {
@@ -291,14 +327,20 @@ public class EditKnowledgeBean {
 	}
 
 	public Term getClonedSelectedTerm() {
-		if (selectedTerm != null && clonedSelectedTerm == null)
-			this.clonedSelectedTerm = selectedTerm.clone();
-
 		return clonedSelectedTerm;
 	}
 
 	public void setClonedSelectedTerm(Term clonedSelectedTerm) {
 		this.clonedSelectedTerm = clonedSelectedTerm;
+	}
+
+	public ArrayList<Recommendation> getNewRecommendations() {
+		return newRecommendations;
+	}
+
+	public void setNewRecommendations(
+			ArrayList<Recommendation> newRecommendations) {
+		this.newRecommendations = newRecommendations;
 	}
 
 }
