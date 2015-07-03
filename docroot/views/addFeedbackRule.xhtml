@@ -136,6 +136,10 @@
 									<h:outputText label="value" rendered="#{item.editValue}"
 										id="value" style="width: 80px;" autocomplete="off"
 										value="Value: #{item.property.value}" />
+										
+									<h:outputText label="value" rendered="#{item.method.flag}"
+											style="width: 80px;" autocomplete="off"
+											value="Value: #{item.method.helpString}" />
 
 									<p:commandButton oncomplete="PF('editDialog').show()"
 										actionListener="#{addNewRuleBean.editNode}" title="View"
@@ -204,9 +208,16 @@
 						id="watermarkValue" />
 					<!--  	<h:outputText value="Value: " id="clonedValue" required="false"
 						rendered="#{addNewRuleBean.cloneSelectedNode.editValue}" />-->
+					<h:outputText value="Value: " id="helpStr" required="false"
+						rendered="#{addNewRuleBean.cloneSelectedNode.method.flag}" />
+					<p:inputText
+						rendered="#{addNewRuleBean.cloneSelectedNode.method.flag}"
+						style="width: 300px;" id="helpStr1" autocomplete="off"
+						value="#{addNewRuleBean.cloneSelectedNode.method.helpString}">
+					</p:inputText>
 					<p:commandButton action="#{addNewRuleBean.saveEditOfNode}"
 						icon="ui-icon-save" title="Save changes"
-						rendered="#{addNewRuleBean.cloneSelectedNode.enableEdit}"
+						rendered="#{addNewRuleBean.cloneSelectedNode.enableEdit or addNewRuleBean.cloneSelectedNode.method.flag}"
 						update=":#{p:component('pan1')}" value="Save"
 						oncomplete="PF('editDialog').hide()">
 					</p:commandButton>

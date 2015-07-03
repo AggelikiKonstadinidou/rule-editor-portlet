@@ -454,6 +454,47 @@ public class Utils {
 		// declaration of a built in method
 		// TODO for primitive jena methods
 		else {
+			String argument = line.substring(line.indexOf("("), line.indexOf(")"));
+			String originName = line.replace(argument, "");
+			BuiltinMethod method = null;
+			//find the method object by the original name
+			for(BuiltinMethod temp : methods){
+				if(temp.getOriginalName().equals(originName)){
+					method = temp.clone();
+					break;
+				}
+			}
+			
+			element.setMethod(method);
+			element.setType(PointElement.Type.BUILTIN_METHOD);
+			element.setId(setUniqueID());
+			element.setVarName(element.getId());
+			element = setPosition(element);
+			element.setPanel(panel);
+			
+			//TODO find the category of the method
+			
+			if(RuleCreationUtilities.categoryOfMethods_1.contains(originName)){
+				// the argument contains variables
+				String[] variables = argument.split(",");
+				PointElement connection = new PointElement();
+				for (int i = 0; i < variables.length; i++) {
+					connection = findElementByVarName(variables[i]);
+					element.getConnections().add(connection);
+				}
+				
+			}else if(RuleCreationUtilities.categoryOfMethods_2.contains(originName)){
+				
+			}else if(RuleCreationUtilities.categoryOfMethods_3.contains(originName)){
+				
+			}else if(RuleCreationUtilities.categoryOfMethods_4.contains(originName)){
+				
+			}
+			
+			
+			
+			
+			
 
 		}
 
@@ -510,6 +551,52 @@ public class Utils {
 				}
 			}
 		}
+	}
+	
+	public static PointElement findElementByVarName(String name) {
+
+		PointElement element = new PointElement();
+
+		for (PointElement pel : conditions) {
+			if (pel.getType() == PointElement.Type.DATA_PROPERTY) {
+
+				DataProperty dataProperty = (DataProperty) pel.getProperty();
+				if (dataProperty.getValue().equals(name)) {
+					element = pel.clone();
+					break;
+				}
+
+			} else if (pel.getType() == PointElement.Type.OBJECT_PROPERTY) {
+
+				if (pel.getConnections().get(0).getVarName().equals(name)) {
+					element = pel.clone();
+					break;
+				}
+
+			}
+		}
+
+		if (element.getId().isEmpty())
+			for (PointElement pel : conclusions) {
+				if (pel.getType() == PointElement.Type.DATA_PROPERTY) {
+
+					DataProperty dataProperty = (DataProperty) pel
+							.getProperty();
+					if (dataProperty.getValue().equals(name)) {
+						element = pel.clone();
+						break;
+					}
+
+				} else if (pel.getType() == PointElement.Type.OBJECT_PROPERTY) {
+
+					if (pel.getConnections().get(0).getVarName().equals(name)) {
+						element = pel.clone();
+						break;
+					}
+
+				}
+			}
+		return element;
 	}
 
 	public static PointElement findElementClassByVarName(String name) {

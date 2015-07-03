@@ -3,6 +3,8 @@ package org.ruleEditor.utils;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 import javax.faces.application.FacesMessage;
 import javax.faces.context.FacesContext;
@@ -17,6 +19,21 @@ public class RuleCreationUtilities {
 
 	public static String prefix_c4a = "@prefix c4a: <http://rbmm.org/schemas/cloud4all/0.1/>.";
 	public static String prefix_rdfs = "@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>.";
+
+	// the arguments of the method are variables separated with comma
+	public static List<String> categoryOfMethods_1 = Arrays.asList("isLiteral",
+			"notLiteral", "isFunctor", "notFunctor", "isBNode", "notBNode",
+			"equal", "notEqual", "lessThan", "greaterThan", "le", "ge");
+	// the argument of the method is a triple
+	public static List<String> categoryOfMethods_2 = Arrays.asList("noValue");
+	// the arguments of the method are variables separated with comma
+	// after the process the final result is set to a variable
+	public static List<String> categoryOfMethods_3 = Arrays.asList("strConcat",
+			"uriConcat", "sum", "addOne", "difference", "min", "max",
+			"product", "quotient");
+	// the argument of the method is a string that is filled by the user
+	public static List<String> categoryOfMethods_4 = Arrays.asList("print",
+			"drop", "makeSkolem");
 
 	public static void saveRule(String ruleName, String fileName,
 			ArrayList<PointElement> conditions,
@@ -71,7 +88,8 @@ public class RuleCreationUtilities {
 	}
 
 	public static String createFeedBackRule(String className, String scope,
-			String id, ArrayList<PointElement> conditions, ArrayList<PointElement> conclusions,String ruleName) {
+			String id, ArrayList<PointElement> conditions,
+			ArrayList<PointElement> conclusions, String ruleName) {
 
 		String rule = prefix_c4a + "\n" + prefix_rdfs + "\n\n" + "[" + ruleName
 				+ "\n";
@@ -109,13 +127,13 @@ public class RuleCreationUtilities {
 
 				OntologyProperty property = (DataProperty) el.getProperty();
 				String value = ((DataProperty) property).getValue();
-				if(!value.contains("?"))
-					value = "\""+value+"\"";
-				
+				if (!value.contains("?"))
+					value = "\"" + value + "\"";
+
 				if (el.getConnections().size() > 0)
 					rule = rule + "(" + el.getConnections().get(0).getVarName()
-							+ " c4a:" + el.getElementName() + " "
-							+ value + ")\n";
+							+ " c4a:" + el.getElementName() + " " + value
+							+ ")\n";
 
 			} else if (el.getType() == PointElement.Type.OBJECT_PROPERTY) {
 
@@ -150,13 +168,48 @@ public class RuleCreationUtilities {
 
 			} else if (el.getType() == PointElement.Type.BUILTIN_METHOD) {
 
-				rule = rule + el.getMethod().getOriginalName() + "(";
-				for (PointElement temp : el.getConnections()) {
-					DataProperty property = (DataProperty) temp.getProperty();
-					rule = rule + property.getValue() + ",";
-				}
+				String originName = el.getMethod().getOriginalName();
 
-				rule = rule.substring(0, rule.length() - 1);
+				rule = rule + el.getMethod().getOriginalName() + "(";
+				if (categoryOfMethods_1.contains(originName)) {
+
+					for (PointElement temp : el.getConnections()) {
+						DataProperty property = (DataProperty) temp
+								.getProperty();
+						rule = rule + property.getValue() + ",";
+					}
+
+					rule = rule.substring(0, rule.length() - 1);
+
+				} else if (categoryOfMethods_2.contains(originName)) {
+
+					// TODO create the triple
+					if (el.getConnections().size() > 0)
+						if (el.getConnections().get(0).getProperty() instanceof DataProperty) {
+
+							DataProperty property = (DataProperty) el
+									.getConnections().get(0).getProperty();
+							PointElement connectedEl = el.getConnections().get(
+									0);
+							rule = rule
+									+ connectedEl.getConnections().get(0)
+											.getVarName() + " c4a:"
+									+ property.getPropertyName() + " "
+									+ property.getValue();
+
+						}
+
+				} else if (categoryOfMethods_4.contains(originName)) {
+
+					if (!el.getMethod().getHelpString().isEmpty()
+							&& !originName.equals("print"))
+						rule = rule + el.getMethod().getHelpString();
+					else if (!el.getMethod().getHelpString().isEmpty()
+							&& originName.equals("print"))
+						rule = rule + "\"" + el.getMethod().getHelpString()
+								+ "\"";
+
+				}
 				rule = rule + ")\n";
 			}
 

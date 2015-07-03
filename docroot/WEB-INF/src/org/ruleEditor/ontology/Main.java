@@ -112,19 +112,19 @@ public class Main {
 		List<BuiltinMethod> list = new ArrayList<BuiltinMethod>();
 
 		BuiltinMethod test1 = new BuiltinMethod(
-				"equals",
-				"equals",
+				"equal",
+				"equal",
 				"Test if x=y. "
 						+ "The equality test is semantic equality so that, for example,"
 						+ " the xsd:int 1 and the xsd:decimal 1 would test equal.",
-				4, Type.DATA_PROPERTY);
+				2, Type.DATA_PROPERTY);
 		BuiltinMethod test2 = new BuiltinMethod(
-				"notEquals",
-				"notEquals",
+				"notEqual",
+				"notEqual",
 				"Test if x != y. "
 						+ "The equality test is semantic equality so that, for example,"
 						+ " the xsd:int 1 and the xsd:decimal 1 would test equal.",
-				4, Type.DATA_PROPERTY);
+				2, Type.DATA_PROPERTY);
 		//-------------------------------------------------
 		BuiltinMethod test4 = new BuiltinMethod("noValue", "noValue",
 				"True if there is no known triple (x, p, ) or (x, p, v) in the model or the explicit forward deductions so far.", 1, Type.DATA_PROPERTY);
@@ -150,11 +150,13 @@ public class Main {
 				"Test whether the single argument is not a blank-node", 1,
 				Type.DATA_PROPERTY);
 		//-------------------------------------------------------
+		
+		//test an h klassi exei antistoixithei h oxi se variable
 		BuiltinMethod test11 = new BuiltinMethod("bound", "bound",
-				"Test if all of the arguments are bound variables", 1,
+				"Test if all of the arguments are bound variables", 100,
 				Type.DATA_PROPERTY);
 		BuiltinMethod test12 = new BuiltinMethod("unbound", "unbound",
-				"Test if all of the arguments are not bound variables", 1,
+				"Test if all of the arguments are not bound variables", 100,
 				Type.DATA_PROPERTY);
 		//-----------------------------------------------------------
 		BuiltinMethod test13 = new BuiltinMethod(
@@ -162,51 +164,51 @@ public class Main {
 				"lessThan",
 				"Test if x is < y."
 						+ " Only passes if both x and y are numbers or time instants (can be integer or floating point or XSDDateTime).",
-				1, Type.DATA_PROPERTY);
+				2, Type.DATA_PROPERTY);
 		BuiltinMethod test14 = new BuiltinMethod(
 				"greaterThan",
 				"greaterThan",
 				"Test if x is > y."
 						+ " Only passes if both x and y are numbers or time instants (can be integer or floating point or XSDDateTime).",
-				1, Type.DATA_PROPERTY);
+				2, Type.DATA_PROPERTY);
 		BuiltinMethod test15 = new BuiltinMethod(
 				"le",
 				"le",
 				"Test if x is <= y."
 						+ " Only passes if both x and y are numbers or time instants (can be integer or floating point or XSDDateTime).",
-				1, Type.DATA_PROPERTY);
+				2, Type.DATA_PROPERTY);
 		BuiltinMethod test16 = new BuiltinMethod(
 				"ge",
 				"ge",
 				"Test if x is >= y."
 						+ " Only passes if both x and y are numbers or time instants (can be integer or floating point or XSDDateTime).",
-				1, Type.DATA_PROPERTY);
+				2, Type.DATA_PROPERTY);
 		
 		//------------------------------------------------------------
 		BuiltinMethod test17 = new BuiltinMethod("sum", "sum",
-				"Sets c to be (a+b).", 1, Type.DATA_PROPERTY);
+				"Sets c to be (a+b).", 3, Type.DATA_PROPERTY);
 		BuiltinMethod test18 = new BuiltinMethod("addOne", "addOne",
-				"Sets c to be (a+1).", 1, Type.DATA_PROPERTY);
+				"Sets c to be (a+1).", 2, Type.DATA_PROPERTY);
 		BuiltinMethod test19 = new BuiltinMethod("difference", "difference",
-				"Sets c to be (a-b).", 1, Type.DATA_PROPERTY);
+				"Sets c to be (a-b).", 3, Type.DATA_PROPERTY);
 		BuiltinMethod test20 = new BuiltinMethod("min", "min",
-				"Sets c to be min(a,b).", 1, Type.DATA_PROPERTY);
+				"Sets c to be min(a,b).", 3, Type.DATA_PROPERTY);
 		BuiltinMethod test21 = new BuiltinMethod("max", "max",
-				"Sets c to be max(a,b)", 1, Type.DATA_PROPERTY);
+				"Sets c to be max(a,b)", 3, Type.DATA_PROPERTY);
 		BuiltinMethod test22 = new BuiltinMethod("product", "product",
-				"Sets c to be (ab).", 1, Type.DATA_PROPERTY);
+				"Sets c to be (ab).", 3, Type.DATA_PROPERTY);
 		BuiltinMethod test23 = new BuiltinMethod("quotient", "quotient",
-				"Sets c to be (a/b).", 1, Type.DATA_PROPERTY);
+				"Sets c to be (a/b).", 3, Type.DATA_PROPERTY);
 		
 		//---------------------------------------------------------------
 		BuiltinMethod test24 = new BuiltinMethod("strConcat", "strConcat",
 				"Concatenates the lexical form of all the arguments except the last,"
 						+ " then binds the last argument to a plain literal "
-						+ " with that lexical form.", 1, Type.DATA_PROPERTY);
+						+ " with that lexical form.", 100, Type.DATA_PROPERTY);
 		BuiltinMethod test25 = new BuiltinMethod("uriConcat", "uriConcat",
 				"Concatenates the lexical form of all the arguments except the last,"
 						+ " then binds the last argument to"
-						+ " a URI node with that lexical form.", 1,
+						+ " a URI node with that lexical form.", 100,
 				Type.DATA_PROPERTY);	
 		//---------------------------------------------------------------
 		//TODO
@@ -227,27 +229,40 @@ public class Main {
 				"makeInstance",
 				"makeInstance",
 				"Binds ?v to be a blank node which is asserted as the value of the ?p property on resource ?x and optionally has type ?t.",
-				1, Type.DATA_PROPERTY);
+				2, Type.DATA_PROPERTY);
 		//--------------------------------------------------------------
+		
 		BuiltinMethod test30 = new BuiltinMethod("makeSkolem", "makeSkolem",
 				"Binds ?x to be a blank node."
 				+ " The blank node is generated based on the values of the"
 				+ " remain ?vi arguments, so the same combination of arguments"
-				+ " will generate the same bNode.", 1, Type.DATA_PROPERTY);
-		
+				+ " will generate the same bNode.", 2, Type.CLASS);
+		test30.setFlag(true);
+		test30.setWatermarkDescription("Parameters : ?variable_name_of_new_Node,"
+				+ "?variable_name_of_classA,?variable_name_of_ClassB,...");
 		//----------------------------------------------------------------
+		
+		//TODO: they remove statements, how can we handle it?
 		BuiltinMethod test31 = new BuiltinMethod("remove", "remove",
 				"Remove the statement (triple) which caused the"
 				+ " n'th body term of this (forward-only) rule to match."
 				+ " Remove will propagate the change to other consequent "
 				+ "rules including the firing rule (which must thus be guarded"
-				+ " by some other clauses).", 1, Type.DATA_PROPERTY);
+				+ " by some other clauses).", 100, Type.DATA_PROPERTY);
 		BuiltinMethod test32 = new BuiltinMethod("drop", "drop",
 				"Drop will silently remove the triple(s) "
 				+ "from the graph but not fire any rules as a consequence",
-				1, Type.DATA_PROPERTY);
+				100, Type.DATA_PROPERTY);
+		
+		test32.setFlag(true);
+		test32.setWatermarkDescription("List the number of connections to be removed");
 		//------------------------------------------------------------------
 		
+		BuiltinMethod test35 = new BuiltinMethod("print", "print",
+				"Print (to standard out) a representation of each argument.", 1, Type.DATA_PROPERTY);
+		test35.setFlag(true);
+		test35.setWatermarkDescription("Text to be printed");
+	/**	
 		BuiltinMethod test33 = new BuiltinMethod("isDType", "isDType",
 				"Tests if literal ?l is an instance of the datatype defined by resource ?t.", 1, Type.DATA_PROPERTY);
 		BuiltinMethod test34 = new BuiltinMethod("notDType", "notDType",
@@ -299,14 +314,20 @@ public class Main {
 				+ " This is useful to enable non-monotonic forward rules to define flag"
 				+ " predicates which are only used for inference control and do not \"pollute\""
 				+ " the inference results.", 1, Type.DATA_PROPERTY);
+		**/
+//		list.add(test1);list.add(test2);list.add(test4);list.add(test5);list.add(test6);
+//		list.add(test7);list.add(test8);list.add(test9);list.add(test10);list.add(test11);list.add(test12);
+//		list.add(test13);list.add(test14);list.add(test15);list.add(test16);list.add(test17);list.add(test18);
+//		list.add(test19);list.add(test20);list.add(test21);list.add(test22);list.add(test23);list.add(test24);list.add(test25);list.add(test26);list.add(test27);
+//		list.add(test28);list.add(test29);list.add(test30);list.add(test31);list.add(test32);list.add(test33);
+//		list.add(test34);list.add(test35);list.add(test36);list.add(test37);list.add(test38);list.add(test39);
+//		list.add(test40);list.add(test41);list.add(test42);list.add(test43);list.add(test44);list.add(test45);list.add(test46);
 		
 		list.add(test1);list.add(test2);list.add(test4);list.add(test5);list.add(test6);
 		list.add(test7);list.add(test8);list.add(test9);list.add(test10);list.add(test11);list.add(test12);
 		list.add(test13);list.add(test14);list.add(test15);list.add(test16);list.add(test17);list.add(test18);
 		list.add(test19);list.add(test20);list.add(test21);list.add(test22);list.add(test23);list.add(test24);list.add(test25);list.add(test26);list.add(test27);
-		list.add(test28);list.add(test29);list.add(test30);list.add(test31);list.add(test32);list.add(test33);
-		list.add(test34);list.add(test35);list.add(test36);list.add(test37);list.add(test38);list.add(test39);
-		list.add(test40);list.add(test41);list.add(test42);list.add(test43);list.add(test44);list.add(test45);list.add(test46);
+		list.add(test28);list.add(test29);list.add(test30);list.add(test31);list.add(test32);list.add(test35);
 		
 		return list;
 	}

@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
@@ -47,6 +48,7 @@ import org.primefaces.model.diagram.endpoint.EndPoint;
 import org.primefaces.model.diagram.endpoint.EndPointAnchor;
 import org.primefaces.model.diagram.endpoint.RectangleEndPoint;
 import org.primefaces.model.diagram.overlay.ArrowOverlay;
+import org.primefaces.model.diagram.overlay.LabelOverlay;
 import org.primefaces.model.mindmap.DefaultMindmapNode;
 import org.primefaces.model.mindmap.MindmapNode;
 import org.ruleEditor.ontology.BuiltinMethod;
@@ -106,6 +108,8 @@ public class AddNewRuleBean {
     private Rule  rule = null;
     private ArrayList<Rule> existingRules = new ArrayList<Rule>();
     private boolean feedback = true;
+    private int counterOfConnections = 0;
+    private List<String> methodsWithoutConnections = Arrays.asList("makeSkolem","print","drop");
 
 	public AddNewRuleBean() {
 		super();
@@ -141,6 +145,7 @@ public class AddNewRuleBean {
 		ruleName = "";
 		oldFileName = "";
 		newFileName = "";
+		counterOfConnections = 0;
 
 		// Initialization of conditions model
 		conditionsModel = new DefaultDiagramModel();
@@ -153,6 +158,7 @@ public class AddNewRuleBean {
 		StraightConnector connector = new StraightConnector();
 		connector.setPaintStyle("{strokeStyle:'#98AFC7', lineWidth:2}");
 		connector.setHoverPaintStyle("{strokeStyle:'#5C738B'}");
+		
 
 		conditionsModel.setDefaultConnector(connector);
 
@@ -613,7 +619,9 @@ public class AddNewRuleBean {
 					this.conclusions.add(index, clonedTargetElement);
 				}
 			}
+			counterOfConnections++;
 			return 1;
+			
 		} else {
 			System.out.println("connection failed");
 		}
@@ -701,6 +709,7 @@ public class AddNewRuleBean {
 					this.conclusions.add(index, clonedTargetElement);
 				}
 			}
+			counterOfConnections++;
 			return 1;
 		} else {
 			System.out.println("connection failed");
@@ -713,29 +722,54 @@ public class AddNewRuleBean {
 	public int connectBuiltinMethodWithProperty(PointElement sourceElement,
 			PointElement targetElement) {
 		int result = 0;
-		// update the connections of the source element (built in method)
+		// update the connections of the source element (built in method), and the
+		//target element
+		boolean sourceFlag = false;
+		boolean targetFlag = false;
 		for (PointElement el : conditions) {
 			if (el.getId().equalsIgnoreCase(sourceElement.getId())) {
 				sourceElement.setConnections(el.getConnections());
-				break;
+				sourceFlag = true;
 			}
+			
+			if (el.getId().equalsIgnoreCase(targetElement.getId())) {
+				targetElement.setConnections(el.getConnections());
+				targetFlag = true;
+			}
+			
+			if(sourceFlag && targetFlag)
+				break;
 		}
 
+		if(!sourceFlag && !targetFlag)
 		for (PointElement el : conclusions) {
 			if (el.getId().equalsIgnoreCase(sourceElement.getId())) {
 				sourceElement.setConnections(el.getConnections());
-				break;
+				sourceFlag = true;
 			}
+			
+			if (el.getId().equalsIgnoreCase(targetElement.getId())) {
+				targetElement.setConnections(el.getConnections());
+				targetFlag = true;
+			}
+			
+			if(sourceFlag && targetFlag)
+				break;
 		}
 
+		//check if the connection with the target element is valid
 		PointElement clonedSourceElement = sourceElement.clone();
 		int i = clonedSourceElement.getMethod().getNumberOfParams();
-		if (clonedSourceElement.getConnections().size() < i) {
+		if (clonedSourceElement.getConnections().size() < i
+				&& targetElement.getType().equals(
+						clonedSourceElement.getMethod().getTypeOfParam())) {
 			clonedSourceElement.getConnections().add(targetElement.clone());
+			counterOfConnections++;
 			result = 1;
 		}
 
 		int index = -1;
+		if(result == 1)
 		if (sourceElement.getPanel().equals("conditions")) {
 			// remove old object from the list
 			// add the updated one
@@ -778,6 +812,18 @@ public class AddNewRuleBean {
 				conditionsModel.getConnections().remove(
 						conditionsModel.getConnections().size() - 1);
 			System.out.println("incorrect connection");
+		}else{
+			
+			// try to pass overlay to know the order of the connection
+			
+			Connection conn = conditionsModel.getConnections().get(
+					conditionsModel.getConnections().size() - 1);
+			conn.getOverlays().add(
+					new LabelOverlay("" + counterOfConnections, "flow-label",
+							0.5));
+			conditionsModel.getConnections().remove(
+					conditionsModel.getConnections().size() - 1);
+			conditionsModel.getConnections().add(conn);
 		}
 			
 		
@@ -973,9 +1019,24 @@ public class AddNewRuleBean {
 		Element element = new Element(networkElement,
 				String.valueOf(networkElement.getX() + "em"),
 				String.valueOf(networkElement.getY() + "em"));
-		EndPoint endPointCA = Utils.createRectangleEndPoint(EndPointAnchor.BOTTOM);
-		endPointCA.setSource(true);
-		element.addEndPoint(endPointCA);
+		
+		// exclude methods that cannot be connected with other nodes
+		// the user has to fill some field in order to use them
+		
+		EndPoint endPointCA = Utils
+				.createRectangleEndPoint(EndPointAnchor.CONTINUOUS);
+		if (!methodsWithoutConnections.contains(this.selectedMethod
+				.getOriginalName())) {
+
+			endPointCA.setSource(false);
+			endPointCA.setTarget(false);
+			element.addEndPoint(endPointCA);
+
+		} else {
+
+			endPointCA.setSource(true);
+			element.addEndPoint(endPointCA);
+		}
 		
 		moveToPanel(panelID, networkElement, element);
 	}
@@ -1069,12 +1130,26 @@ public class AddNewRuleBean {
 	}
 
 	public void clearPanel(String panelID) {
+		
+		// create a connector
+		StraightConnector connector = new StraightConnector();
+		connector.setPaintStyle("{strokeStyle:'#98AFC7', lineWidth:2}");
+		connector.setHoverPaintStyle("{strokeStyle:'#5C738B'}");
 
+		//clear and update the panels
 		if (panelID.contains("pan1")) {
 			conditionsModel = new DefaultDiagramModel();
+			conditionsModel.setMaxConnections(-1);
+			conditionsModel.getDefaultConnectionOverlays().add(
+					new ArrowOverlay(20, 20, 1, 1));
+			conditionsModel.setDefaultConnector(connector);
 			conditions = new ArrayList<PointElement>();
 		} else {
 			conclusionsModel = new DefaultDiagramModel();
+			conclusionsModel.setMaxConnections(-1);
+			conclusionsModel.getDefaultConnectionOverlays().add(
+					new ArrowOverlay(20, 20, 1, 1));
+			conclusionsModel.setDefaultConnector(connector);
 			conclusions = new ArrayList<PointElement>();
 		}
 	}
