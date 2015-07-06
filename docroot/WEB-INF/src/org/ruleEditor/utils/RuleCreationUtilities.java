@@ -83,8 +83,59 @@ public class RuleCreationUtilities {
 		rule = rule + convertListToRule(conclusions);
 
 		rule = rule + "]";
+		
+		if(rule.contains("noValue("))
+		   rule = removeExtraNoValueSentence(rule);
 
 		return rule;
+	}
+	
+//	public static void main(String args[]) {
+//		String rule = "[Res1bTwoSolPreferred:\n"
+//				+ "(?conflict rdf:type c4a:Conflict)\n"
+//				+"(?conflict c4a:deactivated ?x)\n"
+//				+ "(?conflict c4a:class ?class)\n"
+//				+ "(?config_b c4a:isActive \"true\")\n"
+//				+ "noValue(?conflict c4a:deactivated ?x)\n" + "->\n" + "drop(4, 5)\n"
+//				+ "]";
+//		
+//		if(rule.contains("noValue("))
+//			   rule = removeExtraNoValueSentence(rule);
+//		
+//		System.out.println(rule);
+//
+//	}
+	
+	public static String removeExtraNoValueSentence(String rule){
+		String[] splitted = rule.split("\n");
+		String noValueSentence = "";
+		ArrayList<String> indexesToRemove = new ArrayList<String>();
+		
+		for (int i = 0; i < splitted.length; i++) {
+			if (splitted[i].contains("noValue")) {
+				noValueSentence = splitted[i];
+
+				if (!noValueSentence.isEmpty())
+					noValueSentence = noValueSentence.replace("noValue", "");
+
+				for (int j = 0; j < splitted.length; j++) {
+					if (splitted[j].equalsIgnoreCase(noValueSentence)) {
+						indexesToRemove.add("" + j);
+						break;
+					}
+
+				}
+
+			}
+		}
+
+		String newRule = "";
+		for (int i = 0; i < splitted.length; i++) {
+			if (!indexesToRemove.contains("" + i))
+				newRule = newRule.concat(splitted[i]+"\n");
+		}
+		
+		return newRule;
 	}
 
 	public static String createFeedBackRule(String className, String scope,
@@ -127,7 +178,7 @@ public class RuleCreationUtilities {
 
 				OntologyProperty property = (DataProperty) el.getProperty();
 				String value = ((DataProperty) property).getValue();
-				if (!value.contains("?"))
+				if (!value.contains("?") && value.indexOf("\"")!= 0)
 					value = "\"" + value + "\"";
 
 				if (el.getConnections().size() > 0)
@@ -191,11 +242,16 @@ public class RuleCreationUtilities {
 									.getConnections().get(0).getProperty();
 							PointElement connectedEl = el.getConnections().get(
 									0);
+							
+							String value = property.getValue();
+							if (!value.contains("?") && value.indexOf("\"")!= 0)
+								value = "\"" + value + "\"";
+							
 							rule = rule
 									+ connectedEl.getConnections().get(0)
 											.getVarName() + " c4a:"
 									+ property.getPropertyName() + " "
-									+ property.getValue();
+									+ value;
 
 						}
 

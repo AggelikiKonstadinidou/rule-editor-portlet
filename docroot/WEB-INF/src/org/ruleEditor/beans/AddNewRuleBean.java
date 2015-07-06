@@ -86,30 +86,32 @@ public class AddNewRuleBean {
 	private List<DataProperty> datatypes = null;
 	private List<ObjectProperty> objects = null;
 	private List<Instance> instances = null;
-	private OntologyProperty selectedDataProperty = new OntologyProperty("","");
-	private OntologyProperty selectedObjectProperty = new OntologyProperty("","");
+	private OntologyProperty selectedDataProperty = new OntologyProperty("", "");
+	private OntologyProperty selectedObjectProperty = new OntologyProperty("",
+			"");
 	private ArrayList<PointElement> conditions;
 	private ArrayList<PointElement> conclusions;
 	private int counter;
-	private int initialX =3;
+	private int initialX = 3;
 	private int initialY = 3;
 	private int objectCounter = 0;
 	private String nodeForRemove;
 	private PointElement clonedTargetElement = null;
 	private PointElement targetElement = null;
-	private PointElement sourceElement= null;
+	private PointElement sourceElement = null;
 	private PointElement originalTargetElement = null;
 	private PointElement clonedOriginalTargetElement = null;
 	private PointElement cloneSelectedNode = null;
 	private BuiltinMethod selectedMethod = null;
 	private boolean flag = false;// false : for simple rule
-	                             // true : for feedback rule
+									// true : for feedback rule
 	private Instance selectedInstance = null;
-    private Rule  rule = null;
-    private ArrayList<Rule> existingRules = new ArrayList<Rule>();
-    private boolean feedback = true;
-    private int counterOfConnections = 0;
-    private List<String> methodsWithoutConnections = Arrays.asList("makeSkolem","print","drop");
+	private Rule rule = null;
+	private ArrayList<Rule> existingRules = new ArrayList<Rule>();
+	private boolean feedback = true;
+	private int counterOfConnections = 0;
+	private List<String> methodsWithoutConnections = Arrays.asList(
+			"makeSkolem", "print", "drop");
 
 	public AddNewRuleBean() {
 		super();
@@ -130,16 +132,16 @@ public class AddNewRuleBean {
 		conditions = new ArrayList<PointElement>();
 		conclusions = new ArrayList<PointElement>();
 		counter = 0;
-		initialX =3;
+		initialX = 3;
 		initialY = 3;
 		objectCounter = 0;
 		selectedNode = null;
-		selectedDataProperty = new OntologyProperty("","");
-		selectedObjectProperty = new OntologyProperty("","");
+		selectedDataProperty = new OntologyProperty("", "");
+		selectedObjectProperty = new OntologyProperty("", "");
 		nodeForRemove = "";
 		clonedTargetElement = new PointElement();
 		targetElement = new PointElement();
-		sourceElement= new PointElement();
+		sourceElement = new PointElement();
 		originalTargetElement = new PointElement();
 		clonedOriginalTargetElement = new PointElement();
 		ruleName = "";
@@ -158,7 +160,6 @@ public class AddNewRuleBean {
 		StraightConnector connector = new StraightConnector();
 		connector.setPaintStyle("{strokeStyle:'#98AFC7', lineWidth:2}");
 		connector.setHoverPaintStyle("{strokeStyle:'#5C738B'}");
-		
 
 		conditionsModel.setDefaultConnector(connector);
 
@@ -168,28 +169,26 @@ public class AddNewRuleBean {
 		conclusionsModel.getDefaultConnectionOverlays().add(
 				new ArrowOverlay(20, 20, 1, 1));
 		conclusionsModel.setDefaultConnector(connector);
-		
 
 	}
-	
-	public void editRule(boolean flag, ArrayList<PointElement> conditionsList,
-			ArrayList<PointElement> conclusionsList, Rule ruleForEdit, ArrayList<Rule> rulesList) {
 
-		
+	public void editRule(boolean flag, ArrayList<PointElement> conditionsList,
+			ArrayList<PointElement> conclusionsList, Rule ruleForEdit,
+			ArrayList<Rule> rulesList) {
+
 		rule = ruleForEdit;
 		if (rule.getRuleType() == Rule.RuleType.FEEDBACK) {
 			feedback = true;
 		} else
 			feedback = false;
-		
-		
+
 		existingRules = rulesList;
-		
+
 		datatypes = new ArrayList<DataProperty>();
 		objects = new ArrayList<ObjectProperty>();
 		instances = new ArrayList<Instance>();
 		conditions = (ArrayList<PointElement>) conditionsList.clone();
-		conclusions =(ArrayList<PointElement>) conclusionsList.clone();
+		conclusions = (ArrayList<PointElement>) conclusionsList.clone();
 		counter = 0;
 		initialX = 3;
 		initialY = 3;
@@ -224,18 +223,18 @@ public class AddNewRuleBean {
 		conclusionsModel.getDefaultConnectionOverlays().add(
 				new ArrowOverlay(20, 20, 1, 1));
 		conclusionsModel.setDefaultConnector(connector);
-		
-		createModels("conditions",conditions);
-		createModels("conclusions",conclusions);
+
+		createModels("conditions", conditions);
+		createModels("conclusions", conclusions);
 
 	}
-	
+
 	public void createModels(String panelID, ArrayList<PointElement> list) {
 
 		Element element = null;
 		EndPoint endPointCA = null;
 
-		//create the diagram models with the point elements
+		// create the diagram models with the point elements
 		for (PointElement el : list) {
 
 			element = new Element(el, String.valueOf(el.getX() + "em"),
@@ -248,12 +247,33 @@ public class AddNewRuleBean {
 				endPointCA.setSource(true);
 				element.addEndPoint(endPointCA);
 
-			} else {
+			} else if (el.getType() == Type.DATA_PROPERTY
+					|| el.getType() == Type.OBJECT_PROPERTY) {
 
 				endPointCA = Utils
 						.createDotEndPoint(EndPointAnchor.AUTO_DEFAULT);
 				endPointCA.setTarget(true);
 				element.addEndPoint(endPointCA);
+
+			} else if (el.getType() == Type.BUILTIN_METHOD) {
+
+				endPointCA = Utils
+						.createRectangleEndPoint(EndPointAnchor.CONTINUOUS);
+				if (!methodsWithoutConnections.contains(el.getMethod()
+						.getOriginalName())) {
+
+					endPointCA.setSource(false);
+					endPointCA.setTarget(false);
+					element.addEndPoint(endPointCA);
+
+				} else {
+
+					endPointCA.setSource(true);
+					element.addEndPoint(endPointCA);
+				}
+
+			} else if (el.getType() == Type.INSTANCE) {
+				// TODO
 			}
 
 			if (panelID.equalsIgnoreCase("conditions"))
@@ -261,50 +281,85 @@ public class AddNewRuleBean {
 			else
 				conclusionsModel.addElement(element);
 		}
-		
+
 		int sourceIndex = -1;
 		int targetIndex = -1;
-		//make connections between the elements of the diagram models
+		// make connections between the elements of the diagram models
 		for (PointElement el : list) {
 			if (el.getType() == Type.OBJECT_PROPERTY
-					|| el.getType() == Type.DATA_PROPERTY) {
+					|| el.getType() == Type.DATA_PROPERTY
+					|| el.getType() == Type.BUILTIN_METHOD) {
 
 				targetIndex = findIndexOfElementByPointElement(el,
 						conditionsModel);
-				
+
+				boolean flag = false;
 				for (PointElement temp : el.getConnections()) {
 
 					sourceIndex = findIndexOfElementByPointElement(temp,
 							conditionsModel);
 
-					if (sourceIndex == -1)
+					if (sourceIndex == -1) {
 						sourceIndex = findIndexOfElementByPointElement(temp,
 								conclusionsModel);
+						flag = true;
+					}
 
 					if (panelID.equalsIgnoreCase("conclusions"))
 						targetIndex = findIndexOfElementByPointElement(el,
 								conclusionsModel);
 
-					if (panelID.equalsIgnoreCase("conditions"))
-						conditionsModel.connect(new Connection(conditionsModel
-								.getElements().get(sourceIndex).getEndPoints()
-								.get(0), conditionsModel.getElements()
-								.get(targetIndex).getEndPoints().get(0)));
-					else
-						conclusionsModel.connect(new Connection(
-								conclusionsModel.getElements().get(sourceIndex)
-										.getEndPoints().get(0),
-								conclusionsModel.getElements().get(targetIndex)
-										.getEndPoints().get(0)));
+					if (panelID.equalsIgnoreCase("conditions")) {
+
+							conditionsModel.connect(new Connection(
+									conditionsModel.getElements()
+											.get(sourceIndex).getEndPoints()
+											.get(0), conditionsModel
+											.getElements().get(targetIndex)
+											.getEndPoints().get(0)));
+						
+					} else {
+
+						if (flag)
+							conclusionsModel.connect(new Connection(
+									conclusionsModel.getElements()
+											.get(sourceIndex).getEndPoints()
+											.get(0), conclusionsModel
+											.getElements().get(targetIndex)
+											.getEndPoints().get(0)));
+						else {
+							
+							//a conclusion method/property has to be connected with
+							// a class that exists in conditions
+							Element conclElement = new Element(temp,
+									String.valueOf(temp.getX() + "em"),
+									String.valueOf(temp.getY() + "em"));
+							EndPoint endPointCon = Utils
+									.createRectangleEndPoint(EndPointAnchor.BOTTOM);
+							endPointCon.setSource(true);
+							conclElement.addEndPoint(endPointCon);
+							conclusionsModel.addElement(conclElement);
+							
+							sourceIndex = conclusionsModel.getElements().size()-1;
+							
+							conclusionsModel.connect(new Connection(
+									conclusionsModel.getElements()
+											.get(sourceIndex).getEndPoints()
+											.get(0), conclusionsModel
+											.getElements().get(targetIndex)
+											.getEndPoints().get(0)));
+						}
+
+					}
 				}
 			}
 		}
 
 	}
-	
+
 	public int findIndexOfElementByPointElement(PointElement element,
 			DiagramModel model) {
-		
+
 		int index = -1;
 		for (Element el : model.getElements()) {
 			PointElement pel = (PointElement) el.getData();
@@ -316,13 +371,13 @@ public class AddNewRuleBean {
 
 		return index;
 	}
-	
-	public void editNode(){
+
+	public void editNode() {
 		Map<String, String> params = FacesContext.getCurrentInstance()
 				.getExternalContext().getRequestParameterMap();
 		String nodeForRemoveId = params.get("id");
 		String panel = params.get("panel");
-		
+
 		if (panel.equalsIgnoreCase("conditions")) {
 			for (PointElement el : conditions) {
 				if (el.getId().equals(nodeForRemoveId)) {
@@ -342,12 +397,12 @@ public class AddNewRuleBean {
 		}
 
 	}
-	
-	public void uploadFileForSaveAs(FileUploadEvent event) throws IOException{
+
+	public void uploadFileForSaveAs(FileUploadEvent event) throws IOException {
 		oldFileName = event.getFile().getFileName();
 		fileStream = event.getFile().getInputstream();
 	}
-	
+
 	public void saveRule() throws IOException {
 
 		if (ruleName.trim().equals("")) {
@@ -374,15 +429,14 @@ public class AddNewRuleBean {
 			return;
 		}
 
-		RuleCreationUtilities.saveRule(ruleName, finalFileName,
-				conditions, conclusions,
-				false, createNewFile, "", "",
-				"", existingRules, fileStream);
+		RuleCreationUtilities.saveRule(ruleName, finalFileName, conditions,
+				conclusions, false, createNewFile, "", "", "", existingRules,
+				fileStream);
 
 	}
-	
+
 	public void saveEditOfNode() {
-		
+
 		if (cloneSelectedNode.getType() == Type.DATA_PROPERTY) {
 
 			DataProperty property = (DataProperty) cloneSelectedNode
@@ -430,8 +484,8 @@ public class AddNewRuleBean {
 			clonedList.remove(index);
 			clonedList.add(index, cloneSelectedNode);
 		}
-		
-		//update the variable of a class in all connections
+
+		// update the variable of a class in all connections
 		int pos = -1;
 		if (cloneSelectedNode.getType() == Type.CLASS)
 			for (PointElement el : clonedList) {
@@ -478,8 +532,6 @@ public class AddNewRuleBean {
 		}
 
 	}
-	
-	
 
 	public DefaultDiagramModel getConclusionsModel() {
 		return conclusionsModel;
@@ -496,7 +548,7 @@ public class AddNewRuleBean {
 	public void setConditionsModel(DefaultDiagramModel conditionsModel) {
 		this.conditionsModel = conditionsModel;
 	}
-	
+
 	public PointElement getCloneSelectedNode() {
 		return cloneSelectedNode;
 	}
@@ -528,9 +580,9 @@ public class AddNewRuleBean {
 
 		return el;
 	}
-	
-	public void removeNode(){
-		
+
+	public void removeNode() {
+
 		String nodeForRemoveId = cloneSelectedNode.getId();
 		String panel = cloneSelectedNode.getPanel();
 
@@ -569,7 +621,7 @@ public class AddNewRuleBean {
 
 		}
 	}
-	
+
 	public int connectClassWithProperty(PointElement targetElement,
 			PointElement sourceElement) {
 		// update the list with the connections for the target element
@@ -621,14 +673,14 @@ public class AddNewRuleBean {
 			}
 			counterOfConnections++;
 			return 1;
-			
+
 		} else {
 			System.out.println("connection failed");
 		}
 		return 0;
 	}
-	
-	public int addElementForDataProperty(PointElement sourceElement){
+
+	public int addElementForDataProperty(PointElement sourceElement) {
 		DataProperty property = (DataProperty) clonedTargetElement
 				.getProperty();
 		String className = property.getClassName();
@@ -639,35 +691,34 @@ public class AddNewRuleBean {
 			clonedTargetElement.getConnections().add(sourceElement);
 			return 1;
 		}
-		
+
 		return 0;
 	}
-	
-	public int addElementForObjectProperty(PointElement sourceElement){
+
+	public int addElementForObjectProperty(PointElement sourceElement) {
 		ObjectProperty property = (ObjectProperty) clonedTargetElement
 				.getProperty();
 		String className = property.getClassName();
 		String rangeClass = property.getRangeOfClasses().get(0);
 		int maxConns = 2;
 		String name = sourceElement.getElementName();
-		
-		if(sourceElement.getType()==Type.INSTANCE)
-		   name = sourceElement.getInstance().getClassName();
-		
+
+		if (sourceElement.getType() == Type.INSTANCE)
+			name = sourceElement.getInstance().getClassName();
+
 		if (clonedTargetElement.getConnections().size() < maxConns
-				&& (className.equalsIgnoreCase(name)||
-						rangeClass.equalsIgnoreCase(name))) {
+				&& (className.equalsIgnoreCase(name) || rangeClass
+						.equalsIgnoreCase(name))) {
 			clonedTargetElement.getConnections().add(sourceElement);
 			return 1;
 		}
-	
-		
+
 		return 0;
 	}
-	
+
 	public int connectInstanceWithObjectProperty(PointElement sourceElement,
 			PointElement targetElement) {
-		
+
 		// update the list with the connections for the target element
 		for (PointElement el : conditions) {
 			if (el.getId().equalsIgnoreCase(targetElement.getId())) {
@@ -714,7 +765,6 @@ public class AddNewRuleBean {
 		} else {
 			System.out.println("connection failed");
 		}
-		
 
 		return result;
 	}
@@ -722,8 +772,9 @@ public class AddNewRuleBean {
 	public int connectBuiltinMethodWithProperty(PointElement sourceElement,
 			PointElement targetElement) {
 		int result = 0;
-		// update the connections of the source element (built in method), and the
-		//target element
+		// update the connections of the source element (built in method), and
+		// the
+		// target element
 		boolean sourceFlag = false;
 		boolean targetFlag = false;
 		for (PointElement el : conditions) {
@@ -731,33 +782,33 @@ public class AddNewRuleBean {
 				sourceElement.setConnections(el.getConnections());
 				sourceFlag = true;
 			}
-			
+
 			if (el.getId().equalsIgnoreCase(targetElement.getId())) {
 				targetElement.setConnections(el.getConnections());
 				targetFlag = true;
 			}
-			
-			if(sourceFlag && targetFlag)
+
+			if (sourceFlag && targetFlag)
 				break;
 		}
 
-		if(!sourceFlag && !targetFlag)
-		for (PointElement el : conclusions) {
-			if (el.getId().equalsIgnoreCase(sourceElement.getId())) {
-				sourceElement.setConnections(el.getConnections());
-				sourceFlag = true;
-			}
-			
-			if (el.getId().equalsIgnoreCase(targetElement.getId())) {
-				targetElement.setConnections(el.getConnections());
-				targetFlag = true;
-			}
-			
-			if(sourceFlag && targetFlag)
-				break;
-		}
+		if (!sourceFlag && !targetFlag)
+			for (PointElement el : conclusions) {
+				if (el.getId().equalsIgnoreCase(sourceElement.getId())) {
+					sourceElement.setConnections(el.getConnections());
+					sourceFlag = true;
+				}
 
-		//check if the connection with the target element is valid
+				if (el.getId().equalsIgnoreCase(targetElement.getId())) {
+					targetElement.setConnections(el.getConnections());
+					targetFlag = true;
+				}
+
+				if (sourceFlag && targetFlag)
+					break;
+			}
+
+		// check if the connection with the target element is valid
 		PointElement clonedSourceElement = sourceElement.clone();
 		int i = clonedSourceElement.getMethod().getNumberOfParams();
 		if (clonedSourceElement.getConnections().size() < i
@@ -769,53 +820,53 @@ public class AddNewRuleBean {
 		}
 
 		int index = -1;
-		if(result == 1)
-		if (sourceElement.getPanel().equals("conditions")) {
-			// remove old object from the list
-			// add the updated one
+		if (result == 1)
+			if (sourceElement.getPanel().equals("conditions")) {
+				// remove old object from the list
+				// add the updated one
 
-			index = this.conditions.indexOf(sourceElement);
-			if (index != -1) {
-				this.conditions.remove(index);
-				this.conditions.add(index, clonedSourceElement);
+				index = this.conditions.indexOf(sourceElement);
+				if (index != -1) {
+					this.conditions.remove(index);
+					this.conditions.add(index, clonedSourceElement);
+				}
+
+			} else {
+				index = this.conclusions.indexOf(sourceElement);
+				if (index != -1) {
+					this.conclusions.remove(index);
+					this.conclusions.add(index, clonedSourceElement);
+				}
 			}
 
-		} else {
-			index = this.conclusions.indexOf(sourceElement);
-			if (index != -1) {
-				this.conclusions.remove(index);
-				this.conclusions.add(index, clonedSourceElement);
-			}
-		}
-		
 		return result;
 	}
 
 	public void onConnect(ConnectEvent event) {
 
-		targetElement = (PointElement) event.getTargetElement()
-				.getData();
-		sourceElement = (PointElement) event.getSourceElement()
-				.getData();
+		targetElement = (PointElement) event.getTargetElement().getData();
+		sourceElement = (PointElement) event.getSourceElement().getData();
 		int result = 0;
 		// 1st case, connect a class with a property
 		if (sourceElement.getType() == Type.CLASS)
 			result = connectClassWithProperty(targetElement, sourceElement);
 		// 2nd case, connect a built in method with a property
 		else if (sourceElement.getType() == Type.BUILTIN_METHOD)
-			result = connectBuiltinMethodWithProperty(sourceElement, targetElement);
-		else if(sourceElement.getType() == Type.INSTANCE)
-	        result = connectInstanceWithObjectProperty(sourceElement,targetElement);
-		
+			result = connectBuiltinMethodWithProperty(sourceElement,
+					targetElement);
+		else if (sourceElement.getType() == Type.INSTANCE)
+			result = connectInstanceWithObjectProperty(sourceElement,
+					targetElement);
+
 		if (result == 0) {
 			if (conditionsModel.getConnections().size() > 0)
 				conditionsModel.getConnections().remove(
 						conditionsModel.getConnections().size() - 1);
 			System.out.println("incorrect connection");
-		}else{
-			
+		} else {
+
 			// try to pass overlay to know the order of the connection
-			
+
 			Connection conn = conditionsModel.getConnections().get(
 					conditionsModel.getConnections().size() - 1);
 			conn.getOverlays().add(
@@ -825,46 +876,43 @@ public class AddNewRuleBean {
 					conditionsModel.getConnections().size() - 1);
 			conditionsModel.getConnections().add(conn);
 		}
-			
-		
-		
+
 	}
 
 	public void onDisconnect(DisconnectEvent event) {
 		boolean flag = false;
-		
-		targetElement = (PointElement) event.getTargetElement()
-				.getData();
-		sourceElement = (PointElement) event.getSourceElement()
-				.getData();
-		
-		//update the list with the connections for the target element
-		for(PointElement el: conditions){
-			if(el.getId().equalsIgnoreCase(targetElement.getId())){
+
+		targetElement = (PointElement) event.getTargetElement().getData();
+		sourceElement = (PointElement) event.getSourceElement().getData();
+
+		// update the list with the connections for the target element
+		for (PointElement el : conditions) {
+			if (el.getId().equalsIgnoreCase(targetElement.getId())) {
 				targetElement.setConnections(el.getConnections());
 				flag = true;
 				break;
 			}
 		}
-		
-		if(!flag)
-		for(PointElement el: conclusions){
-			if(el.getId().equalsIgnoreCase(targetElement.getId())){
-				targetElement.setConnections(el.getConnections());
-				break;
-			}
-		}
-		
-		//remove the disconnected node from the connections of the property
-        int indexOfNodeToRemove = -1;
-        indexOfNodeToRemove = targetElement.getConnections().indexOf(sourceElement);
-        if(indexOfNodeToRemove!=-1)
-        	targetElement.getConnections().remove(indexOfNodeToRemove);
-        
-        //clone the old property
-        clonedTargetElement = targetElement.clone();
 
-		//add the new property node in the corresponding list
+		if (!flag)
+			for (PointElement el : conclusions) {
+				if (el.getId().equalsIgnoreCase(targetElement.getId())) {
+					targetElement.setConnections(el.getConnections());
+					break;
+				}
+			}
+
+		// remove the disconnected node from the connections of the property
+		int indexOfNodeToRemove = -1;
+		indexOfNodeToRemove = targetElement.getConnections().indexOf(
+				sourceElement);
+		if (indexOfNodeToRemove != -1)
+			targetElement.getConnections().remove(indexOfNodeToRemove);
+
+		// clone the old property
+		clonedTargetElement = targetElement.clone();
+
+		// add the new property node in the corresponding list
 		int index = -1;
 		if (flag) {
 			index = this.conditions.indexOf(targetElement);
@@ -883,13 +931,13 @@ public class AddNewRuleBean {
 	}
 
 	public void onConnectionChange(ConnectionChangeEvent event) {
-		
+
 		ArrayList<PointElement> cloneList = new ArrayList<PointElement>();
 		sourceElement = (PointElement) event.getNewSourceElement().getData();
 		targetElement = (PointElement) event.getNewTargetElement().getData();
 		originalTargetElement = (PointElement) event.getOriginalTargetElement()
 				.getData();
-		
+
 		boolean flag = Utils.findPanelOfElement(sourceElement.getVarName(),
 				conditions, conclusions);
 		if (flag)
@@ -899,8 +947,7 @@ public class AddNewRuleBean {
 
 		for (PointElement el : cloneList) {
 
-			if (el.getId().equalsIgnoreCase(
-					originalTargetElement.getId()))
+			if (el.getId().equalsIgnoreCase(originalTargetElement.getId()))
 				originalTargetElement.setConnections(el.getConnections());
 
 			if (el.getVarName().equalsIgnoreCase(targetElement.getVarName()))
@@ -915,13 +962,13 @@ public class AddNewRuleBean {
 			originalTargetElement.getConnections().remove(index);
 
 		clonedOriginalTargetElement = originalTargetElement.clone();
-		
-//		int result = 0;
-//		if (sourceElement.getType() == Type.CLASS)
-//			result = connectClassWithProperty(targetElement, sourceElement);
-//		// 2nd case, connect a built in method with a property
-//		else if (sourceElement.getType() == Type.BUILTIN_METHOD)
-//			connectBuiltinMethodWithProperty(sourceElement, targetElement);
+
+		// int result = 0;
+		// if (sourceElement.getType() == Type.CLASS)
+		// result = connectClassWithProperty(targetElement, sourceElement);
+		// // 2nd case, connect a built in method with a property
+		// else if (sourceElement.getType() == Type.BUILTIN_METHOD)
+		// connectBuiltinMethodWithProperty(sourceElement, targetElement);
 
 		clonedTargetElement = targetElement.clone();
 
@@ -934,24 +981,24 @@ public class AddNewRuleBean {
 		cloneList.remove(index);
 		cloneList.add(index, clonedTargetElement);
 
-		//update the lists
+		// update the lists
 		if (flag)
 			conditions = (ArrayList<PointElement>) cloneList.clone();
 		else
 			conclusions = (ArrayList<PointElement>) cloneList.clone();
-		
-//		if (result == 0) {
-//			if (flag && conditionsModel.getConnections().size() > 0)
-//				conditionsModel.getConnections().remove(
-//						conditionsModel.getConnections().size() - 1);
-//			else if (!flag && conclusionsModel.getConnections().size() > 0)
-//				conclusionsModel.getConnections().remove(
-//						conclusionsModel.getConnections().size() - 1);
-//
-//			System.out.println("incorrect connection");
-//
-//		}
-		
+
+		// if (result == 0) {
+		// if (flag && conditionsModel.getConnections().size() > 0)
+		// conditionsModel.getConnections().remove(
+		// conditionsModel.getConnections().size() - 1);
+		// else if (!flag && conclusionsModel.getConnections().size() > 0)
+		// conclusionsModel.getConnections().remove(
+		// conclusionsModel.getConnections().size() - 1);
+		//
+		// System.out.println("incorrect connection");
+		//
+		// }
+
 	}
 
 	private void createOntologyTree(Ontology ontology) {
@@ -1007,10 +1054,10 @@ public class AddNewRuleBean {
 		return false;
 	}
 
-	public void createMethodElement(String panelID){
+	public void createMethodElement(String panelID) {
 		PointElement networkElement = new PointElement();
-		networkElement.setElementName(this.selectedMethod
-				.getUsingName().toString());
+		networkElement.setElementName(this.selectedMethod.getUsingName()
+				.toString());
 		networkElement.setType(Type.BUILTIN_METHOD);
 		networkElement.setVarName(setVariableName());
 		networkElement.setId(networkElement.getVarName());
@@ -1019,13 +1066,13 @@ public class AddNewRuleBean {
 		Element element = new Element(networkElement,
 				String.valueOf(networkElement.getX() + "em"),
 				String.valueOf(networkElement.getY() + "em"));
-		
+
 		// exclude methods that cannot be connected with other nodes
 		// the user has to fill some field in order to use them
-		
+
 		EndPoint endPointCA = Utils
 				.createRectangleEndPoint(EndPointAnchor.CONTINUOUS);
-		if (!methodsWithoutConnections.contains(this.selectedMethod
+		if (methodsWithoutConnections.contains(this.selectedMethod
 				.getOriginalName())) {
 
 			endPointCA.setSource(false);
@@ -1037,59 +1084,61 @@ public class AddNewRuleBean {
 			endPointCA.setSource(true);
 			element.addEndPoint(endPointCA);
 		}
-		
+
 		moveToPanel(panelID, networkElement, element);
 	}
-	
-	public void createClassElement(String panelID){
+
+	public void createClassElement(String panelID) {
 		PointElement networkElement = new PointElement();
 		networkElement.setElementName(this.selectedNode.getData().toString());
 		networkElement.setType(Type.CLASS);
-		networkElement.setVarName("?"+setVariableName());
+		networkElement.setVarName("?" + setVariableName());
 		networkElement.setId(networkElement.getVarName());
 		networkElement = setPosition(networkElement);
 		Element element = new Element(networkElement,
 				String.valueOf(networkElement.getX() + "em"),
 				String.valueOf(networkElement.getY() + "em"));
-		EndPoint endPointCA = Utils.createRectangleEndPoint(EndPointAnchor.BOTTOM);
+		EndPoint endPointCA = Utils
+				.createRectangleEndPoint(EndPointAnchor.BOTTOM);
 		endPointCA.setSource(true);
 		element.addEndPoint(endPointCA);
 		moveToPanel(panelID, networkElement, element);
-		
+
 	}
-	
-	public void createInstanceElement(String panelID){
+
+	public void createInstanceElement(String panelID) {
 		PointElement networkElement = new PointElement();
 		networkElement.setElementName(this.selectedInstance.getInstanceName());
 		networkElement.setType(Type.INSTANCE);
 		networkElement.setInstance(this.selectedInstance);
-		//TODO na parei san id to swsto id to individual
-		//to var name den xreiazetai
+		// TODO na parei san id to swsto id to individual
+		// to var name den xreiazetai
 		networkElement.setVarName(this.selectedInstance.getInstanceName());
 		networkElement.setId(this.selectedInstance.getInstanceName());
 		networkElement = setPosition(networkElement);
 		Element element = new Element(networkElement,
 				String.valueOf(networkElement.getX() + "em"),
 				String.valueOf(networkElement.getY() + "em"));
-		EndPoint endPointCA = Utils.createRectangleEndPoint(EndPointAnchor.BOTTOM);
+		EndPoint endPointCA = Utils
+				.createRectangleEndPoint(EndPointAnchor.BOTTOM);
 		endPointCA.setSource(true);
 		element.addEndPoint(endPointCA);
 		moveToPanel(panelID, networkElement, element);
-		
+
 	}
-	
-	public void createPropertyElement(String panelID){
+
+	public void createPropertyElement(String panelID) {
 		OntologyProperty property = new OntologyProperty("", "");
 		Type type = Type.DATA_PROPERTY;
-		
-		if (this.getSelectedDataProperty()!=null) {
+
+		if (this.getSelectedDataProperty() != null) {
 			property = this.getSelectedDataProperty().clone();
 		} else {
 			property = this.getSelectedObjectProperty().clone();
 			type = Type.OBJECT_PROPERTY;
 		}
 
-		//create the nodeElement for conditions list
+		// create the nodeElement for conditions list
 		PointElement propElement = new PointElement();
 		propElement.setElementName(property.getPropertyName());
 		propElement.setVarName(setVariableName());
@@ -1097,22 +1146,21 @@ public class AddNewRuleBean {
 		propElement = setPosition(propElement);
 		propElement.setType(type);
 		propElement.setProperty(property);
-		
-		//create element for the model diagram
-		Element element = new Element(propElement,
-				String.valueOf(propElement.getX() + "em"),
-				String.valueOf(propElement.getY() + "em"));
-		EndPoint endPointCA = Utils.createDotEndPoint(EndPointAnchor.AUTO_DEFAULT);
+
+		// create element for the model diagram
+		Element element = new Element(propElement, String.valueOf(propElement
+				.getX() + "em"), String.valueOf(propElement.getY() + "em"));
+		EndPoint endPointCA = Utils
+				.createDotEndPoint(EndPointAnchor.AUTO_DEFAULT);
 		endPointCA.setTarget(true);
 		element.addEndPoint(endPointCA);
-		 
+
 		moveToPanel(panelID, propElement, element);
-		
+
 		this.selectedDataProperty = null;
 		this.selectedObjectProperty = null;
-		
-	}
 
+	}
 
 	public void moveToPanel(String panelID, PointElement networkElement,
 			Element element) {
@@ -1130,13 +1178,13 @@ public class AddNewRuleBean {
 	}
 
 	public void clearPanel(String panelID) {
-		
+
 		// create a connector
 		StraightConnector connector = new StraightConnector();
 		connector.setPaintStyle("{strokeStyle:'#98AFC7', lineWidth:2}");
 		connector.setHoverPaintStyle("{strokeStyle:'#5C738B'}");
 
-		//clear and update the panels
+		// clear and update the panels
 		if (panelID.contains("pan1")) {
 			conditionsModel = new DefaultDiagramModel();
 			conditionsModel.setMaxConnections(-1);
@@ -1154,11 +1202,9 @@ public class AddNewRuleBean {
 		}
 	}
 
-	public String setVariableName(){
-		return "X_"+counter++;
+	public String setVariableName() {
+		return "X_" + counter++;
 	}
-	
-	
 
 	public Main getMain() {
 		return main;
@@ -1208,7 +1254,6 @@ public class AddNewRuleBean {
 		this.instances = instances;
 	}
 
-	
 	public ArrayList<PointElement> getConditions() {
 		return conditions;
 	}
@@ -1237,7 +1282,8 @@ public class AddNewRuleBean {
 		return selectedObjectProperty;
 	}
 
-	public void setSelectedObjectProperty(OntologyProperty selectedObjectProperty) {
+	public void setSelectedObjectProperty(
+			OntologyProperty selectedObjectProperty) {
 		this.selectedObjectProperty = selectedObjectProperty;
 	}
 
@@ -1320,6 +1366,5 @@ public class AddNewRuleBean {
 	public void setOldFileName(String oldFileName) {
 		this.oldFileName = oldFileName;
 	}
-	
-	
+
 }

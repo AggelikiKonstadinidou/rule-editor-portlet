@@ -152,7 +152,7 @@ public class Ontology implements Serializable {
 			dataProp.setDataRange("string");
 
 			if (s.equalsIgnoreCase("isActive")
-					|| s.equalsIgnoreCase("solutionIsPreferred"))
+					|| s.equalsIgnoreCase("solPreferred"))
 				dataProp.setDataRange("boolean");
 
 			dataProp.setValue("empty");
@@ -219,12 +219,12 @@ public class Ontology implements Serializable {
 				"hasCapabilitiesTransformations", "hasContraints");
 		List<String> installedSolution = Arrays.asList("name", "id");
 		List<String> preference = Arrays.asList("id", "name", "type", "value");
-		List<String> metadata = Arrays.asList("value", "type");
+		List<String> metadata = Arrays.asList("value", "type","scope");
 		List<String> setting = Arrays.asList("name", "id", "description",
 				"refersTo", "value");
 		List<String> inferredConfiguration = Arrays.asList("id", "name");
 		List<String> configuration = Arrays.asList("id", "name", "isActive",
-				"solutionIsPreferred");
+				"solPreferred","refersTo");
 		List<String> conflict = Arrays.asList("id", "name", "class");
 		List<String> conflictResolution = Arrays.asList("id", "name");
 		List<String> preferenceSet = new ArrayList<String>();
@@ -274,7 +274,7 @@ public class Ontology implements Serializable {
 		List<String> solutions = Arrays.asList("settings_Settings",
 				"runsOnDevice_Devices", "runsOnPlatform_Platforms");
 		List<String> setting = new ArrayList<String>();
-		List<String> metadata = Arrays.asList("scope_?");
+		List<String> metadata = new ArrayList<String>();
 		List<String> conflict = Arrays.asList("hasResolution_?",
 				"refersTo_Solutions");
 		List<String> preferenceSet = Arrays.asList("hasMetadata_Metadata",

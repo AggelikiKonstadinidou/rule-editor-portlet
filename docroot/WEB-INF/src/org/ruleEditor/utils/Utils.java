@@ -73,8 +73,8 @@ public class Utils {
 	private static int initialY = 3;
 	private static int objectCounter = 0;
 	private static int counter = 0;
-	private static List<PointElement> conditions = new ArrayList<PointElement>();
-	private static List<PointElement> conclusions = new ArrayList<PointElement>();
+	private static List<PointElement> conditions;
+	private static List<PointElement> conclusions;
 
 	public static EndPoint createDotEndPoint(EndPointAnchor anchor) {
 		DotEndPoint endPoint = new DotEndPoint(anchor);
@@ -350,7 +350,7 @@ public class Utils {
 				ruleName = line.replace("[", "").replace(":", "");
 				// System.out.println(ruleName);
 
-			} else if (line.contains("]")) {
+			} else if (line.equalsIgnoreCase("]")) {
 				// System.out.println("end of rule");
 			} else if (line.contains("->")) {
 
@@ -362,6 +362,10 @@ public class Utils {
 
 			} else if (!line.isEmpty() && !line.contains(prefix_rdfs)
 					&& !line.contains(prefix_c4a)) {
+				
+				if(line.contains("]"))
+					line = line.replace("]", "");
+				
 				element = convertRuleLineToPointElement(line.trim(), classes,
 						methods, panel);
 				if (panel.equalsIgnoreCase("conditions"))
@@ -395,7 +399,7 @@ public class Utils {
 		if (line.contains("rdf:type")) {
 
 			splitted = line.split(" ");
-			varName = splitted[0].replace("(?", "");
+			varName = splitted[0].replace("(", "");
 			className = splitted[2].replace("c4a:", "").replace(")", "");
 			element.setVarName(varName);
 			element.setType(PointElement.Type.CLASS);
@@ -414,7 +418,7 @@ public class Utils {
 			element = setPosition(element);
 			element.setPanel(panel);
 			propertyName = splitted[1].replace("c4a:", "");
-			varName = splitted[0].replace("(?", "");
+			varName = splitted[0].replace("(", "");
 			// find from varName which class owns this property
 			PointElement classEl = findElementClassByVarName(varName);
 			// find what type of property is, and the whole property
@@ -424,18 +428,21 @@ public class Utils {
 			// set the type of the element according to the type of the property
 			if (property instanceof DataProperty) {
 				DataProperty dataProp = (DataProperty) property.clone();
-				dataProp.setValue(splitted[2].replace("?", "").replace(")", ""));
+				dataProp.setValue(splitted[2].replace(")", ""));
 				element.setType(PointElement.Type.DATA_PROPERTY);
 				element.setProperty(dataProp);
 				element.getConnections().add(classEl);
 			} else {
 				element.setType(PointElement.Type.OBJECT_PROPERTY);
-				String objectValue = splitted[2].replace("?", "").replace(")",
+				ObjectProperty objProp = (ObjectProperty) property.clone();
+				String objectValue = splitted[2].replace(")",
 						"");
 				PointElement objValue = findElementClassByVarName(objectValue);
 
-				if (classEl.getId().isEmpty())
+				if (classEl.getId().isEmpty()){
 					classEl.setVarName(varName);
+					classEl.setElementName(objProp.getRangeOfClasses().get(0));
+				}
 
 				element.getConnections().add(classEl);
 
@@ -454,8 +461,8 @@ public class Utils {
 		// declaration of a built in method
 		// TODO for primitive jena methods
 		else {
-			String argument = line.substring(line.indexOf("("), line.indexOf(")"));
-			String originName = line.replace(argument, "");
+			String argument = line.substring(line.indexOf("(")+1, line.indexOf(")"));
+			String originName = line.replace(argument, "").replace("(", "").replace(")", "");
 			BuiltinMethod method = null;
 			//find the method object by the original name
 			for(BuiltinMethod temp : methods){
@@ -466,6 +473,7 @@ public class Utils {
 			}
 			
 			element.setMethod(method);
+			element.setElementName(method.getUsingName());
 			element.setType(PointElement.Type.BUILTIN_METHOD);
 			element.setId(setUniqueID());
 			element.setVarName(element.getId());
@@ -479,8 +487,9 @@ public class Utils {
 				String[] variables = argument.split(",");
 				PointElement connection = new PointElement();
 				for (int i = 0; i < variables.length; i++) {
-					connection = findElementByVarName(variables[i]);
-					element.getConnections().add(connection);
+					connection = findElementByVarName(variables[i].trim());
+					if (connection != null)
+						element.getConnections().add(connection);
 				}
 				
 			}else if(RuleCreationUtilities.categoryOfMethods_2.contains(originName)){
@@ -561,7 +570,14 @@ public class Utils {
 			if (pel.getType() == PointElement.Type.DATA_PROPERTY) {
 
 				DataProperty dataProperty = (DataProperty) pel.getProperty();
-				if (dataProperty.getValue().equals(name)) {
+				if (dataProperty.getValue().equals(name)
+						|| dataProperty.getValue()
+								.equals(name.replace("?", ""))) {
+
+					if (!dataProperty.getValue().contains("?")
+							&& name.contains("?"))
+						dataProperty.setValue("?" + dataProperty.getValue());
+
 					element = pel.clone();
 					break;
 				}
