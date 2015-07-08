@@ -34,6 +34,7 @@ public class RuleCreationUtilities {
 	// the argument of the method is a string that is filled by the user
 	public static List<String> categoryOfMethods_4 = Arrays.asList("print",
 			"drop", "makeSkolem");
+	public static ArrayList<String> declaredVariables;
 
 	public static void saveRule(String ruleName, String fileName,
 			ArrayList<PointElement> conditions,
@@ -72,6 +73,8 @@ public class RuleCreationUtilities {
 
 	public static String createRule(ArrayList<PointElement> conditions,
 			ArrayList<PointElement> conclusions, String ruleName) {
+		
+		declaredVariables = new ArrayList<String>();
 
 		String rule = prefix_c4a + "\n" + prefix_rdfs + "\n\n" + "[" + ruleName
 				+ "\n";
@@ -83,34 +86,34 @@ public class RuleCreationUtilities {
 		rule = rule + convertListToRule(conclusions);
 
 		rule = rule + "]";
-		
-		if(rule.contains("noValue("))
-		   rule = removeExtraNoValueSentence(rule);
+
+		if (rule.contains("noValue("))
+			rule = removeExtraNoValueSentence(rule);
 
 		return rule;
 	}
-	
-//	public static void main(String args[]) {
-//		String rule = "[Res1bTwoSolPreferred:\n"
-//				+ "(?conflict rdf:type c4a:Conflict)\n"
-//				+"(?conflict c4a:deactivated ?x)\n"
-//				+ "(?conflict c4a:class ?class)\n"
-//				+ "(?config_b c4a:isActive \"true\")\n"
-//				+ "noValue(?conflict c4a:deactivated ?x)\n" + "->\n" + "drop(4, 5)\n"
-//				+ "]";
-//		
-//		if(rule.contains("noValue("))
-//			   rule = removeExtraNoValueSentence(rule);
-//		
-//		System.out.println(rule);
-//
-//	}
-	
-	public static String removeExtraNoValueSentence(String rule){
+
+	// public static void main(String args[]) {
+	// String rule = "[Res1bTwoSolPreferred:\n"
+	// + "(?conflict rdf:type c4a:Conflict)\n"
+	// +"(?conflict c4a:deactivated ?x)\n"
+	// + "(?conflict c4a:class ?class)\n"
+	// + "(?config_b c4a:isActive \"true\")\n"
+	// + "noValue(?conflict c4a:deactivated ?x)\n" + "->\n" + "drop(4, 5)\n"
+	// + "]";
+	//
+	// if(rule.contains("noValue("))
+	// rule = removeExtraNoValueSentence(rule);
+	//
+	// System.out.println(rule);
+	//
+	// }
+
+	public static String removeExtraNoValueSentence(String rule) {
 		String[] splitted = rule.split("\n");
 		String noValueSentence = "";
 		ArrayList<String> indexesToRemove = new ArrayList<String>();
-		
+
 		for (int i = 0; i < splitted.length; i++) {
 			if (splitted[i].contains("noValue")) {
 				noValueSentence = splitted[i];
@@ -132,9 +135,9 @@ public class RuleCreationUtilities {
 		String newRule = "";
 		for (int i = 0; i < splitted.length; i++) {
 			if (!indexesToRemove.contains("" + i))
-				newRule = newRule.concat(splitted[i]+"\n");
+				newRule = newRule.concat(splitted[i] + "\n");
 		}
-		
+
 		return newRule;
 	}
 
@@ -169,104 +172,113 @@ public class RuleCreationUtilities {
 
 		// work on conditions
 		for (PointElement el : list) {
-			if (el.getType() == PointElement.Type.CLASS) {
 
-				rule = rule + "(" + el.getVarName() + " rdf:type " + "c4a:"
-						+ el.getElementName() + ")\n";
-
-			} else if (el.getType() == PointElement.Type.DATA_PROPERTY) {
+			 if (el.getType() == PointElement.Type.DATA_PROPERTY) {
 
 				OntologyProperty property = (DataProperty) el.getProperty();
 				String value = ((DataProperty) property).getValue();
-				if (!value.contains("?") && value.indexOf("\"")!= 0)
+				if (!value.contains("?") && value.indexOf("\"") != 0)
 					value = "\"" + value + "\"";
 
-				if (el.getConnections().size() > 0)
-					rule = rule + "(" + el.getConnections().get(0).getVarName()
-							+ " c4a:" + el.getElementName() + " " + value
-							+ ")\n";
+				if (!declaredVariables.contains(property.getClassVar())) {
+					rule = rule + "(" + property.getClassVar()
+							+ " rdf:type c4a:" + property.getClassName()+")\n";
+					declaredVariables.add(property.getClassVar());
+				}
+
+				rule = rule + "(" + property.getClassVar() + " c4a:"
+						+ el.getElementName() + " " + value + ")\n";
 
 			} else if (el.getType() == PointElement.Type.OBJECT_PROPERTY) {
 
-				// TODO: check that there are two connections
-				// and define the correct order
-				// in case that something is missing, throw away
-				// the property node
 				OntologyProperty property = (ObjectProperty) el.getProperty();
 				String className = property.getClassName();
 				String classRange = ((ObjectProperty) property)
 						.getRangeOfClasses().get(0);
-				String source = "";
-				String target = "";
-				if (el.getConnections().size() > 1) {
-					for (PointElement temp : el.getConnections()) {
-						if (temp.getType() == Type.CLASS
+				String source = property.getClassVar();
+				String target = property.getValue();
+				
+				//check if class of source is declared
+				if (!declaredVariables.contains(source) && !source.isEmpty()) {
+					rule = rule + "(" + source
+							+ " rdf:type c4a:" + property.getClassName()+")\n";
+					declaredVariables.add(source);
+				}
+				
+				//check if class of target is declared
+				if (!declaredVariables.contains(target) && !target.isEmpty()) {
+					rule = rule + "(" + target
+							+ " rdf:type c4a:" + classRange+")\n";
+					declaredVariables.add(target);
+				}
+				
+				if (el.getConnections().size() > 0) {
+					for (PointElement temp : el.getConnections()) {		
+						if (temp.getType() == Type.INSTANCE
 								&& temp.getElementName().equalsIgnoreCase(
 										className))
-							source = temp.getVarName();
-						else if (temp.getType() == Type.CLASS
+							source = temp.getInstance().getId();
+						else if (temp.getType() == Type.INSTANCE
 								&& temp.getElementName().equalsIgnoreCase(
 										classRange))
-							target = temp.getVarName();
-						else if (temp.getType() == Type.INSTANCE)
 							target = temp.getInstance().getId();
 					}
-
-					rule = rule + "(" + source + " c4a:" + el.getElementName()
-							+ " " + target + ")\n";
-
 				}
+				
+				rule = rule + "(" + source + " c4a:" + el.getElementName()
+						+ " " + target + ")\n";
 
 			} else if (el.getType() == PointElement.Type.BUILTIN_METHOD) {
 
-				String originName = el.getMethod().getOriginalName();
-
-				rule = rule + el.getMethod().getOriginalName() + "(";
-				if (categoryOfMethods_1.contains(originName)) {
-
-					for (PointElement temp : el.getConnections()) {
-						DataProperty property = (DataProperty) temp
-								.getProperty();
-						rule = rule + property.getValue() + ",";
-					}
-
-					rule = rule.substring(0, rule.length() - 1);
-
-				} else if (categoryOfMethods_2.contains(originName)) {
-
-					// TODO create the triple
-					if (el.getConnections().size() > 0)
-						if (el.getConnections().get(0).getProperty() instanceof DataProperty) {
-
-							DataProperty property = (DataProperty) el
-									.getConnections().get(0).getProperty();
-							PointElement connectedEl = el.getConnections().get(
-									0);
-							
-							String value = property.getValue();
-							if (!value.contains("?") && value.indexOf("\"")!= 0)
-								value = "\"" + value + "\"";
-							
-							rule = rule
-									+ connectedEl.getConnections().get(0)
-											.getVarName() + " c4a:"
-									+ property.getPropertyName() + " "
-									+ value;
-
-						}
-
-				} else if (categoryOfMethods_4.contains(originName)) {
-
-					if (!el.getMethod().getHelpString().isEmpty()
-							&& !originName.equals("print"))
-						rule = rule + el.getMethod().getHelpString();
-					else if (!el.getMethod().getHelpString().isEmpty()
-							&& originName.equals("print"))
-						rule = rule + "\"" + el.getMethod().getHelpString()
-								+ "\"";
-
-				}
-				rule = rule + ")\n";
+//				String originName = el.getMethod().getOriginalName();
+//
+//				rule = rule + el.getMethod().getOriginalName() + "(";
+//				// if (categoryOfMethods_1.contains(originName)) {
+//				//
+//				// for (PointElement temp : el.getConnections()) {
+//				// DataProperty property = (DataProperty) temp
+//				// .getProperty();
+//				// rule = rule + property.getValue() + ",";
+//				// }
+//				//
+//				// rule = rule.substring(0, rule.length() - 1);
+//				//
+//				// } else
+//				if (categoryOfMethods_2.contains(originName)) {
+//
+//					// TODO create the triple
+//					if (el.getConnections().size() > 0)
+//						if (el.getConnections().get(0).getProperty() instanceof DataProperty) {
+//
+//							DataProperty property = (DataProperty) el
+//									.getConnections().get(0).getProperty();
+//							PointElement connectedEl = el.getConnections().get(
+//									0);
+//
+//							String value = property.getValue();
+//							if (!value.contains("?")
+//									&& value.indexOf("\"") != 0)
+//								value = "\"" + value + "\"";
+//
+//							rule = rule
+//									+ connectedEl.getConnections().get(0)
+//											.getVarName() + " c4a:"
+//									+ property.getPropertyName() + " " + value;
+//
+//						}
+//
+//				} else {
+//
+//					if (!el.getMethod().getHelpString().isEmpty()
+//							&& !originName.equals("print"))
+//						rule = rule + el.getMethod().getHelpString();
+//					else if (!el.getMethod().getHelpString().isEmpty()
+//							&& originName.equals("print"))
+//						rule = rule + "\"" + el.getMethod().getHelpString()
+//								+ "\"";
+//
+//				}
+//				rule = rule + ")\n";
 			}
 
 		}

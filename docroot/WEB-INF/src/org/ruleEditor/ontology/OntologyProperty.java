@@ -7,6 +7,24 @@ public class OntologyProperty {
 	private String propertyName;
 	private String className;
 	private String ontologyURI;
+	private String classVar;
+	private String value;
+
+	public String getValue() {
+		return value;
+	}
+
+	public void setValue(String value) {
+		this.value = value;
+	}
+
+	public String getClassVar() {
+		return classVar;
+	}
+
+	public void setClassVar(String classVar) {
+		this.classVar = classVar;
+	}
 
 	public String getOntologyURI() {
 		return ontologyURI;
@@ -37,6 +55,8 @@ public class OntologyProperty {
 		this.propertyName = propertyName;
 		this.className = className;
 		this.ontologyURI = "";
+		this.classVar = "empty";
+		this.value = "empty";
 	}
 	
 	@Override
@@ -56,18 +76,18 @@ public class OntologyProperty {
 		prop.setClassName(this.getClassName());
 		prop.setPropertyName(this.getPropertyName());
 		prop.setOntologyURI(this.getOntologyURI());
+		prop.setClassVar(this.getClassVar());
+		prop.setValue(this.getValue());
 		
 		return prop;
 	}
 
 	public class DataProperty extends OntologyProperty {
 		private String dataRange;
-		private String value;
 
 		public DataProperty(String propertyName, String className) {
 			super(propertyName, className);
 			this.dataRange = "";
-			this.value = "empty";
 		}
 
 		public String getDataRange() {
@@ -78,18 +98,10 @@ public class OntologyProperty {
 			this.dataRange = dataRange;
 		}
 
-		public String getValue() {
-			return value;
-		}
-
-		public void setValue(String value) {
-			this.value = value;
-		}
-		
-
 		public DataProperty clone() {
 			DataProperty dataProp = new DataProperty("","");
 			
+			dataProp.setClassVar(this.getClassVar());
 			dataProp.setClassName(this.getClassName());
 			dataProp.setPropertyName(this.getPropertyName());
 			dataProp.setDataRange(this.getDataRange());
@@ -121,6 +133,8 @@ public class OntologyProperty {
 		public ObjectProperty clone() {
 			ObjectProperty objectProp = new ObjectProperty("","");
 			
+			objectProp.setValue(this.getValue());
+			objectProp.setClassVar(this.getClassVar());
 			objectProp.setClassName(this.getClassName());
 			objectProp.setPropertyName(this.getPropertyName());
 			objectProp.setOntologyURI(this.getOntologyURI());

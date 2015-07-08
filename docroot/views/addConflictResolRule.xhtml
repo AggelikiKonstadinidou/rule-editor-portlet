@@ -90,14 +90,6 @@
 						</p:dataTable>
 
 					</h:panelGrid>
-					<p:contextMenu for="tree">
-						<p:menuitem value="Move to conditions"
-							update=":#{p:component('pan1')}"
-							actionListener="#{addNewRuleBean.createClassElement('pan1')}" />
-						<p:menuitem value="Move to conclusions"
-							update=":#{p:component('pan2')}"
-							actionListener="#{addNewRuleBean.createClassElement('pan2')}" />
-					</p:contextMenu>
 
 					<p:contextMenu for="methods">
 						<p:menuitem value="Move to conditions"
@@ -150,25 +142,30 @@
 							styleClass="ui-widget-content" var="item">
 
 							<f:facet name="element">
-								<p:panel id="pnl1" header="#{item.elementName}">
-									<h:panelGrid columns="4" id="elementGrid1">
-										<h:outputText value="Variable: #{item.varName}"
-											rendered="#{item.editVar}" />
+								<p:panel id="pnl1" header="#{item.property.className}: #{item.elementName}">
+									<h:panelGrid columns="1" columnClasses="label"
+										id="elementGrid1">
+
+										<h:outputText value="Order: #{item.order}"
+											rendered="#{item.order!=0}" />
+
+										<h:outputText label="varName"
+											rendered="#{item.property.ontologyURI!=''}" id="classVar"
+											style="width: 80px;" autocomplete="off"
+											value="Var: #{item.property.classVar}" />
+
 										<h:outputText label="value" rendered="#{item.editValue}"
 											id="value" style="width: 80px;" autocomplete="off"
 											value="Value: #{item.property.value}" />
 
-										<h:outputText label="value" rendered="#{item.method.flag}"
-											style="width: 80px;" autocomplete="off"
-											value="Value: #{item.method.helpString}" />
 
-										<p:commandButton oncomplete="PF('editDialog').show()"
-											actionListener="#{addNewRuleBean.editNode}" title="View"
-											icon="ui-icon-search" update=":#{p:component('editDialog')}">
-											<f:param name="id" value="#{item.varName}" />
-											<f:param name="panel" value="conditions" />
-										</p:commandButton>
 									</h:panelGrid>
+									<p:commandButton oncomplete="PF('editDialog').show()"
+										actionListener="#{addNewRuleBean.editNode}" title="View"
+										icon="ui-icon-search" update=":#{p:component('editDialog')}">
+										<f:param name="id" value="#{item.id}" />
+										<f:param name="panel" value="conditions" />
+									</p:commandButton>
 								</p:panel>
 							</f:facet>
 
@@ -188,20 +185,23 @@
 							style="height:750px;width:500px;" styleClass="ui-widget-content"
 							var="item">
 							<f:facet name="element">
-								<p:panel id="pnl2" header="#{item.elementName}">
-									<h:panelGrid columns="3" id="elementGrid2">
-										<h:outputText value="Variable: #{item.varName}"
-											rendered="#{item.editVar}" />
+								<p:panel id="pnl2" header="#{item.property.className}: #{item.elementName}">
+									<h:panelGrid columns="1" columnClasses="label" id="elementGrid2">
+
+										<h:outputText value="Order: #{item.order}"
+											rendered="#{item.order!=0}" />
+											
+										<h:outputText label="varName" rendered="#{item.property.ontologyURI!=''}"
+											id="classVar2" style="width: 80px;" autocomplete="off"
+											value="Var: #{item.property.classVar}" />
+										
 										<h:outputText label="value" rendered="#{item.editValue}"
-											id="value2" style="width: 80px;"
+											id="value2" style="width: 80px;" autocomplete="off"
 											value="Value: #{item.property.value}" />
-										<h:outputText label="value" rendered="#{item.method.flag}"
-											style="width: 80px;" autocomplete="off"
-											value="Value: #{item.method.helpString}" />
 										<p:commandButton oncomplete="PF('editDialog').show()"
 											actionListener="#{addNewRuleBean.editNode}" title="View"
 											icon="ui-icon-search" update=":#{p:component('editDialog')}">
-											<f:param name="id" value="#{item.varName}" />
+											<f:param name="id" value="#{item.id}" />
 											<f:param name="panel" value="conclusions" />
 										</p:commandButton>
 									</h:panelGrid>
@@ -253,7 +253,7 @@
 					<p:inputText label="Rule name" style="width: 300px;"
 						id="clonedVar1" autocomplete="off"
 						rendered="#{addNewRuleBean.cloneSelectedNode.editVar}"
-						value="#{addNewRuleBean.cloneSelectedNode.varName}"
+						value="#{addNewRuleBean.cloneSelectedNode.property.classVar}"
 						required="true">
 					</p:inputText>
 					<p:watermark for="clonedVar1"

@@ -155,7 +155,6 @@ public class Ontology implements Serializable {
 					|| s.equalsIgnoreCase("solPreferred"))
 				dataProp.setDataRange("boolean");
 
-			dataProp.setValue("empty");
 			dataProperties.add(dataProp);
 		}
 

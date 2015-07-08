@@ -8,22 +8,20 @@ public class BuiltinMethod {
 	private String originalName;
 	private String description;
 	private int numberOfParams;
-	private Type typeOfParam;
 	private String helpString;
 	private String watermarkDescription;
 	private boolean flag; // if the built in method requires a help string e.g a parameter, text etc.
 	
 	public BuiltinMethod(String usingName, String originalName,
-			String description, int numberOfParams, Type typeOfParam) {
+			String description, int numberOfParams) {
 		super();
 		this.usingName = usingName;
 		this.originalName = originalName;
 		this.description = description;
 		this.numberOfParams = numberOfParams;
-		this.typeOfParam = typeOfParam;
 		this.helpString = "empty";
 		this.watermarkDescription = "";
-		this.flag = false;
+		this.flag = true;
 	}
 	
 	public String getUsingName() {
@@ -50,12 +48,7 @@ public class BuiltinMethod {
 	public void setNumberOfParams(int numberOfParams) {
 		this.numberOfParams = numberOfParams;
 	}
-	public Type getTypeOfParam() {
-		return typeOfParam;
-	}
-	public void setTypeOfParam(Type typeOfParam) {
-		this.typeOfParam = typeOfParam;
-	}
+	
 	public String getHelpString() {
 		return helpString;
 	}
@@ -83,13 +76,11 @@ public class BuiltinMethod {
 	}
 
 	public BuiltinMethod clone() {
-		BuiltinMethod method = new BuiltinMethod("", "", "", 0,
-				Type.BUILTIN_METHOD);
+		BuiltinMethod method = new BuiltinMethod("", "", "", 0);
 		method.setUsingName(this.getUsingName());
 		method.setOriginalName(this.getOriginalName());
 		method.setDescription(this.getDescription());
 		method.setNumberOfParams(this.getNumberOfParams());
-		method.setTypeOfParam(this.getTypeOfParam());
 		method.setHelpString(this.helpString);
 		method.setWatermarkDescription(this.watermarkDescription);
 		method.setFlag(this.flag);

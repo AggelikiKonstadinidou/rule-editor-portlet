@@ -2,11 +2,9 @@ package org.ruleEditor.ontology;
 
 import java.util.ArrayList;
 
-
 public class PointElement {
 	private String elementName;
 	private Type type;
-	private String varName;
 	private double x;
 	private double y;
 	private boolean editVar;
@@ -18,12 +16,12 @@ public class PointElement {
 	private BuiltinMethod method;
 	private Instance instance;
 	private boolean enableEdit;
+	private int order;
 
 	public PointElement() {
 		super();
 		this.elementName = "";
 		this.type = Type.CLASS;
-		this.varName = "";
 		this.x = 0;
 		this.y = 0;
 		this.editValue = false;
@@ -32,11 +30,21 @@ public class PointElement {
 		this.connections = new ArrayList<PointElement>();
 		this.panel = "";
 		this.id = "";
-		this.method = new BuiltinMethod("", "", "", 0, Type.BUILTIN_METHOD);
+		this.method = new BuiltinMethod("", "", "", 0);
+		this.method.setFlag(false);
 		this.instance = new Instance("", "", "");
 		this.enableEdit = false;
+		this.order = 0;
 	}
-	
+
+	public int getOrder() {
+		return order;
+	}
+
+	public void setOrder(int order) {
+		this.order = order;
+	}
+
 	public boolean isEditVar() {
 		return editVar;
 	}
@@ -99,22 +107,16 @@ public class PointElement {
 
 	public void setType(Type type) {
 		this.type = type;
-		if(this.type == Type.CLASS){
-			this.setEnableEdit(true);
+		// if(this.type == Type.CLASS){
+		// this.setEnableEdit(true);
+		// this.setEditVar(true);
+		// }
+		if (this.type == Type.DATA_PROPERTY
+				|| this.type == Type.OBJECT_PROPERTY) {
 			this.setEditVar(true);
-		}
-		else if(this.type == Type.DATA_PROPERTY){
 			this.setEnableEdit(true);
 			this.setEditValue(true);
 		}
-	}
-
-	public String getVarName() {
-		return varName;
-	}
-
-	public void setVarName(String varName) {
-		this.varName = varName;
 	}
 
 	public double getX() {
@@ -156,12 +158,13 @@ public class PointElement {
 	public void setPanel(String panel) {
 		this.panel = panel;
 	}
+
 	public enum Type {
 
 		CLASS, DATA_PROPERTY, OBJECT_PROPERTY, INSTANCE, BUILTIN_METHOD;
 
 	}
-	
+
 	@Override
 	public boolean equals(Object obj) {
 		if (this.getElementName().equals(((PointElement) obj).getElementName())
@@ -176,12 +179,11 @@ public class PointElement {
 
 		el.setElementName(this.getElementName());
 		el.setType(this.getType());
-		el.setVarName(this.getVarName());
 		el.setX(this.getX());
 		el.setY(this.getY());
 		el.setEditValue(this.isEditValue());
 		el.setEditVar(this.isEditVar());
-		el.setEnableEdit(this.isEnableEdit());		
+		el.setEnableEdit(this.isEnableEdit());
 		el.setProperty(this.getProperty().clone());
 		for (int i = 0; i < this.getConnections().size(); i++) {
 			el.getConnections().add(this.getConnections().get(i).clone());
@@ -190,12 +192,9 @@ public class PointElement {
 		el.setId(this.getId());
 		el.setMethod(this.getMethod().clone());
 		el.setInstance(this.getInstance().clone());
-		el.setEnableEdit(this.isEnableEdit());
-		
+		el.setOrder(this.getOrder());
 
 		return el;
 	}
-
-
 
 }

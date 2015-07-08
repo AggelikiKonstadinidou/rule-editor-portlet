@@ -461,17 +461,23 @@ public class Utils {
 		// declaration of a built in method
 		// TODO for primitive jena methods
 		else {
-			String argument = line.substring(line.indexOf("(")+1, line.indexOf(")"));
-			String originName = line.replace(argument, "").replace("(", "").replace(")", "");
+			String argument = line.substring(line.indexOf("(") + 1,
+					line.indexOf(")"));
+			String originName = line.replace(argument, "").replace("(", "")
+					.replace(")", "");
+			
+			//TODO the case of noValue (triple)
+			if(!originName.equals("noValue")){
 			BuiltinMethod method = null;
-			//find the method object by the original name
-			for(BuiltinMethod temp : methods){
-				if(temp.getOriginalName().equals(originName)){
+			// find the method object by the original name
+			for (BuiltinMethod temp : methods) {
+				if (temp.getOriginalName().equals(originName)) {
 					method = temp.clone();
 					break;
 				}
 			}
-			
+
+			method.setHelpString(argument);
 			element.setMethod(method);
 			element.setElementName(method.getUsingName());
 			element.setType(PointElement.Type.BUILTIN_METHOD);
@@ -479,31 +485,7 @@ public class Utils {
 			element.setVarName(element.getId());
 			element = setPosition(element);
 			element.setPanel(panel);
-			
-			//TODO find the category of the method
-			
-			if(RuleCreationUtilities.categoryOfMethods_1.contains(originName)){
-				// the argument contains variables
-				String[] variables = argument.split(",");
-				PointElement connection = new PointElement();
-				for (int i = 0; i < variables.length; i++) {
-					connection = findElementByVarName(variables[i].trim());
-					if (connection != null)
-						element.getConnections().add(connection);
-				}
-				
-			}else if(RuleCreationUtilities.categoryOfMethods_2.contains(originName)){
-				
-			}else if(RuleCreationUtilities.categoryOfMethods_3.contains(originName)){
-				
-			}else if(RuleCreationUtilities.categoryOfMethods_4.contains(originName)){
-				
 			}
-			
-			
-			
-			
-			
 
 		}
 
