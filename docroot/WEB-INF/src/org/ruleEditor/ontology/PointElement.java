@@ -17,6 +17,7 @@ public class PointElement {
 	private Instance instance;
 	private boolean enableEdit;
 	private int order;
+	private String label;
 
 	public PointElement() {
 		super();
@@ -35,8 +36,15 @@ public class PointElement {
 		this.instance = new Instance("", "", "");
 		this.enableEdit = false;
 		this.order = 0;
+		this.label = "";
 	}
-
+	
+	public String getLabel() {
+		return label;
+	}
+	public void setLabel(String label) {
+		this.label = label;
+	}
 	public int getOrder() {
 		return order;
 	}
@@ -193,6 +201,7 @@ public class PointElement {
 		el.setMethod(this.getMethod().clone());
 		el.setInstance(this.getInstance().clone());
 		el.setOrder(this.getOrder());
+		el.setLabel(this.getLabel());
 
 		return el;
 	}

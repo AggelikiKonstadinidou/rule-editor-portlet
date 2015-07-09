@@ -112,6 +112,9 @@ public class AddNewRuleBean {
 	private int counterOfConnections = 0;
 	private int orderConditionsCounter = 1;
 	private int orderConclusionsCounter = 1;
+	private ArrayList<String> usedVariablesForClasses = new ArrayList<String>();
+	private ArrayList<String> usedVariablesForValues = new ArrayList<String>();
+	private String argument = "";
 //	private List<String> methodsWithoutConnections = Arrays.asList(
 //			"makeSkolem", "print", "drop");
 
@@ -152,6 +155,9 @@ public class AddNewRuleBean {
 		counterOfConnections = 0;
 		orderConditionsCounter = 1;
 		orderConclusionsCounter = 1;
+		usedVariablesForClasses = new ArrayList<String>();
+		usedVariablesForValues = new ArrayList<String>();
+		argument = "";
 
 		// Initialization of conditions model
 		conditionsModel = new DefaultDiagramModel();
@@ -241,18 +247,11 @@ public class AddNewRuleBean {
 		// create the diagram models with the point elements
 		for (PointElement el : list) {
 
-			element = new Element(el, String.valueOf(el.getX() + "em"),
-					String.valueOf(el.getY() + "em"));
-
-			if (el.getType() == Type.CLASS) {
-
-				endPointCA = Utils
-						.createRectangleEndPoint(EndPointAnchor.BOTTOM);
-				endPointCA.setSource(true);
-				element.addEndPoint(endPointCA);
-
-			} else if (el.getType() == Type.DATA_PROPERTY
+			if (el.getType() == Type.DATA_PROPERTY
 					|| el.getType() == Type.OBJECT_PROPERTY) {
+				
+				element = new Element(el, String.valueOf(el.getX() + "em"),
+						String.valueOf(el.getY() + "em"));
 
 				endPointCA = Utils
 						.createDotEndPoint(EndPointAnchor.AUTO_DEFAULT);
@@ -260,6 +259,9 @@ public class AddNewRuleBean {
 				element.addEndPoint(endPointCA);
 
 			} else if (el.getType() == Type.BUILTIN_METHOD) {
+				
+				element = new Element(el, String.valueOf(el.getX() + "em"),
+						String.valueOf(el.getY() + "em"));
 
 				endPointCA = Utils
 						.createRectangleEndPoint(EndPointAnchor.CONTINUOUS);
@@ -285,78 +287,78 @@ public class AddNewRuleBean {
 				conclusionsModel.addElement(element);
 		}
 
-		int sourceIndex = -1;
-		int targetIndex = -1;
-		// make connections between the elements of the diagram models
-		for (PointElement el : list) {
-			if (el.getType() == Type.OBJECT_PROPERTY
-					|| el.getType() == Type.DATA_PROPERTY
-					|| el.getType() == Type.BUILTIN_METHOD) {
-
-				targetIndex = findIndexOfElementByPointElement(el,
-						conditionsModel);
-
-				boolean flag = false;
-				for (PointElement temp : el.getConnections()) {
-
-					sourceIndex = findIndexOfElementByPointElement(temp,
-							conditionsModel);
-
-					if (sourceIndex == -1) {
-						sourceIndex = findIndexOfElementByPointElement(temp,
-								conclusionsModel);
-						flag = true;
-					}
-
-					if (panelID.equalsIgnoreCase("conclusions"))
-						targetIndex = findIndexOfElementByPointElement(el,
-								conclusionsModel);
-
-					if (panelID.equalsIgnoreCase("conditions")) {
-
-							conditionsModel.connect(new Connection(
-									conditionsModel.getElements()
-											.get(sourceIndex).getEndPoints()
-											.get(0), conditionsModel
-											.getElements().get(targetIndex)
-											.getEndPoints().get(0)));
-						
-					} else {
-
-						if (flag)
-							conclusionsModel.connect(new Connection(
-									conclusionsModel.getElements()
-											.get(sourceIndex).getEndPoints()
-											.get(0), conclusionsModel
-											.getElements().get(targetIndex)
-											.getEndPoints().get(0)));
-						else {
-							
-							//a conclusion method/property has to be connected with
-							// a class that exists in conditions
-							Element conclElement = new Element(temp,
-									String.valueOf(temp.getX() + "em"),
-									String.valueOf(temp.getY() + "em"));
-							EndPoint endPointCon = Utils
-									.createRectangleEndPoint(EndPointAnchor.BOTTOM);
-							endPointCon.setSource(true);
-							conclElement.addEndPoint(endPointCon);
-							conclusionsModel.addElement(conclElement);
-							
-							sourceIndex = conclusionsModel.getElements().size()-1;
-							
-							conclusionsModel.connect(new Connection(
-									conclusionsModel.getElements()
-											.get(sourceIndex).getEndPoints()
-											.get(0), conclusionsModel
-											.getElements().get(targetIndex)
-											.getEndPoints().get(0)));
-						}
-
-					}
-				}
-			}
-		}
+//		int sourceIndex = -1;
+//		int targetIndex = -1;
+//		// make connections between the elements of the diagram models
+//		for (PointElement el : list) {
+//			if (el.getType() == Type.OBJECT_PROPERTY
+//					|| el.getType() == Type.DATA_PROPERTY
+//					|| el.getType() == Type.BUILTIN_METHOD) {
+//
+//				targetIndex = findIndexOfElementByPointElement(el,
+//						conditionsModel);
+//
+//				boolean flag = false;
+//				for (PointElement temp : el.getConnections()) {
+//
+//					sourceIndex = findIndexOfElementByPointElement(temp,
+//							conditionsModel);
+//
+//					if (sourceIndex == -1) {
+//						sourceIndex = findIndexOfElementByPointElement(temp,
+//								conclusionsModel);
+//						flag = true;
+//					}
+//
+//					if (panelID.equalsIgnoreCase("conclusions"))
+//						targetIndex = findIndexOfElementByPointElement(el,
+//								conclusionsModel);
+//
+//					if (panelID.equalsIgnoreCase("conditions")) {
+//
+//							conditionsModel.connect(new Connection(
+//									conditionsModel.getElements()
+//											.get(sourceIndex).getEndPoints()
+//											.get(0), conditionsModel
+//											.getElements().get(targetIndex)
+//											.getEndPoints().get(0)));
+//						
+//					} else {
+//
+//						if (flag)
+//							conclusionsModel.connect(new Connection(
+//									conclusionsModel.getElements()
+//											.get(sourceIndex).getEndPoints()
+//											.get(0), conclusionsModel
+//											.getElements().get(targetIndex)
+//											.getEndPoints().get(0)));
+//						else {
+//							
+//							//a conclusion method/property has to be connected with
+//							// a class that exists in conditions
+//							Element conclElement = new Element(temp,
+//									String.valueOf(temp.getX() + "em"),
+//									String.valueOf(temp.getY() + "em"));
+//							EndPoint endPointCon = Utils
+//									.createRectangleEndPoint(EndPointAnchor.BOTTOM);
+//							endPointCon.setSource(true);
+//							conclElement.addEndPoint(endPointCon);
+//							conclusionsModel.addElement(conclElement);
+//							
+//							sourceIndex = conclusionsModel.getElements().size()-1;
+//							
+//							conclusionsModel.connect(new Connection(
+//									conclusionsModel.getElements()
+//											.get(sourceIndex).getEndPoints()
+//											.get(0), conclusionsModel
+//											.getElements().get(targetIndex)
+//											.getEndPoints().get(0)));
+//						}
+//
+//					}
+//				}
+//			}
+//		}
 
 	}
 
@@ -468,6 +470,21 @@ public class AddNewRuleBean {
 					return;
 				}
 		}
+		
+		// get the used variables for classes and generally for values
+		String s = cloneSelectedNode.getProperty().getClassVar();
+		String value = cloneSelectedNode.getProperty().getValue();
+		if (!usedVariablesForClasses.contains(s) && s.contains("?"))
+			usedVariablesForClasses.add(s);
+
+		if (cloneSelectedNode.getType() == Type.DATA_PROPERTY)
+			if (!usedVariablesForValues.contains(value) && value.contains("?"))
+				usedVariablesForValues.add(value);
+
+		if (cloneSelectedNode.getType() == Type.OBJECT_PROPERTY)
+			if (!usedVariablesForClasses.contains(value) && value.contains("?"))
+				usedVariablesForClasses.add(value);
+	
 
 		ArrayList<PointElement> clonedList = new ArrayList<PointElement>();
 
@@ -1116,13 +1133,14 @@ public class AddNewRuleBean {
 	}
 
 	public void createMethodElement(String panelID) {
-		PointElement methodElement = new PointElement();
-		methodElement.setElementName(this.selectedMethod.getUsingName()
+		PointElement methodEl = new PointElement();
+		methodEl.setElementName(this.selectedMethod.getUsingName()
 				.toString());
-		methodElement.setType(Type.BUILTIN_METHOD);
-		methodElement.setId(setVariableName());
-		methodElement = setPosition(methodElement);
-		methodElement.setMethod(selectedMethod.clone());
+		methodEl.setType(Type.BUILTIN_METHOD);
+		methodEl.setId(setVariableName());
+		methodEl = setPosition(methodEl);
+		methodEl.setMethod(selectedMethod.clone());
+		methodEl.setLabel("Method");
 		// define the order
 		int order = -1 ;
 		if(panelID.equalsIgnoreCase("pan1")){
@@ -1134,10 +1152,10 @@ public class AddNewRuleBean {
 			orderConclusionsCounter++;
 		}
 
-		methodElement.setOrder(order);
-		Element element = new Element(methodElement,
-				String.valueOf(methodElement.getX() + "em"),
-				String.valueOf(methodElement.getY() + "em"));
+		methodEl.setOrder(order);
+		Element element = new Element(methodEl,
+				String.valueOf(methodEl.getX() + "em"),
+				String.valueOf(methodEl.getY() + "em"));
 
 		// exclude methods that cannot be connected with other nodes
 		// the user has to fill some field in order to use them
@@ -1157,44 +1175,25 @@ public class AddNewRuleBean {
 			element.addEndPoint(endPointCA);
 	//	}
 
-		moveToPanel(panelID, methodElement, element);
+		moveToPanel(panelID, methodEl, element);
 	}
 
-//	public void createClassElement(String panelID) {
-//		PointElement networkElement = new PointElement();
-//		networkElement.setElementName(this.selectedNode.getData().toString());
-//		networkElement.setType(Type.CLASS);
-//		networkElement.setVarName("?" + setVariableName());
-//		networkElement.setId(networkElement.getVarName());
-//		networkElement = setPosition(networkElement);
-//		Element element = new Element(networkElement,
-//				String.valueOf(networkElement.getX() + "em"),
-//				String.valueOf(networkElement.getY() + "em"));
-//		EndPoint endPointCA = Utils
-//				.createRectangleEndPoint(EndPointAnchor.BOTTOM);
-//		endPointCA.setSource(true);
-//		element.addEndPoint(endPointCA);
-//		moveToPanel(panelID, networkElement, element);
-//
-//	}
-
 	public void createInstanceElement(String panelID) {
-		PointElement networkElement = new PointElement();
-		networkElement.setElementName(this.selectedInstance.getInstanceName());
-		networkElement.setType(Type.INSTANCE);
-		networkElement.setInstance(this.selectedInstance);
-		// TODO na parei san id to swsto id to individual
-		// to var name den xreiazetai
-		networkElement.setId(this.selectedInstance.getInstanceName());
-		networkElement = setPosition(networkElement);
-		Element element = new Element(networkElement,
-				String.valueOf(networkElement.getX() + "em"),
-				String.valueOf(networkElement.getY() + "em"));
+		PointElement instanceEl = new PointElement();
+		instanceEl.setElementName(this.selectedInstance.getInstanceName());
+		instanceEl.setType(Type.INSTANCE);
+		instanceEl.setInstance(this.selectedInstance);
+		instanceEl.setLabel(this.selectedInstance.getClassName());
+		instanceEl.setId(this.selectedInstance.getInstanceName());
+		instanceEl = setPosition(instanceEl);
+		Element element = new Element(instanceEl,
+				String.valueOf(instanceEl.getX() + "em"),
+				String.valueOf(instanceEl.getY() + "em"));
 		EndPoint endPointCA = Utils
 				.createRectangleEndPoint(EndPointAnchor.BOTTOM);
 		endPointCA.setSource(true);
 		element.addEndPoint(endPointCA);
-		moveToPanel(panelID, networkElement, element);
+		moveToPanel(panelID, instanceEl, element);
 
 	}
 
@@ -1213,6 +1212,7 @@ public class AddNewRuleBean {
 		PointElement propElement = new PointElement();
 		propElement.setElementName(property.getPropertyName());
 		propElement.setId(setVariableName());
+		propElement.setLabel(property.getClassName());
 		
 		//define the order
 		int order = -1 ;
@@ -1452,4 +1452,26 @@ public class AddNewRuleBean {
 		this.oldFileName = oldFileName;
 	}
 
+	public ArrayList<String> getUsedVariablesForClasses() {
+		return usedVariablesForClasses;
+	}
+	public void setUsedVariablesForClasses(ArrayList<String> usedVariablesForClasses) {
+		this.usedVariablesForClasses = usedVariablesForClasses;
+	}
+
+	public ArrayList<String> getUsedVariablesForValues() {
+		return usedVariablesForValues;
+	}
+	public void setUsedVariablesForValues(ArrayList<String> usedVariablesForValues) {
+		this.usedVariablesForValues = usedVariablesForValues;
+	}
+
+	public String getArgument() {
+		return argument;
+	}
+
+	public void setArgument(String argument) {
+		this.argument = argument;
+	}
+	
 }

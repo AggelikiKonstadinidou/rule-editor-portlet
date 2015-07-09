@@ -34,7 +34,8 @@ public class RuleCreationUtilities {
 	// the argument of the method is a string that is filled by the user
 	public static List<String> categoryOfMethods_4 = Arrays.asList("print",
 			"drop", "makeSkolem");
-	public static ArrayList<String> declaredVariables;
+	public static ArrayList<String> declaredClassVariables;
+	public static ArrayList<String> declaredObjectVariables;
 
 	public static void saveRule(String ruleName, String fileName,
 			ArrayList<PointElement> conditions,
@@ -74,7 +75,8 @@ public class RuleCreationUtilities {
 	public static String createRule(ArrayList<PointElement> conditions,
 			ArrayList<PointElement> conclusions, String ruleName) {
 		
-		declaredVariables = new ArrayList<String>();
+		declaredClassVariables = new ArrayList<String>();
+		declaredObjectVariables = new ArrayList<String>();
 
 		String rule = prefix_c4a + "\n" + prefix_rdfs + "\n\n" + "[" + ruleName
 				+ "\n";
@@ -177,17 +179,27 @@ public class RuleCreationUtilities {
 
 				OntologyProperty property = (DataProperty) el.getProperty();
 				String value = ((DataProperty) property).getValue();
+				String classVar = property.getClassVar();
+
 				if (!value.contains("?") && value.indexOf("\"") != 0)
 					value = "\"" + value + "\"";
 
-				if (!declaredVariables.contains(property.getClassVar())) {
-					rule = rule + "(" + property.getClassVar()
-							+ " rdf:type c4a:" + property.getClassName()+")\n";
-					declaredVariables.add(property.getClassVar());
+				// check if the property has class var or it is connected with
+				// an instance
+				if (el.getConnections().size() > 0) {
+					classVar = el.getConnections().get(0).getInstance().getId();
 				}
 
-				rule = rule + "(" + property.getClassVar() + " c4a:"
-						+ el.getElementName() + " " + value + ")\n";
+				if (classVar.contains("?"))
+					if (!declaredClassVariables.contains(classVar)
+							&& !declaredObjectVariables.contains(classVar)) {
+						rule = rule + "(" + classVar + " rdf:type c4a:"
+								+ property.getClassName() + ")\n";
+						declaredClassVariables.add(classVar);
+					}
+
+				rule = rule + "(" + classVar + " c4a:" + el.getElementName()
+						+ " " + value + ")\n";
 
 			} else if (el.getType() == PointElement.Type.OBJECT_PROPERTY) {
 
@@ -198,33 +210,38 @@ public class RuleCreationUtilities {
 				String source = property.getClassVar();
 				String target = property.getValue();
 				
-				//check if class of source is declared
-				if (!declaredVariables.contains(source) && !source.isEmpty()) {
-					rule = rule + "(" + source
-							+ " rdf:type c4a:" + property.getClassName()+")\n";
-					declaredVariables.add(source);
-				}
-				
-				//check if class of target is declared
-				if (!declaredVariables.contains(target) && !target.isEmpty()) {
-					rule = rule + "(" + target
-							+ " rdf:type c4a:" + classRange+")\n";
-					declaredVariables.add(target);
-				}
-				
 				if (el.getConnections().size() > 0) {
-					for (PointElement temp : el.getConnections()) {		
-						if (temp.getType() == Type.INSTANCE
-								&& temp.getElementName().equalsIgnoreCase(
-										className))
-							source = temp.getInstance().getId();
-						else if (temp.getType() == Type.INSTANCE
-								&& temp.getElementName().equalsIgnoreCase(
-										classRange))
-							target = temp.getInstance().getId();
+					for (PointElement temp : el.getConnections()) {
+
+						if (temp.getType() == Type.INSTANCE) {
+							if (temp.getInstance().getClassName()
+									.equalsIgnoreCase(className))
+								source = temp.getInstance().getId();
+							else if (temp.getInstance().getClassName()
+									.equalsIgnoreCase(classRange))
+								target = temp.getInstance().getId();
+						}
+
 					}
 				}
 				
+				//check if class of source is declared
+				if(source.contains("?"))
+					if (!declaredClassVariables.contains(source)
+							&& !source.isEmpty()
+							&& !declaredObjectVariables.contains(source)) {
+						rule = rule + "(" + source + " rdf:type c4a:"
+								+ property.getClassName() + ")\n";
+						declaredClassVariables.add(source);
+					}
+				
+				// check if class of target is declared
+				if (target.contains("?"))
+					if (!declaredObjectVariables.contains(target)
+							&& !target.isEmpty()) {
+						declaredObjectVariables.add(target);
+					}
+
 				rule = rule + "(" + source + " c4a:" + el.getElementName()
 						+ " " + target + ")\n";
 

@@ -223,7 +223,7 @@ public class Ontology implements Serializable {
 				"refersTo", "value");
 		List<String> inferredConfiguration = Arrays.asList("id", "name");
 		List<String> configuration = Arrays.asList("id", "name", "isActive",
-				"solPreferred","refersTo");
+				"solPreferred");
 		List<String> conflict = Arrays.asList("id", "name", "class");
 		List<String> conflictResolution = Arrays.asList("id", "name");
 		List<String> preferenceSet = new ArrayList<String>();

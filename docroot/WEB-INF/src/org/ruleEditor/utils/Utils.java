@@ -75,6 +75,9 @@ public class Utils {
 	private static int counter = 0;
 	private static List<PointElement> conditions;
 	private static List<PointElement> conclusions;
+	private static HashMap<String,String> usedVariablesForClasses;//subjects
+	private static HashMap<String,String> usedVariables; //values and objects
+	private static int orderCounter;
 
 	public static EndPoint createDotEndPoint(EndPointAnchor anchor) {
 		DotEndPoint endPoint = new DotEndPoint(anchor);
@@ -105,7 +108,7 @@ public class Utils {
 
 		boolean flag = false;
 		for (PointElement el : conditions) {
-			if (el.getVarName().equalsIgnoreCase(id)) {
+			if (el.getId().equalsIgnoreCase(id)) {
 				flag = true;
 				break;
 			}
@@ -113,7 +116,7 @@ public class Utils {
 
 		if (!flag)
 			for (PointElement el : conclusions) {
-				if (el.getVarName().equalsIgnoreCase(id)) {
+				if (el.getId().equalsIgnoreCase(id)) {
 					flag = false;
 					break;
 				}
@@ -334,6 +337,9 @@ public class Utils {
 		StringBuilder out = new StringBuilder();
 		String line;
 		String ruleName = "";
+		usedVariablesForClasses = new HashMap<String,String>();
+		usedVariables = new HashMap<String,String>();
+		orderCounter = 1;
 
 		PointElement element;
 		String panel = "conditions";
@@ -359,26 +365,28 @@ public class Utils {
 				initialX = 3;
 				initialY = 3;
 				objectCounter = 0;
+				orderCounter = 1;
 
 			} else if (!line.isEmpty() && !line.contains(prefix_rdfs)
 					&& !line.contains(prefix_c4a)) {
 				
-				if(line.contains("]"))
+				if (line.contains("]"))
 					line = line.replace("]", "");
-				
+
 				element = convertRuleLineToPointElement(line.trim(), classes,
 						methods, panel);
-				if (panel.equalsIgnoreCase("conditions"))
-					conditions.add(element);
-				else
-					conclusions.add(element);
+				if (element != null)
+					if (panel.equalsIgnoreCase("conditions"))
+						conditions.add(element);
+					else
+						conclusions.add(element);
 
 			}
 			out.append(line);
 		}
 
 		// fill missing values in object properties
-		fillMissingClasses(classes);
+	//	fillMissingClasses(classes);
 
 		list.add(conditions);
 		list.add(conclusions);
@@ -395,66 +403,58 @@ public class Utils {
 		String varName = "";
 		String className = "";
 		String propertyName = "";
-		// declaration of a class
+		String value = "";
+		String range = "";
+		
+		// declaration of a property
 		if (line.contains("rdf:type")) {
-
 			splitted = line.split(" ");
 			varName = splitted[0].replace("(", "");
 			className = splitted[2].replace("c4a:", "").replace(")", "");
-			element.setVarName(varName);
-			element.setType(PointElement.Type.CLASS);
-			element.setElementName(className);
-			element.setPanel(panel);
-			element.setId(setUniqueID());
-			element = setPosition(element);
-
+			usedVariablesForClasses.put(varName, className);
+			element = null;
 		}
-		// declaration of a property
 		else if (!line.contains("rdf:type") && line.contains("c4a")) {
 
 			splitted = line.split(" ");
 			element.setId(setUniqueID());
-			element.setVarName(element.getId());
 			element = setPosition(element);
 			element.setPanel(panel);
 			propertyName = splitted[1].replace("c4a:", "");
 			varName = splitted[0].replace("(", "");
 			// find from varName which class owns this property
-			PointElement classEl = findElementClassByVarName(varName);
+			className = findElementClassByVarName(varName);
 			// find what type of property is, and the whole property
 			OntologyProperty property = findPropertyByName(propertyName,
-					classes, classEl.getElementName());
+					classes, className);
 			element.setElementName(propertyName);
+			element.setLabel(className);
+			element.setOrder(orderCounter);
+			orderCounter++;
+			usedVariablesForClasses.put(varName, className);
+			
 			// set the type of the element according to the type of the property
 			if (property instanceof DataProperty) {
 				DataProperty dataProp = (DataProperty) property.clone();
-				dataProp.setValue(splitted[2].replace(")", ""));
+				value = splitted[2].replace(")", "");
+				dataProp.setValue(value);
+				dataProp.setClassVar(varName);
 				element.setType(PointElement.Type.DATA_PROPERTY);
 				element.setProperty(dataProp);
-				element.getConnections().add(classEl);
-			} else {
+			} else if (property instanceof ObjectProperty) {
 				element.setType(PointElement.Type.OBJECT_PROPERTY);
 				ObjectProperty objProp = (ObjectProperty) property.clone();
-				String objectValue = splitted[2].replace(")",
-						"");
-				PointElement objValue = findElementClassByVarName(objectValue);
+				String objectValue = splitted[2].replace(")", "");
 
-				if (classEl.getId().isEmpty()){
-					classEl.setVarName(varName);
-					classEl.setElementName(objProp.getRangeOfClasses().get(0));
-				}
+				if (objectValue.contains("?"))
+					usedVariables.put(objectValue, objProp
+							.getRangeOfClasses().get(0));
 
-				element.getConnections().add(classEl);
+				objProp.setValue(objectValue);
+				objProp.setClassVar(varName);
 
-				if (objValue.getId().isEmpty())
-					objValue.setVarName(objectValue);
-
-				if (property == null) {
-					property = new OntologyProperty(propertyName, "");
-				}
-
-				element.getConnections().add(objValue);
-				element.setProperty(property);
+				// TODO: case of instance
+				element.setProperty(objProp);
 			}
 
 		}
@@ -482,9 +482,10 @@ public class Utils {
 			element.setElementName(method.getUsingName());
 			element.setType(PointElement.Type.BUILTIN_METHOD);
 			element.setId(setUniqueID());
-			element.setVarName(element.getId());
 			element = setPosition(element);
 			element.setPanel(panel);
+			element.setOrder(orderCounter);
+			orderCounter++;
 			}
 
 		}
@@ -492,134 +493,30 @@ public class Utils {
 		return element;
 	}
 
-	public static void fillMissingClasses(List<ArrayList<OntologyClass>> classes) {
-		for (PointElement el : conditions) {
-			if (el.getType() == PointElement.Type.OBJECT_PROPERTY) {
-				if (el.getConnections().get(0).getId().isEmpty()) {
-					PointElement classEl = findElementClassByVarName(el
-							.getConnections().get(0).getVarName());
-					el.getConnections().remove(0);
-					el.getConnections().add(0, classEl);
-				}
-
-				if (el.getConnections().get(1).getId().isEmpty()) {
-					PointElement classEl = findElementClassByVarName(el
-							.getConnections().get(1).getVarName());
-					el.getConnections().remove(1);
-					el.getConnections().add(1, classEl);
-				}
-
-				if (el.getProperty().getOntologyURI().isEmpty()) {
-					OntologyProperty property = findPropertyByName(el
-							.getProperty().getPropertyName(), classes, el
-							.getConnections().get(0).getElementName());
-					el.setProperty(property);
-				}
+	public static String findElementClassByVarName(String varName) {
+		String className = "";
+		Iterator it = usedVariablesForClasses.entrySet().iterator();
+		while (it.hasNext()) {
+			Map.Entry pair = (Map.Entry) it.next();
+			if (pair.getKey().equals(varName)) {
+				className = pair.getValue().toString();
+				break;
 			}
 		}
-
-		for (PointElement el : conclusions) {
-			if (el.getType() == PointElement.Type.OBJECT_PROPERTY) {
-				if (el.getConnections().get(0).getId().isEmpty()) {
-					PointElement classEl = findElementClassByVarName(el
-							.getConnections().get(0).getVarName());
-					el.getConnections().remove(0);
-					el.getConnections().add(0, classEl);
-				}
-
-				if (el.getConnections().get(1).getId().isEmpty()) {
-					PointElement classEl = findElementClassByVarName(el
-							.getConnections().get(1).getVarName());
-					el.getConnections().remove(1);
-					el.getConnections().add(1, classEl);
-				}
-
-				if (el.getProperty().getOntologyURI().isEmpty()) {
-					OntologyProperty property = findPropertyByName(el
-							.getProperty().getPropertyName(), classes, el
-							.getConnections().get(0).getElementName());
-					el.setProperty(property);
-				}
-			}
-		}
-	}
-	
-	public static PointElement findElementByVarName(String name) {
-
-		PointElement element = new PointElement();
-
-		for (PointElement pel : conditions) {
-			if (pel.getType() == PointElement.Type.DATA_PROPERTY) {
-
-				DataProperty dataProperty = (DataProperty) pel.getProperty();
-				if (dataProperty.getValue().equals(name)
-						|| dataProperty.getValue()
-								.equals(name.replace("?", ""))) {
-
-					if (!dataProperty.getValue().contains("?")
-							&& name.contains("?"))
-						dataProperty.setValue("?" + dataProperty.getValue());
-
-					element = pel.clone();
-					break;
-				}
-
-			} else if (pel.getType() == PointElement.Type.OBJECT_PROPERTY) {
-
-				if (pel.getConnections().get(0).getVarName().equals(name)) {
-					element = pel.clone();
-					break;
-				}
-
-			}
-		}
-
-		if (element.getId().isEmpty())
-			for (PointElement pel : conclusions) {
-				if (pel.getType() == PointElement.Type.DATA_PROPERTY) {
-
-					DataProperty dataProperty = (DataProperty) pel
-							.getProperty();
-					if (dataProperty.getValue().equals(name)) {
-						element = pel.clone();
-						break;
-					}
-
-				} else if (pel.getType() == PointElement.Type.OBJECT_PROPERTY) {
-
-					if (pel.getConnections().get(0).getVarName().equals(name)) {
-						element = pel.clone();
-						break;
-					}
-
-				}
-			}
-		return element;
-	}
-
-	public static PointElement findElementClassByVarName(String name) {
-
-		PointElement element = new PointElement();
-
-		for (PointElement pel : conditions) {
-			if (pel.getType() == PointElement.Type.CLASS) {
-				if (pel.getVarName().equalsIgnoreCase(name)) {
-					element = pel.clone();
+		
+		if (className.isEmpty()) {
+			it = usedVariables.entrySet().iterator();
+			while (it.hasNext()) {
+				Map.Entry pair = (Map.Entry) it.next();
+				if (pair.getKey().equals(varName)) {
+					className = pair.getValue().toString();
 					break;
 				}
 			}
 		}
 
-		if (element.getId().isEmpty())
-			for (PointElement pel : conclusions) {
-				if (pel.getType() == PointElement.Type.CLASS) {
-					if (pel.getVarName().equalsIgnoreCase(name)) {
-						element = pel.clone();
-						break;
-					}
-				}
-			}
-		return element;
+		return className;
+
 	}
 
 	public static OntologyProperty findPropertyByName(String name,

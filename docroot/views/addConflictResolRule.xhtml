@@ -142,7 +142,7 @@
 							styleClass="ui-widget-content" var="item">
 
 							<f:facet name="element">
-								<p:panel id="pnl1" header="#{item.property.className}: #{item.elementName}">
+								<p:panel id="pnl1" header="#{item.label}: #{item.elementName}">
 									<h:panelGrid columns="1" columnClasses="label"
 										id="elementGrid1">
 
@@ -170,12 +170,12 @@
 							</f:facet>
 
 							<p:ajax event="connect" listener="#{addNewRuleBean.onConnect}"
-								update=":#{p:component('pan1')}" />
+								update=":#{p:component('conditionsDiagram')}" />
 							<p:ajax event="disconnect"
 								listener="#{addNewRuleBean.onDisconnect}" />
 							<p:ajax event="connectionChange"
 								listener="#{addNewRuleBean.onConnectionChange}"
-								update=":#{p:component('pan1')}" />
+								update=":#{p:component('conditionsDiagram')}" />
 						</p:diagram>
 					</p:panel>
 
@@ -185,7 +185,7 @@
 							style="height:750px;width:500px;" styleClass="ui-widget-content"
 							var="item">
 							<f:facet name="element">
-								<p:panel id="pnl2" header="#{item.property.className}: #{item.elementName}">
+								<p:panel id="pnl2" header="#{item.label}: #{item.elementName}">
 									<h:panelGrid columns="1" columnClasses="label" id="elementGrid2">
 
 										<h:outputText value="Order: #{item.order}"
@@ -248,6 +248,22 @@
 				dynamic="true" hideEffect="fold" position="center,center">
 				<h:panelGrid columns="2" columnClasses="label,value"
 					styleClass="grid">
+					<h:panelGrid >
+						<p:selectCheckboxMenu
+							value="#{addNewRuleBean.argument}"
+							label="Select variable from classes" filter="true"
+							filterText="Filter" filterMatchMode="startsWith"
+							panelStyle="width:220px">
+							<f:selectItems value="#{addNewRuleBean.usedVariablesForClasses}" />
+						</p:selectCheckboxMenu>
+						<p:selectCheckboxMenu
+							value="#{addNewRuleBean.argument}"
+							label="Select variable from classes" filter="true"
+							filterText="Filter" filterMatchMode="startsWith"
+							panelStyle="width:220px">
+							<f:selectItems value="#{addNewRuleBean.usedVariablesForValues}" />
+						</p:selectCheckboxMenu>
+					</h:panelGrid>
 					<h:outputText value="Variable name: " id="clonedVar"
 						rendered="#{addNewRuleBean.cloneSelectedNode.editVar}" />
 					<p:inputText label="Rule name" style="width: 300px;"
