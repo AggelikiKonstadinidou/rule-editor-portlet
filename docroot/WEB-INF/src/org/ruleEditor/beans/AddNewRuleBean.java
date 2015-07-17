@@ -6,6 +6,7 @@ import java.io.InputStream;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -17,9 +18,12 @@ import javax.faces.component.UIViewRoot;
 import javax.faces.component.visit.VisitCallback;
 import javax.faces.component.visit.VisitContext;
 import javax.faces.component.visit.VisitResult;
+import javax.faces.context.ExternalContext;
 import javax.faces.context.FacesContext;
 import javax.faces.event.ActionEvent;
 import javax.faces.event.AjaxBehaviorEvent;
+import javax.faces.event.ValueChangeEvent;
+import javax.servlet.http.HttpSession;
 
 import org.apache.commons.io.FilenameUtils;
 import org.primefaces.component.commandbutton.CommandButton;
@@ -72,6 +76,7 @@ import sun.rmi.runtime.NewThreadAction;
 
 import com.sun.faces.component.visit.FullVisitContext;
 
+import org.ruleEditor.ontology.BuiltinMethod.HelpObject;
 @ManagedBean(name = "addNewRuleBean")
 @SessionScoped
 public class AddNewRuleBean {
@@ -113,10 +118,20 @@ public class AddNewRuleBean {
 	private int orderConditionsCounter = 1;
 	private int orderConclusionsCounter = 1;
 	private ArrayList<String> usedVariablesForClasses = new ArrayList<String>();
+	
 	private ArrayList<String> usedVariablesForValues = new ArrayList<String>();
+	
+	private ArrayList<String> variables = new ArrayList<String>();
 	private String argument = "";
+	private boolean gridType1= true;
+	private boolean selectedClasses = true;
+	private boolean selectedVariables = false;
 //	private List<String> methodsWithoutConnections = Arrays.asList(
 //			"makeSkolem", "print", "drop");
+	private String previousStep = "";
+	private HashMap<String,InputStream> filesToCompare;
+	private ArrayList<Message> correlatedFiles;
+	
 
 	public AddNewRuleBean() {
 		super();
@@ -155,9 +170,24 @@ public class AddNewRuleBean {
 		counterOfConnections = 0;
 		orderConditionsCounter = 1;
 		orderConclusionsCounter = 1;
+		filesToCompare = new HashMap<String, InputStream>();
+		correlatedFiles = new ArrayList<Message>();
+		Message msg = new Message();
+		msg.setLanguage("fileName");
+		msg.setText("rule");
+		correlatedFiles.add(msg);
+		
 		usedVariablesForClasses = new ArrayList<String>();
+		
+		
 		usedVariablesForValues = new ArrayList<String>();
+	
+		
 		argument = "";
+		variables = new ArrayList<String>();
+		gridType1 = false;
+		selectedClasses = true;
+		selectedVariables = false;
 
 		// Initialization of conditions model
 		conditionsModel = new DefaultDiagramModel();
@@ -400,12 +430,65 @@ public class AddNewRuleBean {
 			}
 
 		}
+		
+		if(cloneSelectedNode.getType()==Type.BUILTIN_METHOD)
+			fillListsWithVariables();
+		
 
+	}
+	
+	//TODO it does not work
+	public void spinnerValueChangeForClasses(AjaxBehaviorEvent event) {
+		
+//		String id = FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap().get("index");
+//		String indexOfList = (String)event.getComponent().getAttributes().get("index");
+//		String newValue = (String)event.getComponent().getAttributes().get("newValue");
+		
+		for(int i=0; i<cloneSelectedNode.getMethod().getNumberOfParams();i++){
+			
+		}
+
+	}
+
+	public void fillListsWithVariables() {
+
+		for (int i = 0; i < cloneSelectedNode.getMethod().getNumberOfParams(); i++) {
+			cloneSelectedNode.getMethod().getListOfVarClassesLists()
+					.set(i, usedVariablesForClasses);
+			cloneSelectedNode.getMethod().getListOfVarValuesLists()
+					.set(i, usedVariablesForValues);
+			cloneSelectedNode
+					.getMethod()
+					.getSelectedValues()
+					.add(cloneSelectedNode.getMethod().new HelpObject("" + i,
+							"-"));
+
+		}
 	}
 
 	public void uploadFileForSaveAs(FileUploadEvent event) throws IOException {
 		oldFileName = event.getFile().getFileName();
 		fileStream = event.getFile().getInputstream();
+	}
+	
+	public void uploadFileForCorrelation(FileUploadEvent event)
+			throws IOException {
+		filesToCompare.put(event.getFile().getFileName(), event.getFile()
+				.getInputstream());
+	}
+	
+	public void findCorrelation(){
+		correlatedFiles = Utils.correlateRules(filesToCompare,conditions,conclusions);
+	}
+	
+	public void goToPreviousStep() throws IOException{
+		ExternalContext externalContext = FacesContext.getCurrentInstance()
+				.getExternalContext();
+		externalContext.redirect(previousStep);
+	}
+	
+	public void getPreviousStep(String step){
+		previousStep = step;
 	}
 
 	public void saveRule() throws IOException {
@@ -419,7 +502,7 @@ public class AddNewRuleBean {
 			return;
 		}
 
-		String finalFileName = newFileName.trim();
+		String finalFileName = newFileName.replace(" ", "_").trim();
 		boolean createNewFile = true;
 		if (newFileName.isEmpty() && !oldFileName.trim().isEmpty()) {
 			createNewFile = false;
@@ -434,9 +517,9 @@ public class AddNewRuleBean {
 			return;
 		}
 
-		RuleCreationUtilities.saveRule(ruleName, finalFileName, conditions,
-				conclusions, false, createNewFile, "", "", "", existingRules,
-				fileStream);
+		RuleCreationUtilities.saveRule(ruleName.replace(" ", "").trim(),
+				finalFileName, conditions, conclusions, false, createNewFile,
+				"", "", "", existingRules, fileStream);
 
 	}
 
@@ -484,8 +567,7 @@ public class AddNewRuleBean {
 		if (cloneSelectedNode.getType() == Type.OBJECT_PROPERTY)
 			if (!usedVariablesForClasses.contains(value) && value.contains("?"))
 				usedVariablesForClasses.add(value);
-	
-
+		
 		ArrayList<PointElement> clonedList = new ArrayList<PointElement>();
 
 		// find the panel which the selected node belong to
@@ -552,6 +634,7 @@ public class AddNewRuleBean {
 		}
 
 	}
+	
 
 	public DefaultDiagramModel getConclusionsModel() {
 		return conclusionsModel;
@@ -585,15 +668,18 @@ public class AddNewRuleBean {
 			y = initialY;
 			objectCounter++;
 		} else if (objectCounter == 1) {
-			x = initialX + 15;
+			x = initialX + 20;
 			y = initialY;
-			objectCounter++;
-		} else if (objectCounter == 2) {
-			x = initialX + 30;
-			y = initialY;
+			//objectCounter++;
 			objectCounter = 0;
-			initialY = initialY + 8;
+			initialY = initialY + 12;
 		}
+//		} else if (objectCounter == 2) {
+//			x = initialX + 35;
+//			y = initialY;
+//			objectCounter = 0;
+//			initialY = initialY + 12;
+//		}
 
 		el.setX(x);
 		el.setY(y);
@@ -1286,6 +1372,17 @@ public class AddNewRuleBean {
 			conclusions = new ArrayList<PointElement>();
 		}
 	}
+	
+	public void handleChangeInArguments() {
+		
+		if (selectedClasses && selectedVariables && gridType1) {
+			selectedVariables = false;
+			gridType1 = false;
+		} else if(selectedClasses && selectedVariables && !gridType1 ){
+			selectedClasses = false;
+			gridType1 = true;
+		}
+	}
 
 	public String setVariableName() {
 		return "X_" + counter++;
@@ -1473,5 +1570,47 @@ public class AddNewRuleBean {
 	public void setArgument(String argument) {
 		this.argument = argument;
 	}
+
+	public ArrayList<String> getVariables() {
+		return variables;
+	}
+
+	public void setVariables(ArrayList<String> variables) {
+		this.variables = variables;
+	}
+	public boolean isSelectedClasses() {
+		return selectedClasses;
+	}
+
+	public void setSelectedClasses(boolean selectedClasses) {
+		this.selectedClasses = selectedClasses;
+	}
+
+	public boolean isSelectedVariables() {
+		return selectedVariables;
+	}
+
+	public void setSelectedVariables(boolean selectedVariables) {
+		this.selectedVariables = selectedVariables;
+	}
+
+	public boolean isGridType1() {
+		return gridType1;
+	}
+
+	public void setGridType1(boolean gridType1) {
+		this.gridType1 = gridType1;
+	}
+
+	public ArrayList<Message> getCorrelatedFiles() {
+		return correlatedFiles;
+	}
+
+	public void setCorrelatedFiles(ArrayList<Message> correlatedFiles) {
+		this.correlatedFiles = correlatedFiles;
+	}
+
+	
+	
 	
 }

@@ -69,7 +69,7 @@
 							value="#{addNewRuleBean.instances}" rowKey="#{data}"
 							selectionMode="single"
 							selection="#{addNewRuleBean.selectedInstance}" scrollable="true"
-							scrollHeight="50">
+							scrollHeight="100">
 
 							<p:column headerText="Instances">
 								<h:outputText value="#{data.instanceName}" />
@@ -186,15 +186,17 @@
 							var="item">
 							<f:facet name="element">
 								<p:panel id="pnl2" header="#{item.label}: #{item.elementName}">
-									<h:panelGrid columns="1" columnClasses="label" id="elementGrid2">
+									<h:panelGrid columns="1" columnClasses="label"
+										id="elementGrid2">
 
 										<h:outputText value="Order: #{item.order}"
 											rendered="#{item.order!=0}" />
-											
-										<h:outputText label="varName" rendered="#{item.property.ontologyURI!=''}"
-											id="classVar2" style="width: 80px;" autocomplete="off"
+
+										<h:outputText label="varName"
+											rendered="#{item.property.ontologyURI!=''}" id="classVar2"
+											style="width: 80px;" autocomplete="off"
 											value="Var: #{item.property.classVar}" />
-										
+
 										<h:outputText label="value" rendered="#{item.editValue}"
 											id="value2" style="width: 80px;" autocomplete="off"
 											value="Value: #{item.property.value}" />
@@ -246,67 +248,137 @@
 			<p:dialog widgetVar="editDialog" id="editDialog" modal="true"
 				header="Edit node" resizable="false" showEffect="clip"
 				dynamic="true" hideEffect="fold" position="center,center">
-				<h:panelGrid columns="2" columnClasses="label,value"
-					styleClass="grid">
-					<h:panelGrid >
-						<p:selectCheckboxMenu
-							value="#{addNewRuleBean.argument}"
-							label="Select variable from classes" filter="true"
-							filterText="Filter" filterMatchMode="startsWith"
-							panelStyle="width:220px">
-							<f:selectItems value="#{addNewRuleBean.usedVariablesForClasses}" />
-						</p:selectCheckboxMenu>
-						<p:selectCheckboxMenu
-							value="#{addNewRuleBean.argument}"
-							label="Select variable from classes" filter="true"
-							filterText="Filter" filterMatchMode="startsWith"
-							panelStyle="width:220px">
-							<f:selectItems value="#{addNewRuleBean.usedVariablesForValues}" />
-						</p:selectCheckboxMenu>
+				<h:panelGrid styleClass="grid">
+					<h:panelGrid id="selections"
+						rendered="#{addNewRuleBean.cloneSelectedNode.type=='BUILTIN_METHOD'
+						and (addNewRuleBean.cloneSelectedNode.method.originalName=='equal'
+						or addNewRuleBean.cloneSelectedNode.method.originalName=='notEqual')}"
+						columns="3" columnClasses="output,label,value">
+						<h:outputText value="Select classes" />
+
+						<p:selectBooleanCheckbox value="#{addNewRuleBean.selectedClasses}">
+							<p:ajax listener="#{addNewRuleBean.handleChangeInArguments}"
+								update=":#{p:component('selections')}" />
+						</p:selectBooleanCheckbox>
+
+
+						<p:panelGrid id="gridType1" columns="2"
+							columnClasses="label,value">
+							<f:facet name="header">
+Classes
+</f:facet>
+							<p:selectOneMenu
+								value="#{addNewRuleBean.cloneSelectedNode.method.selectedValues[0].value}"
+								disabled="#{addNewRuleBean.gridType1}">
+								<f:selectItems var="item" itemLabel="#{item}"
+									itemValue="#{item}"
+									value="#{addNewRuleBean.cloneSelectedNode.method.listOfVarClassesLists[0]}" />
+
+								<p:ajax event="change" update=":#{p:component('gridType1')}"
+									listener="#{addNewRuleBean.spinnerValueChangeForClasses}">
+								</p:ajax>
+
+							</p:selectOneMenu>
+
+							<p:selectOneMenu value="#{addNewRuleBean.argument}"
+								disabled="#{addNewRuleBean.gridType1}">
+								<f:selectItems var="item" itemLabel="#{item}"
+									itemValue="#{item}"
+									value="#{addNewRuleBean.cloneSelectedNode.method.listOfVarClassesLists[1]}" />
+							</p:selectOneMenu>
+						</p:panelGrid>
+
+						<h:outputText value="Select or Fill values" />
+						<p:selectBooleanCheckbox
+							value="#{addNewRuleBean.selectedVariables}">
+							<p:ajax listener="#{addNewRuleBean.handleChangeInArguments}"
+								update=":#{p:component('selections')}" />
+						</p:selectBooleanCheckbox>
+
+						<p:panelGrid id="gridType2" columns="2"
+							columnClasses="label,value">
+							<f:facet name="header">
+Values
+</f:facet>
+
+							<p:selectOneMenu value="#{addNewRuleBean.argument}"
+								disabled="#{!addNewRuleBean.gridType1}"
+								>
+								<f:selectItems var="item" itemLabel="#{item}"
+									itemValue="#{item}"
+									value="#{addNewRuleBean.cloneSelectedNode.method.listOfVarValuesLists[0]}" />
+								
+							</p:selectOneMenu>
+
+
+							<p:inputText disabled="#{!addNewRuleBean.gridType1}"
+								style="width: 300px;" autocomplete="off"
+								value="#{addNewRuleBean.argument}">
+							</p:inputText>
+
+							<p:selectOneMenu value="#{addNewRuleBean.argument}"
+								disabled="#{!addNewRuleBean.gridType1}">
+								<f:selectItems var="item" itemLabel="#{item}"
+									itemValue="#{item}"
+									value="#{addNewRuleBean.cloneSelectedNode.method.listOfVarValuesLists[1]}" />
+							</p:selectOneMenu>
+
+							<p:inputText disabled="#{!addNewRuleBean.gridType1}"
+								style="width: 300px;" autocomplete="off"
+								value="#{addNewRuleBean.argument}">
+							</p:inputText>
+						</p:panelGrid>
+
+
 					</h:panelGrid>
-					<h:outputText value="Variable name: " id="clonedVar"
-						rendered="#{addNewRuleBean.cloneSelectedNode.editVar}" />
-					<p:inputText label="Rule name" style="width: 300px;"
-						id="clonedVar1" autocomplete="off"
-						rendered="#{addNewRuleBean.cloneSelectedNode.editVar}"
-						value="#{addNewRuleBean.cloneSelectedNode.property.classVar}"
-						required="true">
-					</p:inputText>
-					<p:watermark for="clonedVar1"
-						value="Insert a variable name e.g ?Sol" id="watermarkVar" />
-					<!--  	<h:outputText value="Value: " id="clonedValue" required="false"
+					<h:panelGrid id="propertyPanel" columns="2"
+						columnClasses="label,value"
+						rendered="#{addNewRuleBean.cloneSelectedNode.type=='DATA_PROPERTY' or
+					 addNewRuleBean.cloneSelectedNode.type=='OBJECT_PROPERTY'}">
+						<h:outputText value="Variable name: " id="clonedVar"
+							rendered="#{addNewRuleBean.cloneSelectedNode.editVar}" />
+						<p:inputText label="Rule name" style="width: 300px;"
+							id="clonedVar1" autocomplete="off"
+							rendered="#{addNewRuleBean.cloneSelectedNode.editVar}"
+							value="#{addNewRuleBean.cloneSelectedNode.property.classVar}"
+							required="true">
+						</p:inputText>
+						<p:watermark for="clonedVar1"
+							value="Insert a variable name e.g ?Sol" id="watermarkVar" />
+						<!--  	<h:outputText value="Value: " id="clonedValue" required="false"
 						rendered="#{addNewRuleBean.cloneSelectedNode.editValue}" />-->
 
-					<h:outputText value="Value: " id="clonedValue" required="false"
-						rendered="#{addNewRuleBean.cloneSelectedNode.editValue}" />
-					<p:inputText
-						rendered="#{addNewRuleBean.cloneSelectedNode.editValue}"
-						style="width: 300px;" id="clonedValue1" autocomplete="off"
-						value="#{addNewRuleBean.cloneSelectedNode.property.value}">
-					</p:inputText>
-					<p:watermark for="clonedValue1"
-						value="Insert a value e.g ?value or 
+						<h:outputText value="Value: " id="clonedValue" required="false"
+							rendered="#{addNewRuleBean.cloneSelectedNode.editValue}" />
+						<p:inputText
+							rendered="#{addNewRuleBean.cloneSelectedNode.editValue}"
+							style="width: 300px;" id="clonedValue1" autocomplete="off"
+							value="#{addNewRuleBean.cloneSelectedNode.property.value}">
+						</p:inputText>
+						<p:watermark for="clonedValue1"
+							value="Insert a value e.g ?value or 
 					'test'"
-						id="watermarkValue" />
-					<!--  	<h:outputText value="Value: " id="clonedValue" required="false"
+							id="watermarkValue" />
+						<!--  	<h:outputText value="Value: " id="clonedValue" required="false"
 						rendered="#{addNewRuleBean.cloneSelectedNode.editValue}" />-->
-					<h:outputText value="Value: " id="helpStr" required="false"
-						rendered="#{addNewRuleBean.cloneSelectedNode.method.flag}" />
-					<p:inputText
-						rendered="#{addNewRuleBean.cloneSelectedNode.method.flag}"
-						style="width: 300px;" id="helpStr1" autocomplete="off"
-						value="#{addNewRuleBean.cloneSelectedNode.method.helpString}">
-					</p:inputText>
-					<p:watermark for="helpStr1"
-						value="#{addNewRuleBean.cloneSelectedNode.method.watermarkDescription}"
-						id="watermarkValue1" />
-					<!--  	<h:outputText value="Value: " id="clonedValue" required="false"
+						<h:outputText value="Value: " id="helpStr" required="false"
+							rendered="#{addNewRuleBean.cloneSelectedNode.method.flag}" />
+						<p:inputText
+							rendered="#{addNewRuleBean.cloneSelectedNode.method.flag}"
+							style="width: 300px;" id="helpStr1" autocomplete="off"
+							value="#{addNewRuleBean.cloneSelectedNode.method.helpString}">
+						</p:inputText>
+						<p:watermark for="helpStr1"
+							value="#{addNewRuleBean.cloneSelectedNode.method.watermarkDescription}"
+							id="watermarkValue1" />
+						<!--  	<h:outputText value="Value: " id="clonedValue" required="false"
 						rendered="#{addNewRuleBean.cloneSelectedNode.editValue}" />-->
+					</h:panelGrid>
 
 					<p:commandButton action="#{addNewRuleBean.saveEditOfNode}"
 						icon="ui-icon-save" title="Save changes"
 						rendered="#{addNewRuleBean.cloneSelectedNode.enableEdit or addNewRuleBean.cloneSelectedNode.method.flag}"
-						update=":#{p:component('pan1')},:#{p:component('pan2')}"
+						update=":#{p:component('pan1')},:#{p:component('pan2')},:#{p:component('selections')}"
 						value="Save" oncomplete="PF('editDialog').hide()">
 					</p:commandButton>
 					<p:commandButton action="#{addNewRuleBean.removeNode}"
@@ -330,50 +402,14 @@
 						action="/views/addMessage.xhtml?javax.portlet.faces.PortletMode=view&amp;javax.portlet.faces.WindowState=normal"
 						value="Yes">
 					</p:commandButton>
-					<p:commandButton icon="ui-icon-close"
+					<p:commandButton icon="ui-icon-close" ajax="false"
 						title="Save the rule withount adding a message" value="No"
-						oncomplete="PF('addMessageDialog').hide();PF('newRuleDialog').show()">
+						actionListener="#{addNewRuleBean.getPreviousStep('/views/addConflictResolRule.xhtml?javax.portlet.faces.PortletMode=view&amp;javax.portlet.faces.WindowState=normal')}"
+						action="/views/saveRule.xhtml?javax.portlet.faces.PortletMode=view&amp;javax.portlet.faces.WindowState=normal">
 					</p:commandButton>
 				</h:panelGrid>
 			</p:dialog>
 
-			<p:dialog widgetVar="newRuleDialog" id="newRuleDialog" modal="true"
-				header="Save rule configuration" resizable="false" showEffect="clip"
-				dynamic="true" hideEffect="fold" position="center,center">
-				<p:messages for="msgs" showDetail="true" autoUpdate="true"
-					closable="true" />
-				<h:panelGrid columns="2" columnClasses="label,value"
-					styleClass="grid">
-					<h:outputText value="Rule name: " id="ruleName" />
-					<p:inputText label="Rule name" style="width: 300px;"
-						id="newRuleName" autocomplete="off"
-						value="#{addNewRuleBean.ruleName}" required="true">
-					</p:inputText>
-				</h:panelGrid>
-				<p:fileUpload style="width: 600px;" mode="advanced"
-					label="Select an existing rule file"
-					value="#{addNewRuleBean.oldFileName}" auto="true"
-					fileUploadListener="#{addNewRuleBean.uploadFileForSaveAs}"
-					allowTypes="/(\.|\/)(rules)$/">
-				</p:fileUpload>
-				<h:panelGrid columns="2" columnClasses="label,value"
-					styleClass="grid">
-					<h:outputText value="Or create a new file " id="FileName"
-						required="false" />
-					<p:inputText label="File Name" style="width: 300px;"
-						id="newFileName" autocomplete="off"
-						value="#{addNewRuleBean.newFileName}">
-					</p:inputText>
-					<p:commandButton value="OK" id="okBut" ajax="false"
-						oncomplete="PF('newRuleDialog').hide()"
-						actionListener="#{addNewRuleBean.saveRule}" />
-					<p:commandButton value="Cancel" id="cancelBut"
-						oncomplete="PF('newRuleDialog').hide()" />
-				</h:panelGrid>
-			</p:dialog>
-
 		</h:form>
-
-
 	</h:body>
 </f:view>

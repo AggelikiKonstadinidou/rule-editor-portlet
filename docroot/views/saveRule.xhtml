@@ -1,0 +1,86 @@
+<?xml version="1.0"?>
+
+<f:view xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:c="http://java.sun.com/jsp/jstl/core"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:ui="http://java.sun.com/jsf/facelets">
+	<h:head />
+	<h:body>
+		<h:form id="form" enctype="multipart/form-data">
+			<p:panel id="informationPanel">
+				<f:facet name="header">
+					<h:outputText value="Save the rule" />
+				</f:facet>
+				<p:messages for="msgs" showDetail="true" autoUpdate="true"
+					closable="true" />
+				<h:panelGrid columns="2" columnClasses="label,value"
+					styleClass="grid">
+					<h:outputText value="Rule name: *" id="ruleName" />
+					<p:inputText label="Rule name" style="width: 300px;"
+						id="newRuleName" autocomplete="off"
+						value="#{addNewRuleBean.ruleName}">
+					</p:inputText>
+				</h:panelGrid>
+				<p:fileUpload style="width: 600px;" mode="advanced"
+					label="Select an existing rule file"
+					value="#{addNewRuleBean.oldFileName}" auto="true"
+					fileUploadListener="#{addNewRuleBean.uploadFileForSaveAs}"
+					allowTypes="/(\.|\/)(rules)$/">
+				</p:fileUpload>
+				<h:panelGrid columns="2" columnClasses="label,value"
+					styleClass="grid">
+					<h:outputText value="Or create a new file " id="FileName"
+						required="false" />
+					<p:inputText label="File Name" style="width: 300px;"
+						id="newFileName" autocomplete="off"
+						value="#{addNewRuleBean.newFileName}">
+					</p:inputText>
+					<p:commandButton value="Previous Step" id="previousStep"
+						actionListener="#{addNewRuleBean.goToPreviousStep}" 
+						ajax="false"/>
+					<p:commandButton value="Save" id="okBut"
+						actionListener="#{addNewRuleBean.saveRule}"
+						oncomplete="PF('correlationDialog').show()" />
+				</h:panelGrid>
+			</p:panel>
+			
+			<p:dialog widgetVar="correlationDialog" id="correlationDialog"
+				modal="true"
+				header="Load file to check correlation with other rules"
+				resizable="false" showEffect="clip" dynamic="true" hideEffect="fold"
+				position="center,center">
+				<h:panelGrid columns="2" columnClasses="label,value"
+					styleClass="grid">
+					<p:fileUpload style="width: 600px;" mode="advanced" multiple="true"
+						label="Select existing rule files" fileLimit="3" auto="false"
+						fileUploadListener="#{addNewRuleBean.uploadFileForCorrelation}"
+						allowTypes="/(\.|\/)(rules)$/">
+					</p:fileUpload>
+					<p:commandButton value="Find correlation" id="correlation"
+						actionListener="#{addNewRuleBean.findCorrelation}" 
+						ajax="false"/>
+				</h:panelGrid>
+				<h:panelGrid id="grid2" style="width:535px;">
+				<p:dataTable id="correlatedRules" var="entry"
+					value="#{addNewRuleBean.correlatedFiles}" rowKey="#{entry.text}"
+					scrollable="true" scrollHeight="100">
+					<f:facet name="header">
+						<h:outputText value="Correlated Rules" />
+					</f:facet>
+
+					<p:column headerText="File">
+						<h:outputText value="#{entry.language}" />
+					</p:column>
+					<p:column headerText="Rule">
+						<h:outputText value="#{entry.text}" />
+					</p:column>
+
+				</p:dataTable>
+				</h:panelGrid>
+			</p:dialog>
+			
+		</h:form>
+	</h:body>
+</f:view>

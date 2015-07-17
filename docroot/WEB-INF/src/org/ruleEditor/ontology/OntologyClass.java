@@ -61,5 +61,38 @@ public class OntologyClass {
 	public void setInstances(List<Instance> instances) {
 		this.instances = instances;
 	}
+	
+	@Override
+	public boolean equals(Object obj) {
+		if (this.getClassName().equals(
+				((OntologyClass) obj).getClassName())) {
+			return true;
+		} else
+			return false;
+	}
+	
+	public OntologyClass clone() {
+		OntologyClass ontClass = new OntologyClass();
+		
+		ontClass.setClassName(this.getClassName());
+		for (DataProperty temp : this.getDataProperties()) {
+			ontClass.getDataProperties().add(temp.clone());
+		}
+
+		for (ObjectProperty temp : this.getObjectProperties()) {
+			ontClass.getObjectProperties().add(temp.clone());
+		}
+
+		for (OntologyClass temp : this.getChildren()) {
+			ontClass.getChildren().add(temp.clone());
+		}
+		
+		for(Instance temp: this.getInstances()){
+			ontClass.getInstances().add(temp.clone());
+		}
+		
+		return ontClass;
+	}
+
 
 }

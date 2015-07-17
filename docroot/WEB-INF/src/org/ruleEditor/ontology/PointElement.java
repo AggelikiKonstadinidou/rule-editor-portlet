@@ -33,7 +33,7 @@ public class PointElement {
 		this.id = "";
 		this.method = new BuiltinMethod("", "", "", 0);
 		this.method.setFlag(false);
-		this.instance = new Instance("", "", "");
+		this.instance = new Instance();
 		this.enableEdit = false;
 		this.order = 0;
 		this.label = "";

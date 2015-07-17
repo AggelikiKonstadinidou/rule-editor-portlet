@@ -139,6 +139,28 @@ public class Utils {
 
 		return el;
 	}
+	
+	public ArrayList<Message> correlateRules(
+			HashMap<String, InputStream> hashmap,
+			List<PointElement> conditions, List<PointElement> conclusions) throws IOException {
+		ArrayList<Message> correlatedFiles = new ArrayList<Message>();
+		//the string is the name of the file, the list contain the rules of the file
+		HashMap<String,ArrayList<Rule>> hashmap2 = new HashMap<String,ArrayList<Rule>>();
+		ArrayList<Rule> rulesList;
+		
+		Iterator it = hashmap.entrySet().iterator();
+	    while (it.hasNext()) {
+	        Map.Entry pair = (Map.Entry)it.next();
+	        System.out.println(pair.getKey() + " = " + pair.getValue());
+	        rulesList = getRulesFromFile((InputStream) pair.getValue());
+	        hashmap2.put(pair.getKey().toString(), rulesList);
+	    }
+
+		return correlatedFiles;
+
+	}
+	
+	
 
 	public static String writeMessagesInJsonLdFile(InputStream inputStream,
 			List<Message> list) throws IOException {

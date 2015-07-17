@@ -223,9 +223,6 @@
 					title="Go to initial menu" id="prevBut" ajax="false"
 					value="Previous step">
 				</p:commandButton>
-				<p:commandButton oncomplete="PF('newRuleDialog').show()"
-					value="Save Changes" title="Save the rule">
-				</p:commandButton>
 				<p:commandButton id="clearConditions"
 					update=":#{p:component('pan1')}"
 					actionListener="#{addNewRuleBean.clearPanel('pan1')}" ajax="false"
@@ -235,6 +232,9 @@
 					update=":#{p:component('pan2')}"
 					actionListener="#{addNewRuleBean.clearPanel('pan2')}" ajax="false"
 					value="Clear conclusions" title="Clear conclusions panel">
+				</p:commandButton>
+				<p:commandButton oncomplete="PF('newRuleDialog').show()"
+					value="Save Changes" title="Save the rule">
 				</p:commandButton>
 
 

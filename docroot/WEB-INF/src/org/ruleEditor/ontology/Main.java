@@ -20,21 +20,59 @@ public class Main {
     private List<ArrayList<OntologyClass>> allClasses;
     private List<BuiltinMethod> methods = new ArrayList<BuiltinMethod>();
     private List<String> languages = new ArrayList<String>();
+    private ArrayList<Solution> allSolutions= new ArrayList<Solution>();
+    private ArrayList<Setting> allSettings = new ArrayList<Setting>();
 	
 	public Main() {
 		System.gc();
 		ontology = new Ontology();
 		this.getOntology().loadOntology();
 
-		//load classes
+		// load solutions and settings
+		allSolutions = this.getOntology().loadSolutionsAndSettingsInstances();
+		for (Solution s : allSolutions) {
+			allSettings.addAll(s.settings);
+		}
+
+		// load classes
 		allClasses = new ArrayList<ArrayList<OntologyClass>>();
 		allClasses = this.getOntology().getClassesStructured();
+		
+		Instance inst = null;
+		int indexOfSolutions = -1;
+		ArrayList<OntologyClass> solutions = null;
+		for (ArrayList<OntologyClass> temp : allClasses) {
+			if (temp.get(0).getClassName().equalsIgnoreCase("Solutions")) {
+				indexOfSolutions = allClasses.indexOf(temp);
+				solutions = temp;
+				//findAndCreateSolutionsInstances(temp);
+			}
 
-		//load built in methods
-		//TODO complete the methods
+			if (temp.get(0).getClassName().equalsIgnoreCase("Settings")) {
+				for (Setting sett : allSettings) {
+					if (!sett.ignoreSetting) {
+						inst = new Instance();
+						inst.setClassName("Settings");
+						inst.setId(sett.instanceName);
+						inst.setInstanceName(sett.instanceName);
+						inst.setInstanceObj(sett);
+						temp.get(0).getInstances().add(inst);
+					}
+
+				}
+			}
+		}
+		
+		ArrayList<OntologyClass> newSolutions = findAndCreateSolutionsInstances(solutions);
+		allClasses.remove(solutions);
+		allClasses.add(indexOfSolutions, newSolutions);
+		
+
+		// load built in methods
+		// TODO complete the methods
 		methods = getBuiltinMethods();
 
-		//load all languages
+		// load all languages
 		Locale l = Locale.ENGLISH;
 		String[] locales = l.getISOLanguages();
 		for (int i = 0; i < locales.length; i++) {
@@ -52,6 +90,53 @@ public class Main {
 
 		System.out.println("Ontology loaded successfully");
 
+	}
+	
+	public ArrayList<OntologyClass> findAndCreateSolutionsInstances(
+			ArrayList<OntologyClass> ontClass) {
+		Instance inst = null;
+		ArrayList<OntologyClass> toBeRturnedList = new ArrayList<OntologyClass>();
+		for (Solution sol : allSolutions) {
+
+			inst = new Instance();
+			inst.setInstanceObj(sol);
+			inst.setInstanceName(sol.name);
+			inst.setId(sol.id);
+			if (sol.className.equalsIgnoreCase("Solutions"))
+				inst.setClassName(sol.className);
+
+			if (ontClass.get(0).getClassName().equalsIgnoreCase(sol.className)) {
+
+				ontClass.get(0).getInstances().add(inst);
+			} else {
+				toBeRturnedList = (ArrayList<OntologyClass>) checkChildrenForSolutions(
+						(ArrayList<OntologyClass>) ontClass.get(0)
+								.getChildren(), inst);
+				ontClass.get(0).setChildren(toBeRturnedList);
+			}
+		}
+
+		return ontClass;
+
+	}
+	
+	public ArrayList<OntologyClass> checkChildrenForSolutions(
+			ArrayList<OntologyClass> ontClass, Instance inst) {
+		ArrayList<OntologyClass> toBeRturnedList = new ArrayList<OntologyClass>();
+		for (OntologyClass temp : ontClass) {
+			if (temp.getClassName().equalsIgnoreCase(inst.getClassName())) {
+				temp.getInstances().add(inst);
+				break;
+			} else {
+
+				toBeRturnedList = checkChildrenForSolutions(
+						(ArrayList<OntologyClass>) temp.getChildren(), inst);
+				temp.setChildren(toBeRturnedList);
+
+			}
+		}
+
+		return ontClass;
 	}
 	
 	public OntologyClass getOntologyClassByName(String name) {
@@ -394,6 +479,14 @@ public class Main {
 
 	public void setLanguages(List<String> languages) {
 		this.languages = languages;
+	}
+
+	public ArrayList<Solution> getAllSolutions() {
+		return allSolutions;
+	}
+
+	public void setAllSolutions(ArrayList<Solution> allSolutions) {
+		this.allSolutions = allSolutions;
 	}
 	
 	

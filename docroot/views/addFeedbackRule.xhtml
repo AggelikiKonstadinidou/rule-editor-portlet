@@ -164,16 +164,17 @@
 					title="Go to initial menu" id="prevBut" ajax="false"
 					value="Previous step">
 				</p:commandButton>
-				<p:commandButton actionListener="#{addMessageBean.init(true)}"
-					action="/views/addMessage.xhtml?javax.portlet.faces.PortletMode=view&amp;javax.portlet.faces.WindowState=normal"
-					title="Move to the next step of the creation of the rule" id="nextBut" ajax="false"
-					value="Next step">
-				</p:commandButton>
 				<p:commandButton id="clearConditions"
 					update=":#{p:component('pan1')}"
 					actionListener="#{addNewRuleBean.clearPanel('pan1')}" ajax="false"
 					value="Clear conditions" title="Clear conditions panel">
 				</p:commandButton>
+				<p:commandButton actionListener="#{addMessageBean.init(true)}"
+					action="/views/addMessage.xhtml?javax.portlet.faces.PortletMode=view&amp;javax.portlet.faces.WindowState=normal"
+					title="Move to the next step of the creation of the rule" id="nextBut" ajax="false"
+					value="Next step">
+				</p:commandButton>
+				
 
 			</p:panel>
 

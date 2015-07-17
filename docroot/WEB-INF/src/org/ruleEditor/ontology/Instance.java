@@ -5,6 +5,8 @@ public class Instance {
 	private String className;
 	private String instanceName;
 	private String id;
+	private Object instanceObj;
+	
 	public String getClassName() {
 		return className;
 	}
@@ -23,11 +25,18 @@ public class Instance {
 	public void setId(String id) {
 		this.id = id;
 	}
-	public Instance(String className, String instanceName, String id) {
+	public Object getInstanceObj() {
+		return instanceObj;
+	}
+	public void setInstanceObj(Object instanceObj) {
+		this.instanceObj = instanceObj;
+	}
+	public Instance() {
 		super();
-		this.className = className;
-		this.instanceName = instanceName;
-		this.id = id;
+		this.className = "";
+		this.instanceName = "";
+		this.id = "";
+		this.instanceObj = null;
 	}
 	
 	@Override
@@ -39,10 +48,11 @@ public class Instance {
 	}
 
 	public Instance clone() {
-		Instance inst = new Instance("", "", "");
+		Instance inst = new Instance();
 		inst.setClassName(this.getClassName());
 		inst.setInstanceName(this.getInstanceName());
 		inst.setId(this.getId());
+		inst.setInstanceObj(this.getInstanceObj());
 		return inst;
 	}
 

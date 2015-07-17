@@ -1,5 +1,6 @@
 package org.ruleEditor.ontology;
 
+import java.io.FileInputStream;
 import java.io.InputStream;
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -13,7 +14,6 @@ import javax.servlet.ServletContext;
 import org.ruleEditor.ontology.OntologyProperty.DataProperty;
 import org.ruleEditor.ontology.OntologyProperty.ObjectProperty;
 import org.ruleEditor.utils.Utils;
-
 import com.hp.hpl.jena.ontology.DatatypeProperty;
 import com.hp.hpl.jena.ontology.Individual;
 import com.hp.hpl.jena.ontology.OntClass;
@@ -23,8 +23,12 @@ import com.hp.hpl.jena.ontology.OntResource;
 import com.hp.hpl.jena.ontology.OntTools;
 import com.hp.hpl.jena.ontology.impl.IndividualImpl;
 import com.hp.hpl.jena.rdf.model.ModelFactory;
+import com.hp.hpl.jena.rdf.model.NodeIterator;
+import com.hp.hpl.jena.rdf.model.RDFNode;
 import com.hp.hpl.jena.rdf.model.Resource;
 import com.hp.hpl.jena.rdf.model.Statement;
+import com.hp.hpl.jena.rdf.model.StmtIterator;
+import com.hp.hpl.jena.rdf.model.impl.StatementImpl;
 import com.hp.hpl.jena.util.FileManager;
 import com.hp.hpl.jena.util.iterator.ExtendedIterator;
 import com.hp.hpl.jena.vocabulary.OWL;
@@ -36,14 +40,13 @@ public class Ontology implements Serializable {
 	String ontologyPath = "";
 	String SOURCE = "http://www.cloud4all.eu/SemanticFrameworkForContentAndSolutions.owl";
 	String NS = SOURCE + "#";
-	private List<String> classes = Arrays.asList("Solutions",
-			"InstalledSolution", "Preference", "Metadata", "Setting",
+	
+	private List<String> classes = Arrays.asList("PreferenceSet", "Preference",
+			"Metadata", "Setting", "InstalledSolution",
 			"InferredConfiguration", "Configuration", "Conflict",
-			"ConflictResolution", "PreferenceSet", "OperatingSystem",
-			"MultipleATConflict", "MultipleSolutionConflict", "Environment",
-			"Devices", "Platforms");
-
-	// "AssistiveTechnology","AccessibilitySolutions"
+			"OperatingSystem", "Solutions", "AccessibilitySolution",
+			"AccessibilitySetting", "AssistiveTechnology",
+			"Settings");
 
 	public void loadOntology() {
 
@@ -69,6 +72,228 @@ public class Ontology implements Serializable {
 		}
 
 	}
+	
+	public ArrayList<Solution> loadSolutionsAndSettingsInstances() {
+
+		ArrayList<Solution> allSolutions = new ArrayList<Solution>();
+		// fill "allSolutions" ArrayList
+
+		OntClass solutionsClass = ontologyModel.getOntClass(NS + "Solutions");
+		List<IndividualImpl> myinstances = new ArrayList<IndividualImpl>();
+		if (solutionsClass != null) {
+			Iterator it = solutionsClass.listInstances();
+			while (it.hasNext()) {
+				IndividualImpl tmpInstance = (IndividualImpl) it.next();
+
+				Solution tmpSolution = new Solution();
+				tmpSolution.className = tmpInstance.getOntClass()
+						.getLocalName();
+				tmpSolution.name = tmpInstance.getLocalName();
+				System.out.println(tmpSolution.className + "  "
+						+ tmpSolution.name);
+
+				tmpSolution.id = tmpInstance
+						.getPropertyValue(ontologyModel.getProperty(NS, "id"))
+						.asLiteral().getValue().toString();
+
+				// get solution settings
+				NodeIterator settingsInstances = tmpInstance
+						.listPropertyValues(ontologyModel.getProperty(NS,
+								"hasSolutionSpecificSettings"));
+				while (settingsInstances.hasNext()) {
+					RDFNode tmpSettingsInstanceRDFNode = (RDFNode) settingsInstances
+							.next();
+					// System.out.println("\t\tsettings instance: "
+					// +
+					// tmpSettingsInstanceRDFNode.toString());
+					Individual tmpSettingsInstance = ontologyModel
+							.getIndividual(tmpSettingsInstanceRDFNode
+									.toString());
+					StmtIterator allSettingsIntanceProperties = tmpSettingsInstance
+							.listProperties();
+					while (allSettingsIntanceProperties.hasNext()) {
+						Statement tmpStatement = allSettingsIntanceProperties
+								.next();
+
+						Setting tmpSetting = new Setting();
+						// System.out.println("\t\t\t\tproperty: " +
+						// tmpStatement.toString());
+						if (tmpStatement.getPredicate() != null) {
+							// System.out.println("\t\t\t\t predicate: "
+							// +
+							// tmpStatement.getPredicate().getLocalName());
+							tmpSetting.instanceName = tmpStatement
+									.getPredicate().getLocalName();
+						}
+						if (tmpStatement.getObject() != null) {
+							// System.out.println("object: " +
+							// tmpStatement.getObject());
+							if (tmpStatement.getObject().isLiteral()) {
+								String valueStr = tmpStatement
+										.getObject()
+										.toString()
+										.substring(
+												0,
+												tmpStatement.getObject()
+														.toString()
+														.indexOf("^^"));
+								String typeStr = tmpStatement
+										.getObject()
+										.toString()
+										.substring(
+												tmpStatement.getObject()
+														.toString()
+														.indexOf("^^") + 2);
+								// System.out.println("\t\t\t\t valueStr: "
+								// + valueStr + ", type: " +
+								// typeStr);
+
+								tmpSetting.value = valueStr;
+								if (typeStr
+										.equals("http://www.w3.org/2001/XMLSchema#string"))
+									tmpSetting.type = Setting.STRING;
+								else if (typeStr
+										.equals("http://www.w3.org/2001/XMLSchema#boolean"))
+									tmpSetting.type = Setting.BOOLEAN;
+								else if (typeStr
+										.equals("http://www.w3.org/2001/XMLSchema#float")
+										|| typeStr
+												.equals("http://www.w3.org/2001/XMLSchema#double"))
+									tmpSetting.type = Setting.FLOAT;
+								else if (typeStr
+										.equals("http://www.w3.org/2001/XMLSchema#int"))
+									tmpSetting.type = Setting.INT;
+								else if (typeStr
+										.equals("http://www.w3.org/2001/XMLSchema#time"))
+									tmpSetting.type = Setting.TIME;
+								else if (typeStr
+										.equals("http://www.w3.org/2001/XMLSchema#date"))
+									tmpSetting.type = Setting.DATE;
+								else if (typeStr
+										.equals("http://www.w3.org/2001/XMLSchema#dateTime"))
+									tmpSetting.type = Setting.DATETIME;
+								else
+									System.out
+											.println("Exception! THIS TYPE IS NOT INCLUDED! -> "
+													+ tmpStatement.getObject());
+
+							} else // object property
+							{
+
+								if (tmpStatement.getPredicate().toString()
+										.endsWith("_isMappedToRegTerm")) {
+									// get mapped common term
+									Individual tmpRegTermInstance = ontologyModel
+											.getIndividual(tmpStatement
+													.getObject().toString());
+									tmpSetting.isMappedToRegTerm = tmpRegTermInstance
+											.getPropertyValue(
+													ontologyModel
+															.getProperty(NS,
+																	"RegistryTerm_hasID"))
+											.asLiteral().getValue().toString();
+								}
+							}
+						}
+
+						if (tmpSetting.instanceName.equals("type") == false
+								&& tmpSetting.instanceName.equals("adapting") == false) {
+							// System.out.println("\t\t\tsetting -> "
+							// +
+							// tmpSetting.toString());
+							// tmpSetting.process();
+							tmpSolution.settings.add(tmpSetting);
+						}
+
+					}
+				}
+
+				allSolutions.add(tmpSolution);
+			}
+		}
+
+		System.out.println(allSolutions.size());
+		allSolutions = processSolutionSettings(allSolutions);
+		return allSolutions;
+
+	}
+	
+	public ArrayList<Solution> processSolutionSettings(ArrayList<Solution> allSolutions) {
+		ArrayList<Solution> cloneAllSolutions = allSolutions;
+		for (int i = 0; i < allSolutions.size(); i++) {
+			Solution tmpSolution = allSolutions.get(i);
+			// System.out.println("SOLUTION name: " + tmpSolution.name +
+			// ", id: " + tmpSolution.id);
+
+			ArrayList<Setting> allSettings = tmpSolution.settings;
+			for (int j = 0; j < allSettings.size(); j++) {
+				Setting tmpSetting = allSettings.get(j);
+
+				//
+				if (!tmpSolution.name.contains("Service_"))	
+				if (tmpSetting.instanceName.endsWith("_hasID")
+						|| tmpSetting.instanceName.endsWith("_hasName")
+						|| tmpSetting.instanceName.endsWith("_hasDescription")
+						|| tmpSetting.instanceName.endsWith("_hasValueSpace")
+						|| tmpSetting.instanceName.endsWith("_hasConstraints")
+						|| tmpSetting.instanceName
+								.endsWith("_isMappedToRegTerm")
+						|| tmpSetting.instanceName.endsWith("_isExactMatching")
+						|| tmpSetting.instanceName
+								.endsWith("_hasCommentsForMapping")) {
+					tmpSetting.ignoreSetting = true;
+
+					String originalSettingName = tmpSetting.instanceName
+							.substring(0,
+									tmpSetting.instanceName.lastIndexOf("_"));
+					Setting originalSetting = getSetting(tmpSolution.name,
+							originalSettingName,cloneAllSolutions);
+
+					if (originalSetting != null) {
+						if (tmpSetting.instanceName.endsWith("_hasID"))
+							originalSetting.hasID = tmpSetting.value;
+						if (tmpSetting.instanceName.endsWith("_hasName"))
+							originalSetting.hasName = tmpSetting.value;
+						if (tmpSetting.instanceName.endsWith("_hasDescription"))
+							originalSetting.hasDescription = tmpSetting.value;
+						if (tmpSetting.instanceName.endsWith("_hasValueSpace"))
+							originalSetting.hasValueSpace = tmpSetting.value;
+						if (tmpSetting.instanceName.endsWith("_hasConstraints"))
+							originalSetting.hasConstraints = tmpSetting.value;
+						if (tmpSetting.instanceName
+								.endsWith("_isMappedToRegTerm"))
+							originalSetting.isMappedToRegTerm = tmpSetting.isMappedToRegTerm;
+						if (tmpSetting.instanceName
+								.endsWith("_isExactMatching"))
+							originalSetting.isExactMatching = Boolean
+									.parseBoolean(tmpSetting.value);
+						if (tmpSetting.instanceName
+								.endsWith("_hasCommentsForMapping"))
+							originalSetting.hasCommentsForMapping = tmpSetting.value;
+					}
+				}
+				// System.out.println("\t" + tmpSetting.toString());
+			}
+		}
+		
+		return allSolutions;
+	}
+
+	public Setting getSetting(String solutionName, String settingName,
+			ArrayList<Solution> allSolutions) {
+		for (int i = 0; i < allSolutions.size(); i++) {
+			Solution tmpSolution = allSolutions.get(i);
+			if (tmpSolution.name.equals(solutionName)) {
+				ArrayList<Setting> allSettings = tmpSolution.settings;
+				for (int j = 0; j < allSettings.size(); j++) {
+					Setting tmpSetting = allSettings.get(j);
+					if (tmpSetting.instanceName.equals(settingName))
+						return tmpSetting;
+				}
+			}
+		}
+		return null;
+	}
 
 	public List<ArrayList<OntologyClass>> getClassesStructured() {
 
@@ -82,16 +307,17 @@ public class Ontology implements Serializable {
 			String vClasse = essaClasse.getLocalName().toString();
 			List<OntologyClass> l = new ArrayList<OntologyClass>();
 
-			// loads all instances of the mother class
-			List<IndividualImpl> instances = getAllIndividualsForClass(s);
-			// get children classes
+			// // loads all instances of the mother class
+			// List<IndividualImpl> instances = getAllIndividualsForClass(s);
+			// // get children classes
 			if (!s.equalsIgnoreCase("Settings"))
 				if (essaClasse.hasSubClass()) {
 					for (Iterator i = essaClasse.listSubClasses(true); i
 							.hasNext();) {
 						OntClass c = (OntClass) i.next();
-						l.add(getConceptChildrenStructured(c, vClasse,
-								instances));
+						// l.add(getConceptChildrenStructured(c,
+						// vClasse,instances));
+						l.add(getConceptChildrenStructured(c, vClasse));
 					}
 				}
 
@@ -100,8 +326,8 @@ public class Ontology implements Serializable {
 			on.setClassName(vClasse);
 			on.setChildren(l);
 
-			// TODO
-			fillClassData(on, vClasse, instances);
+			// fillClassData(on, vClasse, instances);
+			fillClassData(on, vClasse);
 
 			tempList.add(on);
 			list.add(tempList);
@@ -111,12 +337,11 @@ public class Ontology implements Serializable {
 		return list;
 	}
 
-	public void fillClassData(OntologyClass myClass, String motherClassName,
-			List<IndividualImpl> instances) {
+	public void fillClassData(OntologyClass myClass, String motherClassName) {
 
 		ArrayList<DataProperty> dataProperties = new ArrayList<DataProperty>();
 		ArrayList<ObjectProperty> objectProperties = new ArrayList<ObjectProperty>();
-		ArrayList<Instance> tempInstances = new ArrayList<Instance>();
+//		ArrayList<Instance> tempInstances = new ArrayList<Instance>();
 
 		String className = myClass.getClassName();
 
@@ -126,22 +351,23 @@ public class Ontology implements Serializable {
 		OntClass cl = ontologyModel.getOntClass(NS + myClass.getClassName());
 
 		// get instances
-		for (IndividualImpl in : instances) {
-			String categoryName = in.getOntClass().toString().split("#")[1];
-			if (categoryName.equalsIgnoreCase(className)) {
-				String instanceName = in.getURI().replace(NS, "");
-				if (instanceName.contains("_"))
-					instanceName = instanceName.split("_")[0];
-				
-				//TODO load the id for every instance
-				Instance inst = new Instance(className,
-						Utils.splitCamelCase(instanceName), in.getURI());
-				tempInstances.add(inst);
-			}
-		}
+//		for (IndividualImpl in : instances) {
+//			String categoryName = in.getOntClass().toString().split("#")[1];
+//			if (categoryName.equalsIgnoreCase(className)) {
+//				String instanceName = in.getURI().replace(NS, "");
+//				if (instanceName.contains("_"))
+//					instanceName = instanceName.split("_")[0];
+//				
+//				//TODO load the id for every instance
+//				Instance inst = new Instance();
+//				inst.setClassName(className);
+//				inst.setInstanceName(Utils.splitCamelCase(instanceName));
+//				inst.setId(in.getURI());
+//				tempInstances.add(inst);
+//			}
+//		}
 
 		// prepare properties
-		// TODO load properties
 		// data properties
 		OntologyProperty prop = new OntologyProperty("", "");
 		OntologyProperty.DataProperty dataProp = null;
@@ -173,7 +399,7 @@ public class Ontology implements Serializable {
 
 		myClass.setDataProperties(dataProperties);
 		myClass.setObjectProperties(objectProperties);
-		myClass.setInstances(tempInstances);
+//		myClass.setInstances(tempInstances);
 	}
 
 	public List<IndividualImpl> getAllIndividualsForClass(String className) {
@@ -193,50 +419,57 @@ public class Ontology implements Serializable {
 	}
 
 	public OntologyClass getConceptChildrenStructured(OntClass c,
-			String motherClassName, List<IndividualImpl> instances) {
+			String motherClassName) {
 		List<OntologyClass> l = new ArrayList<OntologyClass>();
 		if (c.hasSubClass()) {
 			for (Iterator i = c.listSubClasses(true); i.hasNext();) {
 				OntClass cc = (OntClass) i.next();
-				l.add(getConceptChildrenStructured(cc, motherClassName,
-						instances));
+				l.add(getConceptChildrenStructured(cc, motherClassName));
 			}
 		}
 		OntologyClass on = new OntologyClass();
 		on.setClassName(c.getLocalName());
 		on.setChildren(l);
 
-		fillClassData(on, motherClassName, instances);
+		//fillClassData(on, motherClassName, instances);
+		fillClassData(on, motherClassName);
 
 		return on;
 	}
 
 	public List<String> setDataPropertiesToClass(String name) {
-		List<String> solutions = Arrays.asList("hasSolutionName", "id",
-				"hasSolutionDescription", "hasSolutionVersion",
-				"hasStartCommand", "hasStopCommand", "hasCapabilities",
-				"hasCapabilitiesTransformations", "hasContraints");
+
+		List<String> solutions = Arrays.asList("name", "id", "class");
+		// properties from ontology
+		// Arrays.asList("hasSolutionName", "id",
+		// "hasSolutionDescription", "hasSolutionVersion",
+		// "hasStartCommand", "hasStopCommand", "hasCapabilities",
+		// "hasCapabilitiesTransformations", "hasContraints");
 		List<String> installedSolution = Arrays.asList("name", "id");
 		List<String> preference = Arrays.asList("id", "name", "type", "value");
-		List<String> metadata = Arrays.asList("value", "type","scope");
-		List<String> setting = Arrays.asList("name", "id", "description",
-				"refersTo", "value");
+		List<String> metadata = Arrays.asList("value", "messageType", "scope");
+		List<String> setting = Arrays.asList("name", "id", "value");
 		List<String> inferredConfiguration = Arrays.asList("id", "name");
 		List<String> configuration = Arrays.asList("id", "name", "isActive",
 				"solPreferred");
-		List<String> conflict = Arrays.asList("id", "name", "class");
+		List<String> conflict = Arrays.asList("name", "class", "activated",
+				"deactivated");// id
 		List<String> conflictResolution = Arrays.asList("id", "name");
-		List<String> preferenceSet = new ArrayList<String>();
+		List<String> preferenceSet = Arrays.asList("id", "name");
 
 		List<String> operatingSystem = Arrays.asList("name", "version");
-		List<String> multipleATConflict = new ArrayList<String>();
-		List<String> multipleSolutionConflict = new ArrayList<String>();
 		List<String> environment = Arrays.asList("hasEnvironmentName");
 		List<String> devices = Arrays.asList("hasDeviceName",
 				"hasDeviceDescription");
 		List<String> platforms = Arrays.asList("hasPlatformName",
 				"hasPlatformDescription", "hasPlatformVersion",
 				"hasPlatformSubType", "hasPlatfomType");
+		// use the same list for accessibilitySolution,accessibilitySetting and
+		// assistiveTechnology
+		// as the three of them have tha same property name
+		List<String> accessibilitySolution = Arrays.asList("name");
+		
+		
 
 		if (name.equalsIgnoreCase("Solutions"))
 			return solutions;
@@ -263,21 +496,28 @@ public class Ontology implements Serializable {
 		else if (name.equalsIgnoreCase("platforms"))
 			return platforms;
 		else if (name.equalsIgnoreCase("environment"))
-			return platforms;
+			return environment;
+		else if (name.equalsIgnoreCase("PreferenceSet"))
+			return preferenceSet;
+		else if (name.equalsIgnoreCase("accessibilitySolution")
+				|| name.equalsIgnoreCase("accessibilitySetting")
+				|| name.equalsIgnoreCase("assistiveTechnology"))
+			return accessibilitySolution;
 		else
 			return new ArrayList<String>();
 
 	}
 
 	public List<String> setObjectPropertiesToClass(String name) {
-		List<String> solutions = Arrays.asList("settings_Settings",
-				"runsOnDevice_Devices", "runsOnPlatform_Platforms");
-		List<String> setting = new ArrayList<String>();
+		List<String> solutions = Arrays.asList("settings_Settings");// runsOnDevice_Devices,runsOnPlatform_Platforms
+		List<String> setting = Arrays.asList("refersTo_?"); // TODO refers to
 		List<String> metadata = new ArrayList<String>();
-		List<String> conflict = Arrays.asList("hasResolution_?",
-				"refersTo_Solutions");
+		List<String> conflict = Arrays.asList("refersTo_Solutions");// hasResolution_?,
+																	// TODO
+																	// refersTo
+																	// installedSolution
 		List<String> preferenceSet = Arrays.asList("hasMetadata_Metadata",
-				"hasPreference_Preference");
+				"hasPrefs_Preference");
 		List<String> inferredConfiguration = Arrays.asList(
 				"hasMetadata_Metadata", "hasPrefs_Preference",
 				"refersTo_Configuration");
@@ -288,29 +528,35 @@ public class Ontology implements Serializable {
 				"hasPlatformSpecificSetting_Setting",
 				"platformSupports_Solutions");
 		List<String> installedSolution = Arrays.asList("settings_Setting");
-		List<String> configuration = Arrays.asList("refersTo_Solutions",
-				"settings_Setting");
+		List<String> configuration = Arrays.asList("refersTo_Solutions", // TODO
+																			// refersTo
+																			// se
+																			// installedSolution
+				"settings_Setting", "hasConflict_Conflict");
+		List<String> preference = Arrays.asList("settings_Setting");
 
-		if (name.equals("Solutions"))
+		if (name.equalsIgnoreCase("Solutions"))
 			return solutions;
-		else if (name.equals("Setting"))
+		else if (name.equalsIgnoreCase("Setting"))
 			return setting;
-		else if (name.equals("Conflict"))
+		else if (name.equalsIgnoreCase("Conflict"))
 			return conflict;
-		else if (name.equals("PreferenceSet"))
+		else if (name.equalsIgnoreCase("PreferenceSet"))
 			return preferenceSet;
-		else if (name.equals("InferredConfiguration"))
+		else if (name.equalsIgnoreCase("InferredConfiguration"))
 			return inferredConfiguration;
 		else if (name.equals("Devices"))
 			return devices;
-		else if (name.equals("Platforms"))
+		else if (name.equalsIgnoreCase("Platforms"))
 			return platforms;
-		else if (name.equals("Metadata"))
+		else if (name.equalsIgnoreCase("Metadata"))
 			return metadata;
-		else if (name.equals("InstalledSolution"))
+		else if (name.equalsIgnoreCase("InstalledSolution"))
 			return installedSolution;
-		else if (name.equals("Configuration"))
+		else if (name.equalsIgnoreCase("Configuration"))
 			return configuration;
+		else if (name.equalsIgnoreCase("preference"))
+			return preference;
 		else
 			return new ArrayList<String>();
 
