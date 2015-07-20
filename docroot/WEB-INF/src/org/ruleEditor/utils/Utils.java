@@ -38,6 +38,7 @@ import org.primefaces.model.diagram.endpoint.EndPoint;
 import org.primefaces.model.diagram.endpoint.EndPointAnchor;
 import org.primefaces.model.diagram.endpoint.RectangleEndPoint;
 import org.ruleEditor.ontology.BuiltinMethod;
+import org.ruleEditor.ontology.Main;
 import org.ruleEditor.ontology.Message;
 import org.ruleEditor.ontology.OntologyClass;
 import org.ruleEditor.ontology.OntologyProperty;
@@ -140,26 +141,165 @@ public class Utils {
 		return el;
 	}
 	
-	public ArrayList<Message> correlateRules(
+	public static ArrayList<Message> correlateRules(
 			HashMap<String, InputStream> hashmap,
-			List<PointElement> conditions, List<PointElement> conclusions) throws IOException {
+			List<PointElement> conditions, List<PointElement> conclusions,
+			Main main) throws IOException {
 		ArrayList<Message> correlatedFiles = new ArrayList<Message>();
-		//the string is the name of the file, the list contain the rules of the file
-		HashMap<String,ArrayList<Rule>> hashmap2 = new HashMap<String,ArrayList<Rule>>();
+		// the string is the name of the file, the list contain the rules of the
+		// file
+		HashMap<String, ArrayList<Rule>> hashmap2 = new HashMap<String, ArrayList<Rule>>();
 		ArrayList<Rule> rulesList;
-		
+
 		Iterator it = hashmap.entrySet().iterator();
-	    while (it.hasNext()) {
-	        Map.Entry pair = (Map.Entry)it.next();
-	        System.out.println(pair.getKey() + " = " + pair.getValue());
-	        rulesList = getRulesFromFile((InputStream) pair.getValue());
-	        hashmap2.put(pair.getKey().toString(), rulesList);
-	    }
+		while (it.hasNext()) {
+			Map.Entry pair = (Map.Entry) it.next();
+		//	System.out.println(pair.getKey() + " = " + pair.getValue());
+			rulesList = getRulesFromFile((InputStream) pair.getValue());
+			hashmap2.put(pair.getKey().toString(), rulesList);
+		}
+
+		HashMap<String, ArrayList<String>> returnedHashMap = convertRulesToLists(
+				hashmap2, main);
+
+		ArrayList<String> ruleUsedClassesFromConditions = getUsedClassesFromList(conditions);
+		ArrayList<String> ruleUsedClassesFromConclusions = getUsedClassesFromList(conclusions);
+
+		for (String s : ruleUsedClassesFromConclusions) {
+			if (!ruleUsedClassesFromConditions.contains(s))
+				ruleUsedClassesFromConditions.add(s);
+		}
+
+		correlatedFiles = findCorrelatedRules(returnedHashMap,
+				ruleUsedClassesFromConditions);
 
 		return correlatedFiles;
 
 	}
 	
+	public static ArrayList<String> getUsedClassesFromList(List<PointElement> list){
+		ArrayList<String> ruleUsedClasses = new ArrayList<String>();
+		String className = "";
+		for(PointElement el : list){
+			if (el.getType() != PointElement.Type.BUILTIN_METHOD) {
+				if (el.getType() == PointElement.Type.INSTANCE) {
+					className = el.getInstance().getClassName();
+
+				} else if (el.getType() == PointElement.Type.DATA_PROPERTY
+						|| el.getType() == PointElement.Type.OBJECT_PROPERTY) {
+
+					className = el.getProperty().getClassName();
+
+				} 
+//				else if (el.getType() == PointElement.Type.CLASS) {
+//					className = el.getElementName();
+//				}
+
+				if (!ruleUsedClasses.contains(className))
+					ruleUsedClasses.add(className);
+			}
+		}
+		
+		return ruleUsedClasses;
+	}
+	
+	public static ArrayList<Message> findCorrelatedRules(
+			HashMap<String, ArrayList<String>> hashmap,
+			ArrayList<String> usedClassesFromCreatedRule) {
+		ArrayList<Message> list = new ArrayList<Message>();
+		ArrayList<String> tempList = new ArrayList<String>();
+
+		int numberOfUsedClasses = usedClassesFromCreatedRule.size();
+		int numberOfCommonClasses = 0;
+		Message msg = null;
+
+		Iterator it = hashmap.entrySet().iterator();
+		while (it.hasNext()) {
+			Map.Entry pair = (Map.Entry) it.next();
+			tempList = (ArrayList<String>) pair.getValue();
+			for (String s : usedClassesFromCreatedRule) {
+				if (tempList.contains(s))
+					numberOfCommonClasses++;
+			}
+
+			System.out
+					.println("correlation "
+							+ (double) ((double) numberOfCommonClasses / (double) numberOfUsedClasses));
+
+			if ((double) ((double) numberOfCommonClasses / (double) numberOfUsedClasses) > 0.5) {
+				msg = new Message();
+				String[] splitted = pair.getKey().toString().split("__");
+				msg.setLanguage(splitted[0]);
+				msg.setText(splitted[1]);
+				list.add(msg);
+			}
+
+			numberOfCommonClasses = 0;
+
+		}
+
+		return list;
+	}
+
+	public static HashMap<String, ArrayList<String>> convertRulesToLists(
+			HashMap<String, ArrayList<Rule>> hashmap, Main main)
+			throws IOException {
+
+		ArrayList<Rule> tempList = new ArrayList<Rule>();
+		List<List<PointElement>> list;
+		ArrayList<String> usedClasses;
+		HashMap<String, ArrayList<String>> hashMapToReturn = new HashMap<String, ArrayList<String>>();
+         
+		// iterate the hashmap and return a new hashmap with
+		// key the fileName+ruleName and value a list with all the classes
+		// that are modified through the specific rule
+		Iterator it = hashmap.entrySet().iterator();
+		while (it.hasNext()) {
+			Map.Entry pair = (Map.Entry) it.next();
+			tempList = (ArrayList<Rule>) pair.getValue();
+			for (Rule tempRule : tempList) {
+				list = convertRuleToDiagram(tempRule, main.getAllClasses(),
+						main.getMethods());
+				usedClasses = getUsedClassesFromPointElements(list);
+				hashMapToReturn.put(
+						pair.getKey().toString() + "__" + tempRule.getName(),
+						usedClasses);
+			}
+
+		}
+
+		return hashMapToReturn;
+
+	}
+	
+	public static ArrayList<String> getUsedClassesFromPointElements(
+			List<List<PointElement>> list) {
+		ArrayList<String> usedClasses = new ArrayList<String>();
+		String className = "";
+		for (List<PointElement> tempList : list) {
+			for (PointElement el : tempList) {
+				if (el.getType() != PointElement.Type.BUILTIN_METHOD) {
+					if (el.getType() == PointElement.Type.INSTANCE) {
+						className = el.getInstance().getClassName();
+
+					} else if (el.getType() == PointElement.Type.DATA_PROPERTY
+							|| el.getType() == PointElement.Type.OBJECT_PROPERTY) {
+
+						className = el.getProperty().getClassName();
+
+					} else if (el.getType() == PointElement.Type.CLASS) {
+						className = el.getElementName();
+					}
+
+					if (!usedClasses.contains(className))
+						usedClasses.add(className);
+				}
+			}
+		}
+
+		return usedClasses;
+
+	}
 	
 
 	public static String writeMessagesInJsonLdFile(InputStream inputStream,

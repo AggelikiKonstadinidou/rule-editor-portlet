@@ -477,8 +477,8 @@ public class AddNewRuleBean {
 				.getInputstream());
 	}
 	
-	public void findCorrelation(){
-		correlatedFiles = Utils.correlateRules(filesToCompare,conditions,conclusions);
+	public void findCorrelation() throws IOException{
+		correlatedFiles = Utils.correlateRules(filesToCompare,conditions,conclusions,main);
 	}
 	
 	public void goToPreviousStep() throws IOException{
