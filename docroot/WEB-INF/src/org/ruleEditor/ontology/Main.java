@@ -195,6 +195,13 @@ public class Main {
 	
 	public List<BuiltinMethod> getBuiltinMethods(){
 		List<BuiltinMethod> list = new ArrayList<BuiltinMethod>();
+		
+		//category 1: one parameter
+		//category 2: two parameters
+		//category 3: two variables assigned to third
+		//category 4: makeSkolem
+		//category 5: remove/drop (numbers as parameters)
+		
 
 		BuiltinMethod test1 = new BuiltinMethod(
 				"equal",
@@ -204,6 +211,7 @@ public class Main {
 						+ " the xsd:int 1 and the xsd:decimal 1 would test equal.",
 				2);
 		test1.setWatermarkDescription("?X,?Y to be compared");
+		test1.setCategory("2a");
 		
 		BuiltinMethod test2 = new BuiltinMethod(
 				"notEqual",
@@ -213,6 +221,7 @@ public class Main {
 						+ " the xsd:int 1 and the xsd:decimal 1 would test equal.",
 				2);
 		test2.setWatermarkDescription("?X,?Y to be compared");
+		test2.setCategory("2a");
 		
 		//-------------------------------------------------
 		BuiltinMethod test4 = new BuiltinMethod("noValue", "noValue",
@@ -221,34 +230,42 @@ public class Main {
 		BuiltinMethod test5 = new BuiltinMethod("isLiteral", "isLiteral",
 				"Test whether the single argument is a literal", 1);
 		test5.setWatermarkDescription("?X");
+		test5.setCategory("1");
 		BuiltinMethod test6 = new BuiltinMethod("notLiteral", "notLiteral",
 				"Test whether the single argument is not a literal", 1);
 		test6.setWatermarkDescription("?X");
+		test6.setCategory("1");
 		BuiltinMethod test7 = new BuiltinMethod("isFunctor", "isFunctor",
 				"Test whether the single argument is a functor-valued literal",
 				1);
 		test7.setWatermarkDescription("?X");
+		test7.setCategory("1");
 		BuiltinMethod test8 = new BuiltinMethod(
 				"notFunctor",
 				"notFunctor",
 				"Test whether the single argument is not a functor-valued literal",
 				1);
 		test8.setWatermarkDescription("?X");
+		test8.setCategory("1");
 		BuiltinMethod test9 = new BuiltinMethod("isBNode", "isBNode",
 				"Test whether the single argument is a blank-node", 1);
 		test9.setWatermarkDescription("?X");
+		test9.setCategory("1");
 		BuiltinMethod test10 = new BuiltinMethod("notBNode", "notBNode",
 				"Test whether the single argument is not a blank-node", 1);
 		test10.setWatermarkDescription("?X");
+		test10.setCategory("1");
 		//-------------------------------------------------------
 		
 		//test an h klassi exei antistoixithei h oxi se variable
 		BuiltinMethod test11 = new BuiltinMethod("bound", "bound",
 				"Test if all of the arguments are bound variables", 100);
 		test11.setWatermarkDescription("?X,...?X10");
+		test11.setCategory("1");
 		BuiltinMethod test12 = new BuiltinMethod("unbound", "unbound",
 				"Test if all of the arguments are not bound variables", 100);
 		test12.setWatermarkDescription("?X,...?X10");
+		test12.setCategory("1");
 		//-----------------------------------------------------------
 		BuiltinMethod test13 = new BuiltinMethod(
 				"lessThan",
@@ -257,6 +274,7 @@ public class Main {
 						+ " Only passes if both x and y are numbers or time instants (can be integer or floating point or XSDDateTime).",
 				2);
 		test13.setWatermarkDescription("?X,?Y");
+		test13.setCategory("2b");
 		BuiltinMethod test14 = new BuiltinMethod(
 				"greaterThan",
 				"greaterThan",
@@ -264,6 +282,8 @@ public class Main {
 						+ " Only passes if both x and y are numbers or time instants (can be integer or floating point or XSDDateTime).",
 				2);
 		test14.setWatermarkDescription("?X,?Y");
+		test14.setCategory("2b");
+		
 		BuiltinMethod test15 = new BuiltinMethod(
 				"le",
 				"le",
@@ -271,6 +291,7 @@ public class Main {
 						+ " Only passes if both x and y are numbers or time instants (can be integer or floating point or XSDDateTime).",
 				2);
 		test15.setWatermarkDescription("?X,?Y");
+		test15.setCategory("2b");
 		BuiltinMethod test16 = new BuiltinMethod(
 				"ge",
 				"ge",
@@ -278,29 +299,38 @@ public class Main {
 						+ " Only passes if both x and y are numbers or time instants (can be integer or floating point or XSDDateTime).",
 				2);
 		test16.setWatermarkDescription("?X,?Y");
+		test16.setCategory("2b");
 		
 		//------------------------------------------------------------
 		BuiltinMethod test17 = new BuiltinMethod("sum", "sum",
 				"Sets c to be (a+b).", 3);
 		test17.setWatermarkDescription("?a, ?b, ?c");
+		test17.setCategory("3");
 		BuiltinMethod test18 = new BuiltinMethod("addOne", "addOne",
 				"Sets c to be (a+1).", 2);
 		test18.setWatermarkDescription("?a, ?b, ?c");
+		test18.setCategory("3");
 		BuiltinMethod test19 = new BuiltinMethod("difference", "difference",
 				"Sets c to be (a-b).", 3);
 		test19.setWatermarkDescription("?a, ?b, ?c");
+		test19.setCategory("3");
 		BuiltinMethod test20 = new BuiltinMethod("min", "min",
 				"Sets c to be min(a,b).", 3);
 		test20.setWatermarkDescription("?a, ?b, ?c");
+		test20.setCategory("3");
 		BuiltinMethod test21 = new BuiltinMethod("max", "max",
 				"Sets c to be max(a,b)", 3);
 		test21.setWatermarkDescription("?a, ?b, ?c");
+		test21.setCategory("3");
+		
 		BuiltinMethod test22 = new BuiltinMethod("product", "product",
 				"Sets c to be (ab).", 3);
 		test22.setWatermarkDescription("?a, ?b, ?c");
+		test22.setCategory("3");
 		BuiltinMethod test23 = new BuiltinMethod("quotient", "quotient",
 				"Sets c to be (a/b).", 3);
 		test23.setWatermarkDescription("?a, ?b, ?c");
+		test23.setCategory("3");
 		
 		//---------------------------------------------------------------
 		BuiltinMethod test24 = new BuiltinMethod("strConcat", "strConcat",
@@ -308,11 +338,13 @@ public class Main {
 						+ " then binds the last argument to a plain literal "
 						+ " with that lexical form.", 100);
 		test24.setWatermarkDescription("?a1, .. ?an, ?t");
+		test24.setCategory("3");
 		BuiltinMethod test25 = new BuiltinMethod("uriConcat", "uriConcat",
 				"Concatenates the lexical form of all the arguments except the last,"
 						+ " then binds the last argument to"
 						+ " a URI node with that lexical form.", 100);
 		test25.setWatermarkDescription("?a1, .. ?an, ?t");
+		test25.setCategory("3");
 		//---------------------------------------------------------------
 		//TODO
 		BuiltinMethod test26 = new BuiltinMethod("regex", "regex",
@@ -344,9 +376,10 @@ public class Main {
 				"Binds ?x to be a blank node."
 				+ " The blank node is generated based on the values of the"
 				+ " remain ?vi arguments, so the same combination of arguments"
-				+ " will generate the same bNode.",2);
+				+ " will generate the same bNode.",3);
 		test30.setWatermarkDescription("Parameters : ?variable_name_of_new_Node,"
 				+ "?variable_name_of_classA,?variable_name_of_ClassB,...");
+		test30.setCategory("4");
 		//----------------------------------------------------------------
 		
 		//TODO: they remove statements, how can we handle it?
@@ -358,12 +391,14 @@ public class Main {
 				+ " by some other clauses).", 100);
 		
 		test31.setWatermarkDescription("List the number of connections to be removed e.g. n");
+		test31.setCategory("5");
 		BuiltinMethod test32 = new BuiltinMethod("drop", "drop",
 				"Drop will silently remove the triple(s) "
 				+ "from the graph but not fire any rules as a consequence",
 				100);
 		
 		test32.setWatermarkDescription("List the number of connections to be removed e.g. n");
+		test32.setCategory("5");
 		//------------------------------------------------------------------
 		
 		BuiltinMethod test35 = new BuiltinMethod("print", "print",

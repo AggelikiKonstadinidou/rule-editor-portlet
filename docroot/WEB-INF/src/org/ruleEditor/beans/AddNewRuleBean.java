@@ -77,6 +77,7 @@ import sun.rmi.runtime.NewThreadAction;
 import com.sun.faces.component.visit.FullVisitContext;
 
 import org.ruleEditor.ontology.BuiltinMethod.HelpObject;
+
 @ManagedBean(name = "addNewRuleBean")
 @SessionScoped
 public class AddNewRuleBean {
@@ -118,20 +119,19 @@ public class AddNewRuleBean {
 	private int orderConditionsCounter = 1;
 	private int orderConclusionsCounter = 1;
 	private ArrayList<String> usedVariablesForClasses = new ArrayList<String>();
-	
+
 	private ArrayList<String> usedVariablesForValues = new ArrayList<String>();
-	
+
 	private ArrayList<String> variables = new ArrayList<String>();
 	private String argument = "";
-	private boolean gridType1= true;
+	private boolean gridType1 = true;
 	private boolean selectedClasses = true;
 	private boolean selectedVariables = false;
-//	private List<String> methodsWithoutConnections = Arrays.asList(
-//			"makeSkolem", "print", "drop");
+	// private List<String> methodsWithoutConnections = Arrays.asList(
+	// "makeSkolem", "print", "drop");
 	private String previousStep = "";
-	private HashMap<String,InputStream> filesToCompare;
+	private HashMap<String, InputStream> filesToCompare;
 	private ArrayList<Message> correlatedFiles;
-	
 
 	public AddNewRuleBean() {
 		super();
@@ -176,13 +176,11 @@ public class AddNewRuleBean {
 		msg.setLanguage("fileName");
 		msg.setText("rule");
 		correlatedFiles.add(msg);
-		
+
 		usedVariablesForClasses = new ArrayList<String>();
-		
-		
+
 		usedVariablesForValues = new ArrayList<String>();
-	
-		
+
 		argument = "";
 		variables = new ArrayList<String>();
 		gridType1 = false;
@@ -223,7 +221,7 @@ public class AddNewRuleBean {
 			feedback = false;
 
 		existingRules = rulesList;
-
+		gridType1 = false;
 		datatypes = new ArrayList<DataProperty>();
 		objects = new ArrayList<ObjectProperty>();
 		instances = new ArrayList<Instance>();
@@ -279,7 +277,7 @@ public class AddNewRuleBean {
 
 			if (el.getType() == Type.DATA_PROPERTY
 					|| el.getType() == Type.OBJECT_PROPERTY) {
-				
+
 				element = new Element(el, String.valueOf(el.getX() + "em"),
 						String.valueOf(el.getY() + "em"));
 
@@ -289,7 +287,7 @@ public class AddNewRuleBean {
 				element.addEndPoint(endPointCA);
 
 			} else if (el.getType() == Type.BUILTIN_METHOD) {
-				
+
 				element = new Element(el, String.valueOf(el.getX() + "em"),
 						String.valueOf(el.getY() + "em"));
 
@@ -317,78 +315,78 @@ public class AddNewRuleBean {
 				conclusionsModel.addElement(element);
 		}
 
-//		int sourceIndex = -1;
-//		int targetIndex = -1;
-//		// make connections between the elements of the diagram models
-//		for (PointElement el : list) {
-//			if (el.getType() == Type.OBJECT_PROPERTY
-//					|| el.getType() == Type.DATA_PROPERTY
-//					|| el.getType() == Type.BUILTIN_METHOD) {
-//
-//				targetIndex = findIndexOfElementByPointElement(el,
-//						conditionsModel);
-//
-//				boolean flag = false;
-//				for (PointElement temp : el.getConnections()) {
-//
-//					sourceIndex = findIndexOfElementByPointElement(temp,
-//							conditionsModel);
-//
-//					if (sourceIndex == -1) {
-//						sourceIndex = findIndexOfElementByPointElement(temp,
-//								conclusionsModel);
-//						flag = true;
-//					}
-//
-//					if (panelID.equalsIgnoreCase("conclusions"))
-//						targetIndex = findIndexOfElementByPointElement(el,
-//								conclusionsModel);
-//
-//					if (panelID.equalsIgnoreCase("conditions")) {
-//
-//							conditionsModel.connect(new Connection(
-//									conditionsModel.getElements()
-//											.get(sourceIndex).getEndPoints()
-//											.get(0), conditionsModel
-//											.getElements().get(targetIndex)
-//											.getEndPoints().get(0)));
-//						
-//					} else {
-//
-//						if (flag)
-//							conclusionsModel.connect(new Connection(
-//									conclusionsModel.getElements()
-//											.get(sourceIndex).getEndPoints()
-//											.get(0), conclusionsModel
-//											.getElements().get(targetIndex)
-//											.getEndPoints().get(0)));
-//						else {
-//							
-//							//a conclusion method/property has to be connected with
-//							// a class that exists in conditions
-//							Element conclElement = new Element(temp,
-//									String.valueOf(temp.getX() + "em"),
-//									String.valueOf(temp.getY() + "em"));
-//							EndPoint endPointCon = Utils
-//									.createRectangleEndPoint(EndPointAnchor.BOTTOM);
-//							endPointCon.setSource(true);
-//							conclElement.addEndPoint(endPointCon);
-//							conclusionsModel.addElement(conclElement);
-//							
-//							sourceIndex = conclusionsModel.getElements().size()-1;
-//							
-//							conclusionsModel.connect(new Connection(
-//									conclusionsModel.getElements()
-//											.get(sourceIndex).getEndPoints()
-//											.get(0), conclusionsModel
-//											.getElements().get(targetIndex)
-//											.getEndPoints().get(0)));
-//						}
-//
-//					}
-//				}
-//			}
-//		}
+		// int sourceIndex = -1;
+		// int targetIndex = -1;
+		// // make connections between the elements of the diagram models
+		// for (PointElement el : list) {
+		// if (el.getType() == Type.OBJECT_PROPERTY
+		// || el.getType() == Type.DATA_PROPERTY
+		// || el.getType() == Type.BUILTIN_METHOD) {
+		//
+		// targetIndex = findIndexOfElementByPointElement(el,
+		// conditionsModel);
+		//
+		// boolean flag = false;
+		// for (PointElement temp : el.getConnections()) {
+		//
+		// sourceIndex = findIndexOfElementByPointElement(temp,
+		// conditionsModel);
+		//
+		// if (sourceIndex == -1) {
+		// sourceIndex = findIndexOfElementByPointElement(temp,
+		// conclusionsModel);
+		// flag = true;
+		// }
+		//
+		// if (panelID.equalsIgnoreCase("conclusions"))
+		// targetIndex = findIndexOfElementByPointElement(el,
+		// conclusionsModel);
+		//
+		// if (panelID.equalsIgnoreCase("conditions")) {
+		//
+		// conditionsModel.connect(new Connection(
+		// conditionsModel.getElements()
+		// .get(sourceIndex).getEndPoints()
+		// .get(0), conditionsModel
+		// .getElements().get(targetIndex)
+		// .getEndPoints().get(0)));
+		//
+		// } else {
+		//
+		// if (flag)
+		// conclusionsModel.connect(new Connection(
+		// conclusionsModel.getElements()
+		// .get(sourceIndex).getEndPoints()
+		// .get(0), conclusionsModel
+		// .getElements().get(targetIndex)
+		// .getEndPoints().get(0)));
+		// else {
+		//
+		// //a conclusion method/property has to be connected with
+		// // a class that exists in conditions
+		// Element conclElement = new Element(temp,
+		// String.valueOf(temp.getX() + "em"),
+		// String.valueOf(temp.getY() + "em"));
+		// EndPoint endPointCon = Utils
+		// .createRectangleEndPoint(EndPointAnchor.BOTTOM);
+		// endPointCon.setSource(true);
+		// conclElement.addEndPoint(endPointCon);
+		// conclusionsModel.addElement(conclElement);
+		//
+		// sourceIndex = conclusionsModel.getElements().size()-1;
+		//
+		// conclusionsModel.connect(new Connection(
+		// conclusionsModel.getElements()
+		// .get(sourceIndex).getEndPoints()
+		// .get(0), conclusionsModel
+		// .getElements().get(targetIndex)
+		// .getEndPoints().get(0)));
+		// }
+		//
+		// }
+		// }
+		// }
+		// }
 
 	}
 
@@ -430,22 +428,30 @@ public class AddNewRuleBean {
 			}
 
 		}
-		
-		if(cloneSelectedNode.getType()==Type.BUILTIN_METHOD)
+
+		if (cloneSelectedNode.getType() == Type.BUILTIN_METHOD) {
 			fillListsWithVariables();
-		
+			if (cloneSelectedNode.getMethod().getCategory().equals("2a")) {
+				gridType1 = cloneSelectedNode.getMethod().isFlag();
+				selectedClasses = !cloneSelectedNode.getMethod().isFlag();
+				selectedVariables = cloneSelectedNode.getMethod().isFlag();
+			}
+		}
 
 	}
-	
-	//TODO it does not work
+
+	// TODO it does not work
 	public void spinnerValueChangeForClasses(AjaxBehaviorEvent event) {
-		
-//		String id = FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap().get("index");
-//		String indexOfList = (String)event.getComponent().getAttributes().get("index");
-//		String newValue = (String)event.getComponent().getAttributes().get("newValue");
-		
-		for(int i=0; i<cloneSelectedNode.getMethod().getNumberOfParams();i++){
-			
+
+		// String id =
+		// FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap().get("index");
+		// String indexOfList =
+		// (String)event.getComponent().getAttributes().get("index");
+		// String newValue =
+		// (String)event.getComponent().getAttributes().get("newValue");
+
+		for (int i = 0; i < cloneSelectedNode.getMethod().getNumberOfParams(); i++) {
+
 		}
 
 	}
@@ -457,11 +463,6 @@ public class AddNewRuleBean {
 					.set(i, usedVariablesForClasses);
 			cloneSelectedNode.getMethod().getListOfVarValuesLists()
 					.set(i, usedVariablesForValues);
-			cloneSelectedNode
-					.getMethod()
-					.getSelectedValues()
-					.add(cloneSelectedNode.getMethod().new HelpObject("" + i,
-							"-"));
 
 		}
 	}
@@ -470,24 +471,25 @@ public class AddNewRuleBean {
 		oldFileName = event.getFile().getFileName();
 		fileStream = event.getFile().getInputstream();
 	}
-	
+
 	public void uploadFileForCorrelation(FileUploadEvent event)
 			throws IOException {
 		filesToCompare.put(event.getFile().getFileName(), event.getFile()
 				.getInputstream());
 	}
-	
-	public void findCorrelation() throws IOException{
-		correlatedFiles = Utils.correlateRules(filesToCompare,conditions,conclusions,main);
+
+	public void findCorrelation() throws IOException {
+		correlatedFiles = Utils.correlateRules(filesToCompare, conditions,
+				conclusions, main);
 	}
-	
-	public void goToPreviousStep() throws IOException{
+
+	public void goToPreviousStep() throws IOException {
 		ExternalContext externalContext = FacesContext.getCurrentInstance()
 				.getExternalContext();
 		externalContext.redirect(previousStep);
 	}
-	
-	public void getPreviousStep(String step){
+
+	public void getPreviousStep(String step) {
 		previousStep = step;
 	}
 
@@ -553,7 +555,7 @@ public class AddNewRuleBean {
 					return;
 				}
 		}
-		
+
 		// get the used variables for classes and generally for values
 		String s = cloneSelectedNode.getProperty().getClassVar();
 		String value = cloneSelectedNode.getProperty().getValue();
@@ -567,7 +569,62 @@ public class AddNewRuleBean {
 		if (cloneSelectedNode.getType() == Type.OBJECT_PROPERTY)
 			if (!usedVariablesForClasses.contains(value) && value.contains("?"))
 				usedVariablesForClasses.add(value);
-		
+
+		if (cloneSelectedNode.getType() == Type.BUILTIN_METHOD) {
+			String helpString = "";
+			String category = cloneSelectedNode.getMethod().getCategory();
+			if (category.equals("1")) {
+				helpString = cloneSelectedNode.getMethod().getValue1()
+						.getValue();
+
+			} else if (category.equals("2a")) {
+
+				if (!gridType1)
+					helpString = cloneSelectedNode.getMethod().getValue1()
+							.getValue()
+							+ ","
+							+ cloneSelectedNode.getMethod().getValue2()
+									.getValue();
+				else if (gridType1)
+					helpString = cloneSelectedNode.getMethod().getValue3()
+							.getValue()
+							+ ","
+							+ cloneSelectedNode.getMethod().getValue4()
+									.getValue();
+
+			} else if (category.equals("2b")) {
+
+				helpString = cloneSelectedNode.getMethod().getValue1()
+						.getValue()
+						+ ","
+						+ cloneSelectedNode.getMethod().getValue2().getValue();
+
+			} else if (category.equals("3")) {
+
+				helpString = cloneSelectedNode.getMethod().getValue1()
+						.getValue()
+						+ ","
+						+ cloneSelectedNode.getMethod().getValue2().getValue()
+						+ ","
+						+ cloneSelectedNode.getMethod().getValue3().getValue();
+
+			} else if (category.equals("4")) {
+
+				helpString = cloneSelectedNode.getMethod().getValue1()
+						.getValue()
+						+ ","
+						+ cloneSelectedNode.getMethod().getValue2().getValue()
+						+ ","
+						+ cloneSelectedNode.getMethod().getValue3().getValue();
+
+			} else if (category.equals("5")) {
+				helpString = cloneSelectedNode.getMethod().getValue1()
+						.getValue();
+			}
+
+			cloneSelectedNode.getMethod().setHelpString(helpString);
+		}
+
 		ArrayList<PointElement> clonedList = new ArrayList<PointElement>();
 
 		// find the panel which the selected node belong to
@@ -634,7 +691,6 @@ public class AddNewRuleBean {
 		}
 
 	}
-	
 
 	public DefaultDiagramModel getConclusionsModel() {
 		return conclusionsModel;
@@ -670,16 +726,16 @@ public class AddNewRuleBean {
 		} else if (objectCounter == 1) {
 			x = initialX + 20;
 			y = initialY;
-			//objectCounter++;
+			// objectCounter++;
 			objectCounter = 0;
 			initialY = initialY + 12;
 		}
-//		} else if (objectCounter == 2) {
-//			x = initialX + 35;
-//			y = initialY;
-//			objectCounter = 0;
-//			initialY = initialY + 12;
-//		}
+		// } else if (objectCounter == 2) {
+		// x = initialX + 35;
+		// y = initialY;
+		// objectCounter = 0;
+		// initialY = initialY + 12;
+		// }
 
 		el.setX(x);
 		el.setY(y);
@@ -870,7 +926,6 @@ public class AddNewRuleBean {
 				return 1;
 			}
 
-			
 		}
 
 		return 0;
@@ -897,8 +952,8 @@ public class AddNewRuleBean {
 		clonedTargetElement = targetElement.clone();
 		int result = 0;
 		if (clonedTargetElement.getProperty() instanceof DataProperty) {
-			//add element to data property connections
-             result = addElementForDataProperty(sourceElement);
+			// add element to data property connections
+			result = addElementForDataProperty(sourceElement);
 		} else if (clonedTargetElement.getProperty() instanceof ObjectProperty) {
 			// add element to object property connections
 			result = addElementForObjectProperty(sourceElement);
@@ -974,13 +1029,13 @@ public class AddNewRuleBean {
 		// check if the connection with the target element is valid
 		PointElement clonedSourceElement = sourceElement.clone();
 		int i = clonedSourceElement.getMethod().getNumberOfParams();
-//		if (clonedSourceElement.getConnections().size() < i
-//				&& targetElement.getType().equals(
-//						clonedSourceElement.getMethod().getTypeOfParam())) {
-//			clonedSourceElement.getConnections().add(targetElement.clone());
-//			counterOfConnections++;
-//			result = 1;
-//		}
+		// if (clonedSourceElement.getConnections().size() < i
+		// && targetElement.getType().equals(
+		// clonedSourceElement.getMethod().getTypeOfParam())) {
+		// clonedSourceElement.getConnections().add(targetElement.clone());
+		// counterOfConnections++;
+		// result = 1;
+		// }
 
 		int index = -1;
 		if (result == 1)
@@ -1011,16 +1066,15 @@ public class AddNewRuleBean {
 		sourceElement = (PointElement) event.getSourceElement().getData();
 		int result = 0;
 		// 1st case, connect a class with a property
-//		if (sourceElement.getType() == Type.CLASS)
-//			result = connectClassWithProperty(targetElement, sourceElement);
+		// if (sourceElement.getType() == Type.CLASS)
+		// result = connectClassWithProperty(targetElement, sourceElement);
 		// 2nd case, connect a built in method with a property
-		 if (sourceElement.getType() == Type.BUILTIN_METHOD)
-//			result = connectBuiltinMethodWithProperty(sourceElement,
-//					targetElement);
+		if (sourceElement.getType() == Type.BUILTIN_METHOD)
+			// result = connectBuiltinMethodWithProperty(sourceElement,
+			// targetElement);
 			result = 0;
 		else if (sourceElement.getType() == Type.INSTANCE)
-			result = connectInstanceWithProperty(sourceElement,
-					targetElement);
+			result = connectInstanceWithProperty(sourceElement, targetElement);
 
 		if (result == 0) {
 			if (conditionsModel.getConnections().size() > 0)
@@ -1030,7 +1084,7 @@ public class AddNewRuleBean {
 		} else {
 
 			// try to pass overlay to know the order of the connection
-            //valid connection, add number (TODO dont know how to use it yet)
+			// valid connection, add number (TODO dont know how to use it yet)
 			Connection conn = conditionsModel.getConnections().get(
 					conditionsModel.getConnections().size() - 1);
 			conn.getOverlays().add(
@@ -1102,22 +1156,22 @@ public class AddNewRuleBean {
 		originalTargetElement = (PointElement) event.getOriginalTargetElement()
 				.getData();
 
-//		boolean flag = Utils.findPanelOfElement(sourceElement.getVarName(),
-//				conditions, conclusions);
-//		if (flag)
-//			cloneList = (ArrayList<PointElement>) conditions.clone();
-//		else
-//			cloneList = (ArrayList<PointElement>) conclusions.clone();
-//
-//		for (PointElement el : cloneList) {
-//
-//			if (el.getId().equalsIgnoreCase(originalTargetElement.getId()))
-//				originalTargetElement.setConnections(el.getConnections());
-//
-//			if (el.getVarName().equalsIgnoreCase(targetElement.getVarName()))
-//				targetElement.setConnections(el.getConnections());
-//
-//		}
+		// boolean flag = Utils.findPanelOfElement(sourceElement.getVarName(),
+		// conditions, conclusions);
+		// if (flag)
+		// cloneList = (ArrayList<PointElement>) conditions.clone();
+		// else
+		// cloneList = (ArrayList<PointElement>) conclusions.clone();
+		//
+		// for (PointElement el : cloneList) {
+		//
+		// if (el.getId().equalsIgnoreCase(originalTargetElement.getId()))
+		// originalTargetElement.setConnections(el.getConnections());
+		//
+		// if (el.getVarName().equalsIgnoreCase(targetElement.getVarName()))
+		// targetElement.setConnections(el.getConnections());
+		//
+		// }
 
 		// remove sourceElement from the connections of the old target
 		int index = -1;
@@ -1220,46 +1274,43 @@ public class AddNewRuleBean {
 
 	public void createMethodElement(String panelID) {
 		PointElement methodEl = new PointElement();
-		methodEl.setElementName(this.selectedMethod.getUsingName()
-				.toString());
+		methodEl.setElementName(this.selectedMethod.getUsingName().toString());
 		methodEl.setType(Type.BUILTIN_METHOD);
 		methodEl.setId(setVariableName());
 		methodEl = setPosition(methodEl);
 		methodEl.setMethod(selectedMethod.clone());
 		methodEl.setLabel("Method");
 		// define the order
-		int order = -1 ;
-		if(panelID.equalsIgnoreCase("pan1")){
+		int order = -1;
+		if (panelID.equalsIgnoreCase("pan1")) {
 			order = orderConditionsCounter;
 			orderConditionsCounter++;
-		}
-		else{
+		} else {
 			order = orderConclusionsCounter;
 			orderConclusionsCounter++;
 		}
 
 		methodEl.setOrder(order);
-		Element element = new Element(methodEl,
-				String.valueOf(methodEl.getX() + "em"),
-				String.valueOf(methodEl.getY() + "em"));
+		Element element = new Element(methodEl, String.valueOf(methodEl.getX()
+				+ "em"), String.valueOf(methodEl.getY() + "em"));
 
 		// exclude methods that cannot be connected with other nodes
 		// the user has to fill some field in order to use them
 
 		EndPoint endPointCA = Utils
 				.createRectangleEndPoint(EndPointAnchor.CONTINUOUS);
-//		if (methodsWithoutConnections.contains(this.selectedMethod
-//				.getOriginalName())) {
-//
-//			endPointCA.setSource(false);
-//			endPointCA.setTarget(false);
-//			element.addEndPoint(endPointCA);
-//
-//		} else {
+		// if (methodsWithoutConnections.contains(this.selectedMethod
+		// .getOriginalName())) {
+		//
+		// endPointCA.setSource(false);
+		// endPointCA.setTarget(false);
+		// element.addEndPoint(endPointCA);
+		//
+		// } else {
 
-			endPointCA.setSource(true);
-			element.addEndPoint(endPointCA);
-	//	}
+		endPointCA.setSource(true);
+		element.addEndPoint(endPointCA);
+		// }
 
 		moveToPanel(panelID, methodEl, element);
 	}
@@ -1272,9 +1323,8 @@ public class AddNewRuleBean {
 		instanceEl.setLabel(this.selectedInstance.getClassName());
 		instanceEl.setId(this.selectedInstance.getInstanceName());
 		instanceEl = setPosition(instanceEl);
-		Element element = new Element(instanceEl,
-				String.valueOf(instanceEl.getX() + "em"),
-				String.valueOf(instanceEl.getY() + "em"));
+		Element element = new Element(instanceEl, String.valueOf(instanceEl
+				.getX() + "em"), String.valueOf(instanceEl.getY() + "em"));
 		EndPoint endPointCA = Utils
 				.createRectangleEndPoint(EndPointAnchor.BOTTOM);
 		endPointCA.setSource(true);
@@ -1299,21 +1349,20 @@ public class AddNewRuleBean {
 		propElement.setElementName(property.getPropertyName());
 		propElement.setId(setVariableName());
 		propElement.setLabel(property.getClassName());
-		
-		//define the order
-		int order = -1 ;
-		if(panelID.equalsIgnoreCase("pan1")){
+
+		// define the order
+		int order = -1;
+		if (panelID.equalsIgnoreCase("pan1")) {
 			order = orderConditionsCounter;
 			orderConditionsCounter++;
-		}
-		else{
+		} else {
 			order = orderConclusionsCounter;
 			orderConclusionsCounter++;
 		}
-		
+
 		propElement.setOrder(order);
-		
-		//define x, y
+
+		// define x, y
 		propElement = setPosition(propElement);
 		propElement.setType(type);
 		propElement.setProperty(property);
@@ -1372,16 +1421,18 @@ public class AddNewRuleBean {
 			conclusions = new ArrayList<PointElement>();
 		}
 	}
-	
+
 	public void handleChangeInArguments() {
-		
+
 		if (selectedClasses && selectedVariables && gridType1) {
 			selectedVariables = false;
 			gridType1 = false;
-		} else if(selectedClasses && selectedVariables && !gridType1 ){
+		} else if (selectedClasses && selectedVariables && !gridType1) {
 			selectedClasses = false;
 			gridType1 = true;
 		}
+
+		cloneSelectedNode.getMethod().setFlag(gridType1);
 	}
 
 	public String setVariableName() {
@@ -1552,14 +1603,18 @@ public class AddNewRuleBean {
 	public ArrayList<String> getUsedVariablesForClasses() {
 		return usedVariablesForClasses;
 	}
-	public void setUsedVariablesForClasses(ArrayList<String> usedVariablesForClasses) {
+
+	public void setUsedVariablesForClasses(
+			ArrayList<String> usedVariablesForClasses) {
 		this.usedVariablesForClasses = usedVariablesForClasses;
 	}
 
 	public ArrayList<String> getUsedVariablesForValues() {
 		return usedVariablesForValues;
 	}
-	public void setUsedVariablesForValues(ArrayList<String> usedVariablesForValues) {
+
+	public void setUsedVariablesForValues(
+			ArrayList<String> usedVariablesForValues) {
 		this.usedVariablesForValues = usedVariablesForValues;
 	}
 
@@ -1578,6 +1633,7 @@ public class AddNewRuleBean {
 	public void setVariables(ArrayList<String> variables) {
 		this.variables = variables;
 	}
+
 	public boolean isSelectedClasses() {
 		return selectedClasses;
 	}
@@ -1610,7 +1666,4 @@ public class AddNewRuleBean {
 		this.correlatedFiles = correlatedFiles;
 	}
 
-	
-	
-	
 }

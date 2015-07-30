@@ -20,20 +20,20 @@ public class RuleCreationUtilities {
 	public static String prefix_c4a = "@prefix c4a: <http://rbmm.org/schemas/cloud4all/0.1/>.";
 	public static String prefix_rdfs = "@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>.";
 
-	// the arguments of the method are variables separated with comma
 	public static List<String> categoryOfMethods_1 = Arrays.asList("isLiteral",
-			"notLiteral", "isFunctor", "notFunctor", "isBNode", "notBNode",
-			"equal", "notEqual", "lessThan", "greaterThan", "le", "ge");
-	// the argument of the method is a triple
-	public static List<String> categoryOfMethods_2 = Arrays.asList("noValue");
-	// the arguments of the method are variables separated with comma
-	// after the process the final result is set to a variable
+			"notLiteral", "isFunctor", "notFunctor", "isBNode", "notBNode");
+	public static List<String> categoryOfMethods_2a = Arrays.asList("equal",
+			"notEqual");
+	public static List<String> categoryOfMethods_2b = Arrays.asList("lessThan",
+			"greaterThan", "le", "ge");
 	public static List<String> categoryOfMethods_3 = Arrays.asList("strConcat",
 			"uriConcat", "sum", "addOne", "difference", "min", "max",
 			"product", "quotient");
-	// the argument of the method is a string that is filled by the user
-	public static List<String> categoryOfMethods_4 = Arrays.asList("print",
-			"drop", "makeSkolem");
+	public static List<String> categoryOfMethods_4 = Arrays
+			.asList("makeSkolem");
+	public static List<String> categoryOfMethods_5 = Arrays.asList("drop",
+			"remove");
+
 	public static ArrayList<String> declaredClassVariables;
 	public static ArrayList<String> declaredObjectVariables;
 
@@ -74,7 +74,7 @@ public class RuleCreationUtilities {
 
 	public static String createRule(ArrayList<PointElement> conditions,
 			ArrayList<PointElement> conclusions, String ruleName) {
-		
+
 		declaredClassVariables = new ArrayList<String>();
 		declaredObjectVariables = new ArrayList<String>();
 
@@ -91,6 +91,8 @@ public class RuleCreationUtilities {
 
 		if (rule.contains("noValue("))
 			rule = removeExtraNoValueSentence(rule);
+
+		System.out.println(rule);
 
 		return rule;
 	}
@@ -175,7 +177,7 @@ public class RuleCreationUtilities {
 		// work on conditions
 		for (PointElement el : list) {
 
-			 if (el.getType() == PointElement.Type.DATA_PROPERTY) {
+			if (el.getType() == PointElement.Type.DATA_PROPERTY) {
 
 				OntologyProperty property = (DataProperty) el.getProperty();
 				String value = ((DataProperty) property).getValue();
@@ -209,7 +211,7 @@ public class RuleCreationUtilities {
 						.getRangeOfClasses().get(0);
 				String source = property.getClassVar();
 				String target = property.getValue();
-				
+
 				if (el.getConnections().size() > 0) {
 					for (PointElement temp : el.getConnections()) {
 
@@ -224,9 +226,9 @@ public class RuleCreationUtilities {
 
 					}
 				}
-				
-				//check if class of source is declared
-				if(source.contains("?"))
+
+				// check if class of source is declared
+				if (source.contains("?"))
 					if (!declaredClassVariables.contains(source)
 							&& !source.isEmpty()
 							&& !declaredObjectVariables.contains(source)) {
@@ -234,7 +236,7 @@ public class RuleCreationUtilities {
 								+ property.getClassName() + ")\n";
 						declaredClassVariables.add(source);
 					}
-				
+
 				// check if class of target is declared
 				if (target.contains("?"))
 					if (!declaredObjectVariables.contains(target)
@@ -247,60 +249,56 @@ public class RuleCreationUtilities {
 
 			} else if (el.getType() == PointElement.Type.BUILTIN_METHOD) {
 
-//				String originName = el.getMethod().getOriginalName();
-//
-//				rule = rule + el.getMethod().getOriginalName() + "(";
-//				// if (categoryOfMethods_1.contains(originName)) {
-//				//
-//				// for (PointElement temp : el.getConnections()) {
-//				// DataProperty property = (DataProperty) temp
-//				// .getProperty();
-//				// rule = rule + property.getValue() + ",";
-//				// }
-//				//
-//				// rule = rule.substring(0, rule.length() - 1);
-//				//
-//				// } else
-//				if (categoryOfMethods_2.contains(originName)) {
-//
-//					// TODO create the triple
-//					if (el.getConnections().size() > 0)
-//						if (el.getConnections().get(0).getProperty() instanceof DataProperty) {
-//
-//							DataProperty property = (DataProperty) el
-//									.getConnections().get(0).getProperty();
-//							PointElement connectedEl = el.getConnections().get(
-//									0);
-//
-//							String value = property.getValue();
-//							if (!value.contains("?")
-//									&& value.indexOf("\"") != 0)
-//								value = "\"" + value + "\"";
-//
-//							rule = rule
-//									+ connectedEl.getConnections().get(0)
-//											.getVarName() + " c4a:"
-//									+ property.getPropertyName() + " " + value;
-//
-//						}
-//
-//				} else {
-//
-//					if (!el.getMethod().getHelpString().isEmpty()
-//							&& !originName.equals("print"))
-//						rule = rule + el.getMethod().getHelpString();
-//					else if (!el.getMethod().getHelpString().isEmpty()
-//							&& originName.equals("print"))
-//						rule = rule + "\"" + el.getMethod().getHelpString()
-//								+ "\"";
-//
-//				}
-//				rule = rule + ")\n";
+				// covers at least the case of 1,2a,2b,3,4,5
+				rule = rule + el.getMethod().getOriginalName() + "("
+						+ el.getMethod().getHelpString() + ")\n";
+
 			}
 
 		}
 
 		return rule;
 	}
+
+	public static String getCategoryByName(String name) {
+		String category = "";
+
+		if (categoryOfMethods_1.contains(name))
+			category = "1";
+		else if (categoryOfMethods_2a.contains(name))
+			category = "2a";
+		else if (categoryOfMethods_2b.contains(name))
+			category = "2b";
+		else if (categoryOfMethods_3.contains(name))
+			category = "3";
+		else if (categoryOfMethods_4.contains(name))
+			category = "4";
+		else if (categoryOfMethods_5.contains(name))
+			category = "5";
+		else
+			category = "-1"; // non defined category yet
+
+		return category;
+	}
+
+	public static ArrayList<String> getDeclaredClassVariables() {
+		return declaredClassVariables;
+	}
+
+	public static void setDeclaredClassVariables(
+			ArrayList<String> declaredClassVariables) {
+		RuleCreationUtilities.declaredClassVariables = declaredClassVariables;
+	}
+
+	public static ArrayList<String> getDeclaredObjectVariables() {
+		return declaredObjectVariables;
+	}
+
+	public static void setDeclaredObjectVariables(
+			ArrayList<String> declaredObjectVariables) {
+		RuleCreationUtilities.declaredObjectVariables = declaredObjectVariables;
+	}
+	
+	
 
 }

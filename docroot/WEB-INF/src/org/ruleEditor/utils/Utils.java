@@ -18,6 +18,7 @@ import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import javax.faces.component.UIComponent;
 import javax.faces.component.UIViewRoot;
@@ -76,8 +77,8 @@ public class Utils {
 	private static int counter = 0;
 	private static List<PointElement> conditions;
 	private static List<PointElement> conclusions;
-	private static HashMap<String,String> usedVariablesForClasses;//subjects
-	private static HashMap<String,String> usedVariables; //values and objects
+	private static HashMap<String, String> usedVariablesForClasses;// subjects
+	private static HashMap<String, String> usedVariables; // values and objects
 	private static int orderCounter;
 
 	public static EndPoint createDotEndPoint(EndPointAnchor anchor) {
@@ -140,7 +141,7 @@ public class Utils {
 
 		return el;
 	}
-	
+
 	public static ArrayList<Message> correlateRules(
 			HashMap<String, InputStream> hashmap,
 			List<PointElement> conditions, List<PointElement> conclusions,
@@ -154,7 +155,7 @@ public class Utils {
 		Iterator it = hashmap.entrySet().iterator();
 		while (it.hasNext()) {
 			Map.Entry pair = (Map.Entry) it.next();
-		//	System.out.println(pair.getKey() + " = " + pair.getValue());
+			// System.out.println(pair.getKey() + " = " + pair.getValue());
 			rulesList = getRulesFromFile((InputStream) pair.getValue());
 			hashmap2.put(pair.getKey().toString(), rulesList);
 		}
@@ -176,11 +177,12 @@ public class Utils {
 		return correlatedFiles;
 
 	}
-	
-	public static ArrayList<String> getUsedClassesFromList(List<PointElement> list){
+
+	public static ArrayList<String> getUsedClassesFromList(
+			List<PointElement> list) {
 		ArrayList<String> ruleUsedClasses = new ArrayList<String>();
 		String className = "";
-		for(PointElement el : list){
+		for (PointElement el : list) {
 			if (el.getType() != PointElement.Type.BUILTIN_METHOD) {
 				if (el.getType() == PointElement.Type.INSTANCE) {
 					className = el.getInstance().getClassName();
@@ -190,19 +192,19 @@ public class Utils {
 
 					className = el.getProperty().getClassName();
 
-				} 
-//				else if (el.getType() == PointElement.Type.CLASS) {
-//					className = el.getElementName();
-//				}
+				}
+				// else if (el.getType() == PointElement.Type.CLASS) {
+				// className = el.getElementName();
+				// }
 
 				if (!ruleUsedClasses.contains(className))
 					ruleUsedClasses.add(className);
 			}
 		}
-		
+
 		return ruleUsedClasses;
 	}
-	
+
 	public static ArrayList<Message> findCorrelatedRules(
 			HashMap<String, ArrayList<String>> hashmap,
 			ArrayList<String> usedClassesFromCreatedRule) {
@@ -249,7 +251,7 @@ public class Utils {
 		List<List<PointElement>> list;
 		ArrayList<String> usedClasses;
 		HashMap<String, ArrayList<String>> hashMapToReturn = new HashMap<String, ArrayList<String>>();
-         
+
 		// iterate the hashmap and return a new hashmap with
 		// key the fileName+ruleName and value a list with all the classes
 		// that are modified through the specific rule
@@ -271,7 +273,7 @@ public class Utils {
 		return hashMapToReturn;
 
 	}
-	
+
 	public static ArrayList<String> getUsedClassesFromPointElements(
 			List<List<PointElement>> list) {
 		ArrayList<String> usedClasses = new ArrayList<String>();
@@ -300,7 +302,6 @@ public class Utils {
 		return usedClasses;
 
 	}
-	
 
 	public static String writeMessagesInJsonLdFile(InputStream inputStream,
 			List<Message> list) throws IOException {
@@ -323,9 +324,10 @@ public class Utils {
 		return json;
 
 	}
-	
-	public static String createJsonLdKnowledge(ArrayList<RecommendationForJson> terms){
-		
+
+	public static String createJsonLdKnowledge(
+			ArrayList<RecommendationForJson> terms) {
+
 		String jsonString = "";
 		JsonObject json = new JsonObject();
 		JsonObject context = new JsonObject();
@@ -333,45 +335,46 @@ public class Utils {
 
 		context.add("c4a", new JsonPrimitive(Utils.prefix_c4a));
 		context.add("rdfs", new JsonPrimitive(Utils.prefix_rdfs));
-		
+
 		JsonObject abstractTerm = null;
 		JsonObject recommendation = null;
 		JsonArray recommendations = null;
-		
-		for(RecommendationForJson temp : terms){
+
+		for (RecommendationForJson temp : terms) {
 			abstractTerm = new JsonObject();
 			abstractTerm.add("@type", new JsonPrimitive("c4a:AbstractTerm"));
 			abstractTerm.add("c4a:id", new JsonPrimitive(temp.getId()));
 			abstractTerm.add("c4a:value", new JsonPrimitive(temp.isValue()));
 			abstractTerm.add("c4a:rating", new JsonPrimitive(temp.getRating()));
-			
+
 			recommendations = new JsonArray();
-			for(Recommendation temp2 : temp.getHasRecommendation()){
+			for (Recommendation temp2 : temp.getHasRecommendation()) {
 				recommendation = new JsonObject();
-				recommendation.add("@type", new JsonPrimitive("Recommendation"));
+				recommendation
+						.add("@type", new JsonPrimitive("Recommendation"));
 				recommendation.add("c4a:id", new JsonPrimitive(temp2.getId()));
-				recommendation.add("c4a:name", new JsonPrimitive(temp2.getName()));
-				recommendation.add("c4a:value", new JsonPrimitive(temp2.getValue()));
+				recommendation.add("c4a:name",
+						new JsonPrimitive(temp2.getName()));
+				recommendation.add("c4a:value",
+						new JsonPrimitive(temp2.getValue()));
 				recommendations.add(recommendation);
-				
+
 			}
-			
+
 			abstractTerm.add("c4a:hasRecommendation", recommendations);
 			graph.add(abstractTerm);
 		}
-		
 
 		json.add("@context", context);
 		json.add("@graph", graph);
-		
+
 		Gson gson = new GsonBuilder().setPrettyPrinting().disableHtmlEscaping()
 				.serializeNulls()
 				.setFieldNamingPolicy(FieldNamingPolicy.UPPER_CAMEL_CASE)
 				.create();
 
 		jsonString = gson.toJson(json);
-		
-		
+
 		return jsonString;
 	}
 
@@ -432,7 +435,7 @@ public class Utils {
 
 		return s;
 	}
-	
+
 	public static String readJsonLd(InputStream inputStream) throws IOException {
 		BufferedReader reader = new BufferedReader(new InputStreamReader(
 				inputStream));
@@ -451,7 +454,7 @@ public class Utils {
 		return result;
 
 	}
-	
+
 	public static ArrayList<RecommendationForJson> getObjectsFromJsonLd(
 			InputStream inputStream, String result) throws IOException,
 			JsonLdError {
@@ -479,7 +482,6 @@ public class Utils {
 		return list;
 
 	}
-	
 
 	static public String splitCamelCase(String s) {
 		return s.replaceAll(String.format("%s|%s|%s",
@@ -499,8 +501,8 @@ public class Utils {
 		StringBuilder out = new StringBuilder();
 		String line;
 		String ruleName = "";
-		usedVariablesForClasses = new HashMap<String,String>();
-		usedVariables = new HashMap<String,String>();
+		usedVariablesForClasses = new HashMap<String, String>();
+		usedVariables = new HashMap<String, String>();
 		orderCounter = 1;
 
 		PointElement element;
@@ -531,7 +533,7 @@ public class Utils {
 
 			} else if (!line.isEmpty() && !line.contains(prefix_rdfs)
 					&& !line.contains(prefix_c4a)) {
-				
+
 				if (line.contains("]"))
 					line = line.replace("]", "");
 
@@ -548,7 +550,7 @@ public class Utils {
 		}
 
 		// fill missing values in object properties
-	//	fillMissingClasses(classes);
+		// fillMissingClasses(classes);
 
 		list.add(conditions);
 		list.add(conclusions);
@@ -567,7 +569,7 @@ public class Utils {
 		String propertyName = "";
 		String value = "";
 		String range = "";
-		
+
 		// declaration of a property
 		if (line.contains("rdf:type")) {
 			splitted = line.split(" ");
@@ -575,8 +577,7 @@ public class Utils {
 			className = splitted[2].replace("c4a:", "").replace(")", "");
 			usedVariablesForClasses.put(varName, className);
 			element = null;
-		}
-		else if (!line.contains("rdf:type") && line.contains("c4a")) {
+		} else if (!line.contains("rdf:type") && line.contains("c4a")) {
 
 			splitted = line.split(" ");
 			element.setId(setUniqueID());
@@ -594,7 +595,7 @@ public class Utils {
 			element.setOrder(orderCounter);
 			orderCounter++;
 			usedVariablesForClasses.put(varName, className);
-			
+
 			// set the type of the element according to the type of the property
 			if (property instanceof DataProperty) {
 				DataProperty dataProp = (DataProperty) property.clone();
@@ -603,14 +604,15 @@ public class Utils {
 				dataProp.setClassVar(varName);
 				element.setType(PointElement.Type.DATA_PROPERTY);
 				element.setProperty(dataProp);
+				usedVariables.put(value, value);
 			} else if (property instanceof ObjectProperty) {
 				element.setType(PointElement.Type.OBJECT_PROPERTY);
 				ObjectProperty objProp = (ObjectProperty) property.clone();
 				String objectValue = splitted[2].replace(")", "");
 
 				if (objectValue.contains("?"))
-					usedVariables.put(objectValue, objProp
-							.getRangeOfClasses().get(0));
+					usedVariablesForClasses.put(objectValue, objProp.getRangeOfClasses()
+							.get(0));
 
 				objProp.setValue(objectValue);
 				objProp.setClassVar(varName);
@@ -627,9 +629,10 @@ public class Utils {
 					line.indexOf(")"));
 			String originName = line.replace(argument, "").replace("(", "")
 					.replace(")", "");
-			
-			//TODO the case of noValue (triple)
-			if(!originName.equals("noValue")){
+
+			// String category =
+			// RuleCreationUtilities.getCategoryByName(originName);
+
 			BuiltinMethod method = null;
 			// find the method object by the original name
 			for (BuiltinMethod temp : methods) {
@@ -639,8 +642,64 @@ public class Utils {
 				}
 			}
 
-			method.setHelpString(argument);
+			String[] argumentsSplitted = null;
+			boolean flag = false;
+			if (!method.getCategory().equals("1"))
+				argumentsSplitted = argument.split(",");
+
+			if (method.getCategory().equals("1")) {
+				method.getValue1().setValue(argument.trim());
+
+			} else if (method.getCategory().equals("2a")) {
+
+				// check if the arguments are variables or classes
+				// if they are classes assigned them to 1 and 2, else
+				// assign them to 3 and 4.
+				flag = findTypeOfVariable(argumentsSplitted[0].replace(" ", ""));
+				if (flag) {
+					method.getValue1().setValue(
+							argumentsSplitted[0].replace(" ", ""));
+					method.getValue2().setValue(
+							argumentsSplitted[1].replace(" ", ""));
+				} else {
+					method.getValue3().setValue(
+							argumentsSplitted[0].replace(" ", ""));
+					method.getValue4().setValue(
+							argumentsSplitted[1].replace(" ", ""));
+					method.setFlag(true);
+				}
+
+			} else if (method.getCategory().equals("2b")) {
+
+				method.getValue1().setValue(
+						argumentsSplitted[0].replace(" ", ""));
+				method.getValue2().setValue(
+						argumentsSplitted[1].replace(" ", ""));
+
+			} else if (method.getCategory().equals("3")) {
+				method.getValue1().setValue(
+						argumentsSplitted[0].replace(" ", ""));
+				method.getValue2().setValue(
+						argumentsSplitted[1].replace(" ", ""));
+				method.getValue3().setValue(
+						argumentsSplitted[2].replace(" ", ""));
+
+			} else if (method.getCategory().equals("4")) {
+
+				method.getValue1().setValue(
+						argumentsSplitted[0].replace(" ", ""));
+				method.getValue2().setValue(
+						argumentsSplitted[1].replace(" ", ""));
+				method.getValue3().setValue(
+						argumentsSplitted[2].replace(" ", ""));
+
+			} else if (method.getCategory().equals("5")) {
+				method.getValue1().setValue(argument.trim());
+			}
+
+			method.setHelpString(argument.trim());
 			element.setMethod(method);
+			element.setLabel("Method");
 			element.setElementName(method.getUsingName());
 			element.setType(PointElement.Type.BUILTIN_METHOD);
 			element.setId(setUniqueID());
@@ -648,11 +707,23 @@ public class Utils {
 			element.setPanel(panel);
 			element.setOrder(orderCounter);
 			orderCounter++;
-			}
 
 		}
 
 		return element;
+	}
+
+	public static boolean findTypeOfVariable(String var) {
+		boolean flag = false;
+		Iterator it = usedVariablesForClasses.entrySet().iterator();
+		while (it.hasNext()) {
+			Map.Entry pair = (Map.Entry) it.next();
+			if (pair.getKey().equals(var)) {
+				flag = true;
+				break;
+			}
+		}
+		return flag;
 	}
 
 	public static String findElementClassByVarName(String varName) {
@@ -665,7 +736,7 @@ public class Utils {
 				break;
 			}
 		}
-		
+
 		if (className.isEmpty()) {
 			it = usedVariables.entrySet().iterator();
 			while (it.hasNext()) {
@@ -844,14 +915,10 @@ public class Utils {
 			y = initialY;
 			objectCounter++;
 		} else if (objectCounter == 1) {
-			x = initialX + 15;
-			y = initialY;
-			objectCounter++;
-		} else if (objectCounter == 2) {
-			x = initialX + 30;
+			x = initialX + 20;
 			y = initialY;
 			objectCounter = 0;
-			initialY = initialY + 8;
+			initialY = initialY + 12;
 		}
 
 		el.setX(x);
@@ -886,11 +953,11 @@ public class Utils {
 			else if (line.contains("queries="))
 				counter = 0;
 
-			 out.append(line+"\n");
+			out.append(line + "\n");
 
 		}
 
-	    String fileInput = out.toString();
+		String fileInput = out.toString();
 
 		String[] splitted = ruleString.split(";");
 		for (int i = 0; i < splitted.length; i++) {
@@ -914,11 +981,49 @@ public class Utils {
 
 		return out.toString();
 	}
-	
-	public static void main(String args[]){
-		
-		
-		
+
+	public static ArrayList<String> getUsedVariablesForClassesList() {
+		ArrayList<String> usedVariablesForClassesList = new ArrayList<String>();
+		Iterator entries = usedVariablesForClasses.entrySet().iterator();
+		while (entries.hasNext()) {
+			Map.Entry entry = (Map.Entry) entries.next();
+			usedVariablesForClassesList.add((String) entry.getKey());
+		}
+
+		return usedVariablesForClassesList;
+	}
+
+	public static ArrayList<String> getUsedVariablesForValuesList() {
+		ArrayList<String> usedVariablesForValuesList = new ArrayList<String>();
+
+		Iterator entries = usedVariables.entrySet().iterator();
+		while (entries.hasNext()) {
+			Map.Entry entry = (Map.Entry) entries.next();
+			usedVariablesForValuesList.add((String) entry.getKey());
+		}
+
+		return usedVariablesForValuesList;
+	}
+
+	public static HashMap<String, String> getUsedVariablesForClasses() {
+		return usedVariablesForClasses;
+	}
+
+	public static void setUsedVariablesForClasses(
+			HashMap<String, String> usedVariablesForClasses) {
+		Utils.usedVariablesForClasses = usedVariablesForClasses;
+	}
+
+	public static HashMap<String, String> getUsedVariables() {
+		return usedVariables;
+	}
+
+	public static void setUsedVariables(HashMap<String, String> usedVariables) {
+		Utils.usedVariables = usedVariables;
+	}
+
+	public static void main(String args[]) {
+
 	}
 
 }

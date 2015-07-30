@@ -88,10 +88,18 @@ public class EditRuleStep1Bean {
 				.getApplication().evaluateExpressionGet(context,
 						"#{addNewRuleBean}", AddNewRuleBean.class);
 
+		//get the lists with the variables for the rule that is
+		//going to be edited
+		addNewRuleBean.setUsedVariablesForClasses(Utils
+				.getUsedVariablesForClassesList());
+		addNewRuleBean.setUsedVariablesForValues(Utils
+				.getUsedVariablesForValuesList());
+
 		boolean flag = false;
 		if (rule.contains("message"))
 			flag = true;
 
+		//make initializations
 		addNewRuleBean.editRule(flag, conditions, conclusions, selectedRule,
 				rulesList);
 
