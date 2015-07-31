@@ -237,9 +237,23 @@ public class EditKnowledgeBean {
 	}
 
 	public void saveNewAbstractTerm() throws IOException {
-		for (Recommendation temp : abstractTerm.getHasRecommendation()) {
-			temp.setType("Recommendation");
+		
+		ArrayList<String> emptyRecomm = new ArrayList<String>();
+		for (int i = 0; i < abstractTerm.getHasRecommendation().size(); i++) {
+
+			Recommendation temp = abstractTerm.getHasRecommendation().get(i);
+			if (!temp.getId().isEmpty() && !temp.getValue().isEmpty()
+					&& !temp.getName().isEmpty())
+				temp.setType("Recommendation");
+			else
+				emptyRecomm.add("" + i);
 		}
+
+		// remove empty recommendations from abstract term
+		for (String s : emptyRecomm) {
+			abstractTerm.getHasRecommendation().remove(Integer.parseInt(s));
+		}
+
 		terms.add(abstractTerm);
 		createJsonTree();
 		abstractTerm = new RecommendationForJson("AbstractTerm", "", true, 0,

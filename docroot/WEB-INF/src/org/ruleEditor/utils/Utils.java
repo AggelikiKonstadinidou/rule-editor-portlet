@@ -693,8 +693,17 @@ public class Utils {
 				method.getValue3().setValue(
 						argumentsSplitted[2].replace(" ", ""));
 
-			} else if (method.getCategory().equals("5")) {
+			} else if (method.getCategory().equals("5")
+					|| method.getCategory().equals("9")
+					|| method.getCategory().equals("7")
+					|| method.getCategory().equals("8")) {
 				method.getValue1().setValue(argument.trim());
+				
+				if (method.getCategory().equals("8"))
+					usedVariablesForClasses.put(argument.trim(),
+							"category8Method");
+				else if (method.getCategory().equals("9"))
+					usedVariables.put(argument.trim(), "category9Method");
 			}
 
 			method.setHelpString(argument.trim());

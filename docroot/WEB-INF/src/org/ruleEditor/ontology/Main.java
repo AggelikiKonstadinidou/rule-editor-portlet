@@ -201,6 +201,8 @@ public class Main {
 		//category 3: two variables assigned to third
 		//category 4: makeSkolem
 		//category 5: remove/drop (numbers as parameters)
+		//category 6: noValue
+		//category 7: print
 		
 
 		BuiltinMethod test1 = new BuiltinMethod(
@@ -226,6 +228,7 @@ public class Main {
 		//-------------------------------------------------
 		BuiltinMethod test4 = new BuiltinMethod("noValue", "noValue",
 				"True if there is no known triple (x, p, ) or (x, p, v) in the model or the explicit forward deductions so far.", 1);
+		test4.setCategory("6");
 		//-----------------------------------------------
 		BuiltinMethod test5 = new BuiltinMethod("isLiteral", "isLiteral",
 				"Test whether the single argument is a literal", 1);
@@ -359,10 +362,12 @@ public class Main {
 				"Binds ?x to an xsd:dateTime value corresponding to the current time.",
 				1);
 		test27.setWatermarkDescription("?x");
+		test27.setCategory("8");
 		//--------------------------------------------------------------
 		BuiltinMethod test28 = new BuiltinMethod("makeTemp", "makeTemp",
 				"Binds ?x to a newly created blank node.", 1);
 		test28.setWatermarkDescription("?x");
+		test28.setCategory("9");
 		//--------------------------------------------------------------
 		BuiltinMethod test29 = new BuiltinMethod(
 				"makeInstance",
@@ -404,6 +409,7 @@ public class Main {
 		BuiltinMethod test35 = new BuiltinMethod("print", "print",
 				"Print (to standard out) a representation of each argument.", 1);
 		test35.setWatermarkDescription("Text to be printed");
+		test35.setCategory("7");
 		
 		BuiltinMethod test33 = new BuiltinMethod("isDType", "isDType",
 				"Tests if literal ?l is an instance of the datatype defined by resource ?t.", 1);

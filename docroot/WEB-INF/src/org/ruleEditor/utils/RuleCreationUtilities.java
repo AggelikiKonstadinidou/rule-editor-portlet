@@ -249,7 +249,7 @@ public class RuleCreationUtilities {
 
 			} else if (el.getType() == PointElement.Type.BUILTIN_METHOD) {
 
-				// covers at least the case of 1,2a,2b,3,4,5
+				// covers at least the case of 1,2a,2b,3,4,5,7,8,9
 				rule = rule + el.getMethod().getOriginalName() + "("
 						+ el.getMethod().getHelpString() + ")\n";
 

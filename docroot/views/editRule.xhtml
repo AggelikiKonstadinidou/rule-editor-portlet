@@ -566,6 +566,51 @@ Classes
 							</p:inputText>
 						</p:panelGrid>
 					</h:panelGrid>
+					<!-- print method-->
+					<h:panelGrid id="selections7"
+						rendered="#{addNewRuleBean.cloneSelectedNode.type=='BUILTIN_METHOD'
+						and (addNewRuleBean.cloneSelectedNode.method.category=='7')}"
+						columns="1" columnClasses="output">
+
+						<p:panelGrid id="gridTypePrint" columns="2"
+							columnClasses="label,value">
+							<h:outputText value="Enter text to be printed: " />
+							<h:inputTextarea label="tripleToRemove" style="width: 200px;"
+								autocomplete="off"
+								value="#{addNewRuleBean.cloneSelectedNode.method.value1.value}">
+							</h:inputTextarea>
+						</p:panelGrid>
+					</h:panelGrid>
+					<!-- now(x) method, category 8-->
+					<h:panelGrid id="selections8"
+						rendered="#{addNewRuleBean.cloneSelectedNode.type=='BUILTIN_METHOD'
+						and (addNewRuleBean.cloneSelectedNode.method.category=='8')}"
+						columns="1" columnClasses="output">
+
+						<p:panelGrid id="gridTypeNow" columns="2"
+							columnClasses="label,value">
+							<h:outputText value="Enter variable to be binded to the current time: " />
+							<p:inputText style="width: 100px;"
+								autocomplete="off"
+								value="#{addNewRuleBean.cloneSelectedNode.method.value1.value}">
+							</p:inputText>
+						</p:panelGrid>
+					</h:panelGrid>
+					<!-- makeTemp method, category 9-->
+					<h:panelGrid id="selections9"
+						rendered="#{addNewRuleBean.cloneSelectedNode.type=='BUILTIN_METHOD'
+						and (addNewRuleBean.cloneSelectedNode.method.category=='9')}"
+						columns="1" columnClasses="output">
+
+						<p:panelGrid id="gridTypeMakeTemp" columns="2"
+							columnClasses="label,value">
+							<h:outputText value="Enter variable to be binded to a new node: " />
+							<p:inputText style="width: 100px;"
+								autocomplete="off"
+								value="#{addNewRuleBean.cloneSelectedNode.method.value1.value}">
+							</p:inputText>
+						</p:panelGrid>
+					</h:panelGrid>
 					<h:panelGrid id="propertyPanel" columns="2"
 						columnClasses="label,value"
 						rendered="#{addNewRuleBean.cloneSelectedNode.type=='DATA_PROPERTY' or
