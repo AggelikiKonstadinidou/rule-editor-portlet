@@ -549,13 +549,58 @@ public class Utils {
 			out.append(line);
 		}
 
-		// fill missing values in object properties
-		// fillMissingClasses(classes);
+		// fill missing values
+		fillMissingClasses(classes);
 
 		list.add(conditions);
 		list.add(conclusions);
 
 		return list;
+	}
+	
+	public static void fillMissingClasses( List<ArrayList<OntologyClass>> classes){
+	
+		String className = "";
+		String varName = "";
+		String propertyName = "";
+		for (PointElement el : conditions) {
+			if (el.getProperty().getClassName().isEmpty()
+					&& !el.getProperty().getClassVar().isEmpty()) {
+				varName = el.getProperty().getClassVar();
+				className = findElementClassByVarName(varName);
+				propertyName = el.getProperty().getPropertyName();
+				// find what type of property is, and the whole property
+				OntologyProperty property = findPropertyByName(propertyName,
+						classes, className);
+				el.setElementName(propertyName);
+				el.setLabel(className);
+				
+				if (property instanceof DataProperty) {
+					DataProperty dataProp = (DataProperty) property.clone();
+//					value = splitted[2].replace(")", "");
+//					dataProp.setValue(value);
+//					dataProp.setClassVar(varName);
+					el.setType(PointElement.Type.DATA_PROPERTY);
+					el.setProperty(dataProp);
+//					usedVariables.put(value, value);
+				} else if (property instanceof ObjectProperty) {
+					el.setType(PointElement.Type.OBJECT_PROPERTY);
+					ObjectProperty objProp = (ObjectProperty) property.clone();
+//					String objectValue = splitted[2].replace(")", "");
+//
+//					if (objectValue.contains("?"))
+//						usedVariablesForClasses.put(objectValue, objProp.getRangeOfClasses()
+//								.get(0));
+//
+//					objProp.setValue(objectValue);
+					objProp.setClassVar(varName);
+
+					// TODO: case of instance
+					el.setProperty(objProp);
+				}
+
+			}
+		}
 	}
 
 	public static PointElement convertRuleLineToPointElement(String line,
@@ -587,38 +632,52 @@ public class Utils {
 			varName = splitted[0].replace("(", "");
 			// find from varName which class owns this property
 			className = findElementClassByVarName(varName);
-			// find what type of property is, and the whole property
-			OntologyProperty property = findPropertyByName(propertyName,
-					classes, className);
-			element.setElementName(propertyName);
-			element.setLabel(className);
 			element.setOrder(orderCounter);
 			orderCounter++;
-			usedVariablesForClasses.put(varName, className);
+			
+			if (!className.isEmpty()) {
+				// find what type of property is, and the whole property
+				OntologyProperty property = findPropertyByName(propertyName,
+						classes, className);
+				element.setElementName(propertyName);
+				element.setLabel(className);
 
-			// set the type of the element according to the type of the property
-			if (property instanceof DataProperty) {
-				DataProperty dataProp = (DataProperty) property.clone();
+				usedVariablesForClasses.put(varName, className);
+
+				// set the type of the element according to the type of the
+				// property
+				if (property instanceof DataProperty) {
+					DataProperty dataProp = (DataProperty) property.clone();
+					value = splitted[2].replace(")", "");
+					dataProp.setValue(value);
+					dataProp.setClassVar(varName);
+					element.setType(PointElement.Type.DATA_PROPERTY);
+					element.setProperty(dataProp);
+					usedVariables.put(value, value);
+				} else if (property instanceof ObjectProperty) {
+					element.setType(PointElement.Type.OBJECT_PROPERTY);
+					ObjectProperty objProp = (ObjectProperty) property.clone();
+					String objectValue = splitted[2].replace(")", "");
+
+					if (objectValue.contains("?"))
+						usedVariablesForClasses.put(objectValue, objProp
+								.getRangeOfClasses().get(0));
+
+					objProp.setValue(objectValue);
+					objProp.setClassVar(varName);
+
+					// TODO: case of instance
+					element.setProperty(objProp);
+				}
+			}
+
+			// the case where the declaration of the class
+			// follows the declaration of the property
+			if (className.isEmpty()) {
+				element.getProperty().setClassVar(varName);
 				value = splitted[2].replace(")", "");
-				dataProp.setValue(value);
-				dataProp.setClassVar(varName);
-				element.setType(PointElement.Type.DATA_PROPERTY);
-				element.setProperty(dataProp);
-				usedVariables.put(value, value);
-			} else if (property instanceof ObjectProperty) {
-				element.setType(PointElement.Type.OBJECT_PROPERTY);
-				ObjectProperty objProp = (ObjectProperty) property.clone();
-				String objectValue = splitted[2].replace(")", "");
-
-				if (objectValue.contains("?"))
-					usedVariablesForClasses.put(objectValue, objProp.getRangeOfClasses()
-							.get(0));
-
-				objProp.setValue(objectValue);
-				objProp.setClassVar(varName);
-
-				// TODO: case of instance
-				element.setProperty(objProp);
+				element.getProperty().setValue(value);
+				element.getProperty().setPropertyName(propertyName);
 			}
 
 		}

@@ -618,7 +618,8 @@ public class AddNewRuleBean {
 						+ cloneSelectedNode.getMethod().getValue3().getValue();
 
 			} else if (category.equals("5") || category.equals("7")
-					|| category.equals("8") || category.equals("9")) {
+					|| category.equals("8") || category.equals("9")
+					|| category.equals("6")) {
 				helpString = cloneSelectedNode.getMethod().getValue1()
 						.getValue();
 

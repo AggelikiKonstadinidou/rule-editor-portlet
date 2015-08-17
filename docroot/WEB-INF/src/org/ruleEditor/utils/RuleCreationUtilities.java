@@ -33,6 +33,11 @@ public class RuleCreationUtilities {
 			.asList("makeSkolem");
 	public static List<String> categoryOfMethods_5 = Arrays.asList("drop",
 			"remove");
+	public static List<String> categoryOfMethods_6 = Arrays.asList("noValue");
+	public static List<String> categoryOfMethods_7 = Arrays.asList("print");
+	public static List<String> categoryOfMethods_8 = Arrays.asList("now");
+	public static List<String> categoryOfMethods_9 = Arrays.asList("makeTemp");
+	public static List<String> categoryOfMethods_10 = Arrays.asList("makeInstance");
 
 	public static ArrayList<String> declaredClassVariables;
 	public static ArrayList<String> declaredObjectVariables;
@@ -250,6 +255,36 @@ public class RuleCreationUtilities {
 			} else if (el.getType() == PointElement.Type.BUILTIN_METHOD) {
 
 				// covers at least the case of 1,2a,2b,3,4,5,7,8,9
+				String s = "";
+				if (categoryOfMethods_7.contains(el.getMethod()
+						.getOriginalName())) {
+					s = el.getMethod().getHelpString();
+					el.getMethod().setHelpString("\"" + s + "\"");
+				}
+
+				// case of makeInstance method, find the order number of the
+				// triple
+				// create the triple and remove it from the rule body
+				if (categoryOfMethods_6.contains(el.getMethod()
+						.getOriginalName())) {
+					int orderNumber = Integer.parseInt(el.getMethod()
+							.getHelpString());
+					PointElement triple = null;
+
+					for (PointElement testEl : list) {
+						if (testEl.getOrder() == orderNumber) {
+							triple = testEl;
+							break;
+						}
+					}
+
+					// TODO create the triple
+					String tripleString = getTripleFromElement(triple);
+					el.getMethod().setHelpString(
+							tripleString.replace("(", "").replace(")", ""));
+					rule = rule.replace(tripleString, "");
+				}
+
 				rule = rule + el.getMethod().getOriginalName() + "("
 						+ el.getMethod().getHelpString() + ")\n";
 
@@ -258,6 +293,83 @@ public class RuleCreationUtilities {
 		}
 
 		return rule;
+	}
+	
+	public static String getTripleFromElement(PointElement el){
+		String triple ="";
+		if (el.getType() == PointElement.Type.DATA_PROPERTY) {
+
+			OntologyProperty property = (DataProperty) el.getProperty();
+			String value = ((DataProperty) property).getValue();
+			String classVar = property.getClassVar();
+
+			if (!value.contains("?") && value.indexOf("\"") != 0)
+				value = "\"" + value + "\"";
+
+			// check if the property has class var or it is connected with
+			// an instance
+			if (el.getConnections().size() > 0) {
+				classVar = el.getConnections().get(0).getInstance().getId();
+			}
+
+			if (classVar.contains("?"))
+				if (!declaredClassVariables.contains(classVar)
+						&& !declaredObjectVariables.contains(classVar)) {
+					triple = "(" + classVar + " rdf:type c4a:"
+							+ property.getClassName() + ")\n";
+					declaredClassVariables.add(classVar);
+				}
+
+			triple = "(" + classVar + " c4a:" + el.getElementName()
+					+ " " + value + ")\n";
+
+		} else if (el.getType() == PointElement.Type.OBJECT_PROPERTY) {
+
+			OntologyProperty property = (ObjectProperty) el.getProperty();
+			String className = property.getClassName();
+			String classRange = ((ObjectProperty) property)
+					.getRangeOfClasses().get(0);
+			String source = property.getClassVar();
+			String target = property.getValue();
+
+			if (el.getConnections().size() > 0) {
+				for (PointElement temp : el.getConnections()) {
+
+					if (temp.getType() == Type.INSTANCE) {
+						if (temp.getInstance().getClassName()
+								.equalsIgnoreCase(className))
+							source = temp.getInstance().getId();
+						else if (temp.getInstance().getClassName()
+								.equalsIgnoreCase(classRange))
+							target = temp.getInstance().getId();
+					}
+
+				}
+			}
+
+			// check if class of source is declared
+			if (source.contains("?"))
+				if (!declaredClassVariables.contains(source)
+						&& !source.isEmpty()
+						&& !declaredObjectVariables.contains(source)) {
+					triple = "(" + source + " rdf:type c4a:"
+							+ property.getClassName() + ")\n";
+					declaredClassVariables.add(source);
+				}
+
+			// check if class of target is declared
+			if (target.contains("?"))
+				if (!declaredObjectVariables.contains(target)
+						&& !target.isEmpty()) {
+					declaredObjectVariables.add(target);
+				}
+
+			triple = "(" + source + " c4a:" + el.getElementName()
+					+ " " + target + ")\n";
+
+		}
+		
+		return triple;
 	}
 
 	public static String getCategoryByName(String name) {

@@ -512,10 +512,10 @@ public class Ontology implements Serializable {
 		List<String> solutions = Arrays.asList("settings_Settings");// runsOnDevice_Devices,runsOnPlatform_Platforms
 		List<String> setting = Arrays.asList("refersTo_?"); // TODO refers to
 		List<String> metadata = new ArrayList<String>();
-		List<String> conflict = Arrays.asList("refersTo_Solutions");// hasResolution_?,
+		List<String> conflict = Arrays.asList("refersTo_Configuration");// hasResolution_?,
 																	// TODO
 																	// refersTo
-																	// installedSolution
+																	// installedSolution, Solution, Configuration?
 		List<String> preferenceSet = Arrays.asList("hasMetadata_Metadata",
 				"hasPrefs_Preference");
 		List<String> inferredConfiguration = Arrays.asList(
