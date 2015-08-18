@@ -118,18 +118,27 @@
 
 				</h:panelGrid>
 
-				<p:panel header="Conditions" id="pan1" style="height:700px;">
-					<p:diagram value="#{addNewRuleBean.conditionsModel}"
-						id="conditionsDiagram" style="height:650px;"
-						styleClass="ui-widget-content" var="item">
+					<p:panel header="conditions" id="pan1"
+						style="height:700px;">
+						<f:facet name="header">
+							<h:outputText value="Conditions" />
+						</f:facet>
+						<p:diagram value="#{addNewRuleBean.conditionsModel}"
+							id="conditionsDiagram" style="height:650px;"
+							styleClass="ui-widget-content" var="item">
 
-						<f:facet name="element">
-							<p:panel id="pnl1" header="#{item.elementName}">
-								<h:panelGrid columns="1" columnClasses="label"
+							<f:facet name="element">
+								<p:panel id="pnl1" header="#{item.label}: #{item.elementName}">
+									<h:panelGrid columns="1" columnClasses="label"
 										id="elementGrid1">
 
 										<h:outputText value="Order: #{item.order}"
 											rendered="#{item.order!=0}" />
+
+										<h:outputText label="varName"
+											rendered="#{item.method.originalName!=''}"
+											style="width: 80px;" autocomplete="off"
+											value="Arguments: #{item.method.helpString}" />
 
 										<h:outputText label="varName"
 											rendered="#{item.property.ontologyURI!=''}" id="classVar"
@@ -148,16 +157,18 @@
 										<f:param name="id" value="#{item.id}" />
 										<f:param name="panel" value="conditions" />
 									</p:commandButton>
-							</p:panel>
-						</f:facet>
+								</p:panel>
+							</f:facet>
 
-						<p:ajax event="connect" listener="#{addNewRuleBean.onConnect}" />
-						<p:ajax event="disconnect"
-							listener="#{addNewRuleBean.onDisconnect}" />
-						<p:ajax event="connectionChange"
-							listener="#{addNewRuleBean.onConnectionChange}" />
-					</p:diagram>
-				</p:panel>
+							<p:ajax event="connect" listener="#{addNewRuleBean.onConnect}"
+								update=":#{p:component('conditionsDiagram')}" />
+							<p:ajax event="disconnect"
+								listener="#{addNewRuleBean.onDisconnect}" />
+							<p:ajax event="connectionChange"
+								listener="#{addNewRuleBean.onConnectionChange}"
+								update=":#{p:component('conditionsDiagram')}" />
+						</p:diagram>
+					</p:panel>
 
 				<p:commandButton actionListener="#{addRuleStep1Bean.init}"
 					action="/views/addRuleStep1Bean.xhtml?javax.portlet.faces.PortletMode=view&amp;javax.portlet.faces.WindowState=normal"
@@ -447,17 +458,15 @@ Classes
 
 						<p:panelGrid id="gridType7" columns="2"
 							columnClasses="label,value">
-							<f:facet name="header">
-Classes
-</f:facet>
+							
 							<h:outputText value="Enter the order number of the triple: " />
 							<p:inputText label="tripleToRemove" style="width: 100px;"
 								autocomplete="off"
-								value="#{addNewRuleBean.cloneSelectedNode.method.newNodeName}">
+								value="#{addNewRuleBean.cloneSelectedNode.method.value1.value}">
 							</p:inputText>
 						</p:panelGrid>
 					</h:panelGrid>
-					<!-- print method, category 7-->
+					<!-- print method,category 7-->
 					<h:panelGrid id="selections7"
 						rendered="#{addNewRuleBean.cloneSelectedNode.type=='BUILTIN_METHOD'
 						and (addNewRuleBean.cloneSelectedNode.method.category=='7')}"

@@ -37,7 +37,8 @@ public class RuleCreationUtilities {
 	public static List<String> categoryOfMethods_7 = Arrays.asList("print");
 	public static List<String> categoryOfMethods_8 = Arrays.asList("now");
 	public static List<String> categoryOfMethods_9 = Arrays.asList("makeTemp");
-	public static List<String> categoryOfMethods_10 = Arrays.asList("makeInstance");
+	public static List<String> categoryOfMethods_10 = Arrays
+			.asList("makeInstance");
 
 	public static ArrayList<String> declaredClassVariables;
 	public static ArrayList<String> declaredObjectVariables;
@@ -94,8 +95,8 @@ public class RuleCreationUtilities {
 
 		rule = rule + "]";
 
-		if (rule.contains("noValue("))
-			rule = removeExtraNoValueSentence(rule);
+		// if (rule.contains("noValue("))
+		// rule = removeExtraNoValueSentence(rule);
 
 		System.out.println(rule);
 
@@ -178,6 +179,7 @@ public class RuleCreationUtilities {
 
 	public static String convertListToRule(ArrayList<PointElement> list) {
 		String rule = "";
+		String tripleString = "";
 
 		// work on conditions
 		for (PointElement el : list) {
@@ -279,14 +281,18 @@ public class RuleCreationUtilities {
 					}
 
 					// TODO create the triple
-					String tripleString = getTripleFromElement(triple);
-					el.getMethod().setHelpString(
-							tripleString.replace("(", "").replace(")", ""));
+					tripleString = getTripleFromElement(triple);
 					rule = rule.replace(tripleString, "");
 				}
 
-				rule = rule + el.getMethod().getOriginalName() + "("
-						+ el.getMethod().getHelpString() + ")\n";
+				if (!categoryOfMethods_6.contains(el.getMethod()
+						.getOriginalName()))
+					rule = rule + el.getMethod().getOriginalName() + "("
+							+ el.getMethod().getHelpString() + ")\n";
+				else
+					rule = rule + el.getMethod().getOriginalName() + "("
+							+ tripleString.replace("(", "").replace(")", "")
+							+ ")\n";
 
 			}
 
@@ -294,9 +300,9 @@ public class RuleCreationUtilities {
 
 		return rule;
 	}
-	
-	public static String getTripleFromElement(PointElement el){
-		String triple ="";
+
+	public static String getTripleFromElement(PointElement el) {
+		String triple = "";
 		if (el.getType() == PointElement.Type.DATA_PROPERTY) {
 
 			OntologyProperty property = (DataProperty) el.getProperty();
@@ -320,15 +326,15 @@ public class RuleCreationUtilities {
 					declaredClassVariables.add(classVar);
 				}
 
-			triple = "(" + classVar + " c4a:" + el.getElementName()
-					+ " " + value + ")\n";
+			triple = "(" + classVar + " c4a:" + el.getElementName() + " "
+					+ value + ")\n";
 
 		} else if (el.getType() == PointElement.Type.OBJECT_PROPERTY) {
 
 			OntologyProperty property = (ObjectProperty) el.getProperty();
 			String className = property.getClassName();
-			String classRange = ((ObjectProperty) property)
-					.getRangeOfClasses().get(0);
+			String classRange = ((ObjectProperty) property).getRangeOfClasses()
+					.get(0);
 			String source = property.getClassVar();
 			String target = property.getValue();
 
@@ -364,11 +370,11 @@ public class RuleCreationUtilities {
 					declaredObjectVariables.add(target);
 				}
 
-			triple = "(" + source + " c4a:" + el.getElementName()
-					+ " " + target + ")\n";
+			triple = "(" + source + " c4a:" + el.getElementName() + " "
+					+ target + ")\n";
 
 		}
-		
+
 		return triple;
 	}
 
@@ -410,7 +416,5 @@ public class RuleCreationUtilities {
 			ArrayList<String> declaredObjectVariables) {
 		RuleCreationUtilities.declaredObjectVariables = declaredObjectVariables;
 	}
-	
-	
 
 }

@@ -65,8 +65,8 @@ public class EditRuleStep1Bean {
 	}
 
 	public void reload() {
-		selectedRule = null;
-		formCompleted = true;
+		this.selectedRule = new Rule("", "", null);;
+		this.formCompleted = true;
 	}
 
 	public void submitOption() throws IOException {
@@ -143,7 +143,8 @@ public class EditRuleStep1Bean {
 
 	public void setSelectedRule(Rule selectedRule) {
 		this.selectedRule = selectedRule;
-		counter = 0;
+		this.counter = 0;
+		this.formCompleted = false;
 	}
 
 }

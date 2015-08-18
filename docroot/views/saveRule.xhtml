@@ -37,12 +37,14 @@
 						id="newFileName" autocomplete="off"
 						value="#{addNewRuleBean.newFileName}">
 					</p:inputText>
-					<p:commandButton value="Previous Step" id="previousStep"
-						actionListener="#{addNewRuleBean.goToPreviousStep}" ajax="false" />
-					<p:commandButton value="Save" id="okBut"
-						actionListener="#{addNewRuleBean.saveRule}"
-						oncomplete="PF('correlationDialog').show()" />
+
 				</h:panelGrid>
+				<p:commandButton value="Previous Step" id="previousStep"
+					actionListener="#{addNewRuleBean.goToPreviousStep}" ajax="false" />
+				<p:commandButton value="Save" id="okBut" ajax="false"
+					actionListener="#{addNewRuleBean.saveRule}" />
+				<p:commandButton value="Check Correlation" id="correlation"
+					oncomplete="PF('correlationDialog').show()" />
 			</p:panel>
 
 

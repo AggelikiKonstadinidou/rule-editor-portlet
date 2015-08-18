@@ -557,49 +557,53 @@ public class Utils {
 
 		return list;
 	}
-	
-	public static void fillMissingClasses( List<ArrayList<OntologyClass>> classes){
-	
+
+	public static void fillMissingClasses(List<ArrayList<OntologyClass>> classes) {
+
 		String className = "";
 		String varName = "";
 		String propertyName = "";
 		for (PointElement el : conditions) {
-			if (el.getProperty().getClassName().isEmpty()
-					&& !el.getProperty().getClassVar().isEmpty()) {
-				varName = el.getProperty().getClassVar();
-				className = findElementClassByVarName(varName);
-				propertyName = el.getProperty().getPropertyName();
-				// find what type of property is, and the whole property
-				OntologyProperty property = findPropertyByName(propertyName,
-						classes, className);
-				el.setElementName(propertyName);
-				el.setLabel(className);
-				
-				if (property instanceof DataProperty) {
-					DataProperty dataProp = (DataProperty) property.clone();
-//					value = splitted[2].replace(")", "");
-//					dataProp.setValue(value);
-//					dataProp.setClassVar(varName);
-					el.setType(PointElement.Type.DATA_PROPERTY);
-					el.setProperty(dataProp);
-//					usedVariables.put(value, value);
-				} else if (property instanceof ObjectProperty) {
-					el.setType(PointElement.Type.OBJECT_PROPERTY);
-					ObjectProperty objProp = (ObjectProperty) property.clone();
-//					String objectValue = splitted[2].replace(")", "");
-//
-//					if (objectValue.contains("?"))
-//						usedVariablesForClasses.put(objectValue, objProp.getRangeOfClasses()
-//								.get(0));
-//
-//					objProp.setValue(objectValue);
-					objProp.setClassVar(varName);
+			if (el.getType() != PointElement.Type.BUILTIN_METHOD)
+				if (el.getProperty().getClassName().isEmpty()
+						&& (!el.getProperty().getClassVar().isEmpty() || el
+								.getLabel().isEmpty())) {
+					varName = el.getProperty().getClassVar();
+					className = findElementClassByVarName(varName);
+					propertyName = el.getProperty().getPropertyName();
+					// find what type of property is, and the whole property
+					OntologyProperty property = findPropertyByName(
+							propertyName, classes, className);
+					el.setElementName(propertyName);
+					el.setLabel(className);
 
-					// TODO: case of instance
-					el.setProperty(objProp);
+					if (property instanceof DataProperty) {
+						DataProperty dataProp = (DataProperty) property.clone();
+						// value = splitted[2].replace(")", "");
+						// dataProp.setValue(value);
+						// dataProp.setClassVar(varName);
+						el.setType(PointElement.Type.DATA_PROPERTY);
+						el.setProperty(dataProp);
+						// usedVariables.put(value, value);
+					} else if (property instanceof ObjectProperty) {
+						el.setType(PointElement.Type.OBJECT_PROPERTY);
+						ObjectProperty objProp = (ObjectProperty) property
+								.clone();
+						// String objectValue = splitted[2].replace(")", "");
+						//
+						// if (objectValue.contains("?"))
+						// usedVariablesForClasses.put(objectValue,
+						// objProp.getRangeOfClasses()
+						// .get(0));
+						//
+						// objProp.setValue(objectValue);
+						objProp.setClassVar(varName);
+
+						// TODO: case of instance
+						el.setProperty(objProp);
+					}
+
 				}
-
-			}
 		}
 	}
 
@@ -622,7 +626,8 @@ public class Utils {
 			className = splitted[2].replace("c4a:", "").replace(")", "");
 			usedVariablesForClasses.put(varName, className);
 			element = null;
-		} else if (!line.contains("rdf:type") && line.contains("c4a")) {
+		} else if (!line.contains("rdf:type") && line.contains("c4a")
+				&& !line.contains("noValue")) {
 
 			splitted = line.split(" ");
 			element.setId(setUniqueID());
@@ -634,7 +639,7 @@ public class Utils {
 			className = findElementClassByVarName(varName);
 			element.setOrder(orderCounter);
 			orderCounter++;
-			
+
 			if (!className.isEmpty()) {
 				// find what type of property is, and the whole property
 				OntologyProperty property = findPropertyByName(propertyName,
@@ -675,7 +680,11 @@ public class Utils {
 			// follows the declaration of the property
 			if (className.isEmpty()) {
 				element.getProperty().setClassVar(varName);
-				value = splitted[2].replace(")", "");
+				// case of e.g. noValue(?config c4a:solPreferred)
+				if (splitted.length > 2)
+					value = splitted[2].replace(")", "");
+				else
+					value = "";
 				element.getProperty().setValue(value);
 				element.getProperty().setPropertyName(propertyName);
 			}
@@ -752,12 +761,93 @@ public class Utils {
 				method.getValue3().setValue(
 						argumentsSplitted[2].replace(" ", ""));
 
+			} // case of noValue method
+			else if (method.getCategory().equals("6")) {
+				// !! CREATE TRIPLE FOR NOVALUE METHOD
+				String[] triple = argument.split(" ");
+				PointElement tripleEl = new PointElement();
+				tripleEl.setId(setUniqueID());
+				tripleEl = setPosition(tripleEl);
+				tripleEl.setPanel(panel);
+				propertyName = triple[1].replace("c4a:", "");
+				varName = triple[0].replace("(", "");
+				// find from varName which class owns this property
+				className = findElementClassByVarName(varName);
+				tripleEl.setOrder(orderCounter);
+				orderCounter++;
+
+				if (!className.isEmpty()) {
+					// find what type of property is, and the whole property
+					OntologyProperty property = findPropertyByName(
+							propertyName, classes, className);
+					tripleEl.setElementName(propertyName);
+					tripleEl.setLabel(className);
+
+					usedVariablesForClasses.put(varName, className);
+
+					// set the type of the element according to the type of the
+					// property
+					if (property instanceof DataProperty) {
+						DataProperty dataProp = (DataProperty) property.clone();
+						if (triple.length > 2)
+							value = triple[2].replace(")", "");
+						else
+							value = "";
+						dataProp.setValue(value);
+						dataProp.setClassVar(varName);
+						tripleEl.setType(PointElement.Type.DATA_PROPERTY);
+						tripleEl.setProperty(dataProp);
+						usedVariables.put(value, value);
+					} else if (property instanceof ObjectProperty) {
+						element.setType(PointElement.Type.OBJECT_PROPERTY);
+						ObjectProperty objProp = (ObjectProperty) property
+								.clone();
+						String objectValue = "";
+						if (triple.length > 2)
+							objectValue = triple[2].replace(")", "");
+
+						if (objectValue.contains("?"))
+							usedVariablesForClasses.put(objectValue, objProp
+									.getRangeOfClasses().get(0));
+
+						objProp.setValue(objectValue);
+						objProp.setClassVar(varName);
+
+						// TODO: case of instance
+						tripleEl.setProperty(objProp);
+
+					}
+				}
+
+				// the case where the declaration of the class
+				// follows the declaration of the property
+				if (className.isEmpty()) {
+					tripleEl.getProperty().setClassVar(varName);
+					// case of e.g. noValue(?config c4a:solPreferred)
+					if (triple.length > 2)
+						value = triple[2].replace(")", "");
+					else
+						value = "";
+					tripleEl.getProperty().setValue(value);
+					tripleEl.getProperty().setPropertyName(propertyName);
+				}
+
+				if (tripleEl != null)
+					if (panel.equalsIgnoreCase("conditions"))
+						conditions.add(tripleEl);
+					else
+						conclusions.add(tripleEl);
+
+				argument = "" + tripleEl.getOrder();
+				method.getValue1().setValue(argument.trim());
+				// !!END OF CREATION TRIPLE FOR METHOD
+
 			} else if (method.getCategory().equals("5")
 					|| method.getCategory().equals("9")
 					|| method.getCategory().equals("7")
 					|| method.getCategory().equals("8")) {
 				method.getValue1().setValue(argument.trim());
-				
+
 				if (method.getCategory().equals("8"))
 					usedVariablesForClasses.put(argument.trim(),
 							"category8Method");
