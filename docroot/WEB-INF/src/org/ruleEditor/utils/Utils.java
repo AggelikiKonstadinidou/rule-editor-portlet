@@ -11,6 +11,8 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.lang.reflect.Type;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -30,6 +32,11 @@ import javax.portlet.PortletResponse;
 import javax.servlet.http.HttpServletResponse;
 
 import org.coode.owlapi.owlxml.renderer.OWLXMLOntologyStorer;
+import org.jgrapht.DirectedGraph;
+import org.jgrapht.UndirectedGraph;
+import org.jgrapht.graph.DefaultDirectedGraph;
+import org.jgrapht.graph.DefaultEdge;
+import org.jgrapht.graph.SimpleGraph;
 import org.primefaces.model.DefaultStreamedContent;
 import org.primefaces.model.StreamedContent;
 import org.primefaces.model.diagram.DefaultDiagramModel;
@@ -1181,7 +1188,15 @@ public class Utils {
 	}
 
 	public static void main(String args[]) {
-
+		// UndirectedGraph<PointElement, DefaultEdge> conditionsGraph =
+		// createStringGraph();
+		// System.out.println(conditionsGraph.toString());
 	}
 
+	public static UndirectedGraph<PointElement, DefaultEdge> createGraph() {
+		UndirectedGraph<PointElement, DefaultEdge> g = new SimpleGraph<PointElement, DefaultEdge>(
+				DefaultEdge.class);
+		return g;
+	}
+	
 }

@@ -26,6 +26,8 @@ import javax.faces.event.ValueChangeEvent;
 import javax.servlet.http.HttpSession;
 
 import org.apache.commons.io.FilenameUtils;
+import org.jgrapht.UndirectedGraph;
+import org.jgrapht.graph.DefaultEdge;
 import org.primefaces.component.commandbutton.CommandButton;
 import org.primefaces.component.contextmenu.ContextMenu;
 import org.primefaces.component.panel.Panel;
@@ -132,6 +134,8 @@ public class AddNewRuleBean {
 	private String previousStep = "";
 	private HashMap<String, InputStream> filesToCompare;
 	private ArrayList<Message> correlatedFiles;
+	private UndirectedGraph<PointElement, DefaultEdge> conditionsGraph = null;
+	private UndirectedGraph<PointElement, DefaultEdge> conclusionsGraph = null;
 
 	public AddNewRuleBean() {
 		super();
@@ -187,6 +191,10 @@ public class AddNewRuleBean {
 		selectedClasses = true;
 		selectedVariables = false;
 
+		// Initialization of graphs
+		conditionsGraph = Utils.createGraph();
+		conclusionsGraph = Utils.createGraph();
+
 		// Initialization of conditions model
 		conditionsModel = new DefaultDiagramModel();
 		conditionsModel.setMaxConnections(-1);
@@ -227,6 +235,11 @@ public class AddNewRuleBean {
 		instances = new ArrayList<Instance>();
 		conditions = (ArrayList<PointElement>) conditionsList.clone();
 		conclusions = (ArrayList<PointElement>) conclusionsList.clone();
+
+		//fill graphs with point elements from conditions and conclusions
+		//of the new rule
+		fillGraphsWithPointElements();
+
 		counter = 0;
 		initialX = 3;
 		initialY = 3;
@@ -265,6 +278,16 @@ public class AddNewRuleBean {
 		createModels("conditions", conditions);
 		createModels("conclusions", conclusions);
 
+	}
+
+	public void fillGraphsWithPointElements() {
+		for (PointElement temp : conditions) {
+			conditionsGraph.addVertex(temp);
+		}
+
+		for (PointElement temp : conclusions) {
+			conclusionsGraph.addVertex(temp);
+		}
 	}
 
 	public void createModels(String panelID, ArrayList<PointElement> list) {
@@ -1398,10 +1421,12 @@ public class AddNewRuleBean {
 			conditionsModel.addElement(element);
 			networkElement.setPanel("conditions");
 			conditions.add(networkElement);
+			conditionsGraph.addVertex(networkElement);
 		} else {
 			conclusionsModel.addElement(element);
 			networkElement.setPanel("conclusions");
 			conclusions.add(networkElement);
+			conclusionsGraph.addVertex(networkElement);
 		}
 
 	}
