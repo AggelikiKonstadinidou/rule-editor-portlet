@@ -136,6 +136,8 @@ public class AddNewRuleBean {
 	private ArrayList<Message> correlatedFiles;
 	private UndirectedGraph<PointElement, DefaultEdge> conditionsGraph = null;
 	private UndirectedGraph<PointElement, DefaultEdge> conclusionsGraph = null;
+	private ArrayList<String> types = null;
+	private ArrayList<OntologyProperty> propertiesList = null;
 
 	public AddNewRuleBean() {
 		super();
@@ -184,6 +186,10 @@ public class AddNewRuleBean {
 		usedVariablesForClasses = new ArrayList<String>();
 
 		usedVariablesForValues = new ArrayList<String>();
+
+		types = new ArrayList<String>();
+		types.add("-");
+		propertiesList = new ArrayList<OntologyProperty>();
 
 		argument = "";
 		variables = new ArrayList<String>();
@@ -236,8 +242,8 @@ public class AddNewRuleBean {
 		conditions = (ArrayList<PointElement>) conditionsList.clone();
 		conclusions = (ArrayList<PointElement>) conclusionsList.clone();
 
-		//fill graphs with point elements from conditions and conclusions
-		//of the new rule
+		// fill graphs with point elements from conditions and conclusions
+		// of the new rule
 		fillGraphsWithPointElements();
 
 		counter = 0;
@@ -652,7 +658,19 @@ public class AddNewRuleBean {
 				else if (category.equals("9"))
 					usedVariablesForClasses.add(cloneSelectedNode.getMethod()
 							.getValue1().getValue());
+			} else if (category.equals("11")) {
+				
+				//TODO remove value3 if type is -. Find out types
+				helpString = cloneSelectedNode.getMethod().getValue1()
+						.getValue()
+						+ ","
+						+ cloneSelectedNode.getMethod().getValue2().getValue()
+						+ ","
+						+ cloneSelectedNode.getMethod().getValue3().getValue()
+						+ ","
+						+ cloneSelectedNode.getMethod().getValue4().getValue();
 			}
+			//TODO the category 10
 
 			cloneSelectedNode.getMethod().setHelpString(helpString);
 		}
@@ -1277,16 +1295,20 @@ public class AddNewRuleBean {
 
 	public void onNodeSelect() {
 
+		boolean flag = false;
 		for (ArrayList<OntologyClass> temp : main.getAllClasses()) {
-			searchChildrenByName(temp.get(0));
+			flag = searchChildrenByName(temp.get(0), this.selectedNode
+					.getData().toString());
+			if (flag)
+				break;
 
 		}
 
 	}
 
-	public boolean searchChildrenByName(OntologyClass tempClass) {
+	public boolean searchChildrenByName(OntologyClass tempClass, String name) {
 		boolean flag = false;
-		if (tempClass.getClassName().equals(this.selectedNode.getData())) {
+		if (tempClass.getClassName().equals(name)) {
 
 			datatypes = tempClass.getDataProperties();
 			objects = tempClass.getObjectProperties();
@@ -1295,7 +1317,38 @@ public class AddNewRuleBean {
 
 		} else {
 			for (OntologyClass tempChild : tempClass.getChildren()) {
-				flag = searchChildrenByName(tempChild);
+				flag = searchChildrenByName(tempChild, name);
+				if (flag)
+					break;
+			}
+		}
+
+		return false;
+	}
+
+	public void findPropertiesForClass(String className) {
+
+		boolean flag = false;
+		for (ArrayList<OntologyClass> temp : main.getAllClasses()) {
+			flag = searchChildren(temp.get(0), className);
+			if (flag)
+				break;
+
+		}
+
+	}
+
+	public boolean searchChildren(OntologyClass tempClass, String className) {
+		boolean flag = false;
+		if (tempClass.getClassName().equals(className)) {
+
+			propertiesList.addAll(tempClass.getDataProperties());
+			propertiesList.addAll(tempClass.getObjectProperties());
+			return true;
+
+		} else {
+			for (OntologyClass tempChild : tempClass.getChildren()) {
+				flag = searchChildrenByName(tempChild, className);
 				if (flag)
 					break;
 			}
@@ -1471,6 +1524,42 @@ public class AddNewRuleBean {
 
 	public String setVariableName() {
 		return "X_" + counter++;
+	}
+
+	public void updatePropertiesList(AjaxBehaviorEvent event) {
+		String selectedClassVar = cloneSelectedNode.getMethod().getValue1()
+				.getValue();
+		String className = getClassFromVar(selectedClassVar);
+		findPropertiesForClass(className);
+		System.out.println(propertiesList.size());
+
+	}
+
+	public String getClassFromVar(String var) {
+		String className = "";
+
+		// look for the class var firstly in conditions
+		for (PointElement tmp : conditions) {
+			if (tmp.getType() != PointElement.Type.BUILTIN_METHOD) {
+				if (var.equals(tmp.getProperty().getClassVar())) {
+					className = tmp.getProperty().getClassName();
+					break;
+				}
+			}
+		}
+
+		// if the class name is empty look for it in the conclusions
+		if (className.isEmpty())
+			for (PointElement tmp : conclusions) {
+				if (tmp.getType() != PointElement.Type.BUILTIN_METHOD) {
+					if (var.equals(tmp.getProperty().getClassVar())) {
+						className = tmp.getProperty().getClassName();
+						break;
+					}
+				}
+			}
+
+		return className;
 	}
 
 	public Main getMain() {
@@ -1698,6 +1787,22 @@ public class AddNewRuleBean {
 
 	public void setCorrelatedFiles(ArrayList<Message> correlatedFiles) {
 		this.correlatedFiles = correlatedFiles;
+	}
+
+	public ArrayList<String> getTypes() {
+		return types;
+	}
+
+	public void setTypes(ArrayList<String> types) {
+		this.types = types;
+	}
+
+	public ArrayList<OntologyProperty> getPropertiesList() {
+		return propertiesList;
+	}
+
+	public void setPropertiesList(ArrayList<OntologyProperty> propertiesList) {
+		this.propertiesList = propertiesList;
 	}
 
 }

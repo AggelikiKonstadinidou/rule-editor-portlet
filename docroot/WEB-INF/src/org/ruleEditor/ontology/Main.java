@@ -14,15 +14,14 @@ import org.ruleEditor.ontology.PointElement.Type;
 
 @ManagedBean(name = "main", eager = true)
 @ApplicationScoped
-
 public class Main {
 	private Ontology ontology;
-    private List<ArrayList<OntologyClass>> allClasses;
-    private List<BuiltinMethod> methods = new ArrayList<BuiltinMethod>();
-    private List<String> languages = new ArrayList<String>();
-    private ArrayList<Solution> allSolutions= new ArrayList<Solution>();
-    private ArrayList<Setting> allSettings = new ArrayList<Setting>();
-	
+	private List<ArrayList<OntologyClass>> allClasses;
+	private List<BuiltinMethod> methods = new ArrayList<BuiltinMethod>();
+	private List<String> languages = new ArrayList<String>();
+	private ArrayList<Solution> allSolutions = new ArrayList<Solution>();
+	private ArrayList<Setting> allSettings = new ArrayList<Setting>();
+
 	public Main() {
 		System.gc();
 		ontology = new Ontology();
@@ -37,7 +36,7 @@ public class Main {
 		// load classes
 		allClasses = new ArrayList<ArrayList<OntologyClass>>();
 		allClasses = this.getOntology().getClassesStructured();
-		
+
 		Instance inst = null;
 		int indexOfSolutions = -1;
 		ArrayList<OntologyClass> solutions = null;
@@ -45,7 +44,7 @@ public class Main {
 			if (temp.get(0).getClassName().equalsIgnoreCase("Solutions")) {
 				indexOfSolutions = allClasses.indexOf(temp);
 				solutions = temp;
-				//findAndCreateSolutionsInstances(temp);
+				// findAndCreateSolutionsInstances(temp);
 			}
 
 			if (temp.get(0).getClassName().equalsIgnoreCase("Settings")) {
@@ -62,11 +61,10 @@ public class Main {
 				}
 			}
 		}
-		
+
 		ArrayList<OntologyClass> newSolutions = findAndCreateSolutionsInstances(solutions);
 		allClasses.remove(solutions);
 		allClasses.add(indexOfSolutions, newSolutions);
-		
 
 		// load built in methods
 		// TODO complete the methods
@@ -91,7 +89,7 @@ public class Main {
 		System.out.println("Ontology loaded successfully");
 
 	}
-	
+
 	public ArrayList<OntologyClass> findAndCreateSolutionsInstances(
 			ArrayList<OntologyClass> ontClass) {
 		Instance inst = null;
@@ -119,7 +117,7 @@ public class Main {
 		return ontClass;
 
 	}
-	
+
 	public ArrayList<OntologyClass> checkChildrenForSolutions(
 			ArrayList<OntologyClass> ontClass, Instance inst) {
 		ArrayList<OntologyClass> toBeRturnedList = new ArrayList<OntologyClass>();
@@ -138,7 +136,7 @@ public class Main {
 
 		return ontClass;
 	}
-	
+
 	public OntologyClass getOntologyClassByName(String name) {
 		OntologyClass ontClass = new OntologyClass();
 
@@ -167,43 +165,43 @@ public class Main {
 		return null;
 
 	}
-	
-	
-	public OntologyProperty findProperty(String value){
-		
-		OntologyProperty ontologyProp = new OntologyProperty("","");
-		for(ArrayList<OntologyClass> temp : allClasses){
-			for(DataProperty prop : temp.get(0).getDataProperties()){
-				if(prop.getOntologyURI().equalsIgnoreCase(value)){
+
+	public OntologyProperty findProperty(String value) {
+
+		OntologyProperty ontologyProp = new OntologyProperty("", "");
+		for (ArrayList<OntologyClass> temp : allClasses) {
+			for (DataProperty prop : temp.get(0).getDataProperties()) {
+				if (prop.getOntologyURI().equalsIgnoreCase(value)) {
 					ontologyProp = (DataProperty) temp.clone();
 					break;
 				}
 			}
-			
-			for(ObjectProperty prop : temp.get(0).getObjectProperties()){
-				if(prop.getOntologyURI().equalsIgnoreCase(value)){
+
+			for (ObjectProperty prop : temp.get(0).getObjectProperties()) {
+				if (prop.getOntologyURI().equalsIgnoreCase(value)) {
 					ontologyProp = (ObjectProperty) temp.clone();
 					break;
 				}
 			}
-			
-			
+
 		}
-		
+
 		return ontologyProp;
 	}
-	
-	public List<BuiltinMethod> getBuiltinMethods(){
+
+	public List<BuiltinMethod> getBuiltinMethods() {
 		List<BuiltinMethod> list = new ArrayList<BuiltinMethod>();
-		
-		//category 1: one parameter
-		//category 2: two parameters
-		//category 3: two variables assigned to third
-		//category 4: makeSkolem
-		//category 5: remove/drop (numbers as parameters)
-		//category 6: noValue
-		//category 7: print
-		
+
+		// category 1: one parameter
+		// category 2: two parameters
+		// category 3: two variables assigned to third
+		// category 4: makeSkolem
+		// category 5: remove/drop (numbers as parameters)
+		// category 6: noValue
+		// category 7: print
+		// category 8: now
+		// category 9: makeTemp
+		// category 10: regex
 
 		BuiltinMethod test1 = new BuiltinMethod(
 				"equal",
@@ -214,7 +212,7 @@ public class Main {
 				2);
 		test1.setWatermarkDescription("?X,?Y to be compared");
 		test1.setCategory("2a");
-		
+
 		BuiltinMethod test2 = new BuiltinMethod(
 				"notEqual",
 				"notEqual",
@@ -224,12 +222,15 @@ public class Main {
 				2);
 		test2.setWatermarkDescription("?X,?Y to be compared");
 		test2.setCategory("2a");
-		
-		//-------------------------------------------------
-		BuiltinMethod test4 = new BuiltinMethod("noValue", "noValue",
-				"True if there is no known triple (x, p, ) or (x, p, v) in the model or the explicit forward deductions so far.", 1);
+
+		// -------------------------------------------------
+		BuiltinMethod test4 = new BuiltinMethod(
+				"noValue",
+				"noValue",
+				"True if there is no known triple (x, p, ) or (x, p, v) in the model or the explicit forward deductions so far.",
+				1);
 		test4.setCategory("6");
-		//-----------------------------------------------
+		// -----------------------------------------------
 		BuiltinMethod test5 = new BuiltinMethod("isLiteral", "isLiteral",
 				"Test whether the single argument is a literal", 1);
 		test5.setWatermarkDescription("?X");
@@ -258,9 +259,9 @@ public class Main {
 				"Test whether the single argument is not a blank-node", 1);
 		test10.setWatermarkDescription("?X");
 		test10.setCategory("1");
-		//-------------------------------------------------------
-		
-		//test an h klassi exei antistoixithei h oxi se variable
+		// -------------------------------------------------------
+
+		// test an h klassi exei antistoixithei h oxi se variable
 		BuiltinMethod test11 = new BuiltinMethod("bound", "bound",
 				"Test if all of the arguments are bound variables", 100);
 		test11.setWatermarkDescription("?X,...?X10");
@@ -269,7 +270,7 @@ public class Main {
 				"Test if all of the arguments are not bound variables", 100);
 		test12.setWatermarkDescription("?X,...?X10");
 		test12.setCategory("1");
-		//-----------------------------------------------------------
+		// -----------------------------------------------------------
 		BuiltinMethod test13 = new BuiltinMethod(
 				"lessThan",
 				"lessThan",
@@ -286,7 +287,7 @@ public class Main {
 				2);
 		test14.setWatermarkDescription("?X,?Y");
 		test14.setCategory("2b");
-		
+
 		BuiltinMethod test15 = new BuiltinMethod(
 				"le",
 				"le",
@@ -303,8 +304,8 @@ public class Main {
 				2);
 		test16.setWatermarkDescription("?X,?Y");
 		test16.setCategory("2b");
-		
-		//------------------------------------------------------------
+
+		// ------------------------------------------------------------
 		BuiltinMethod test17 = new BuiltinMethod("sum", "sum",
 				"Sets c to be (a+b).", 3);
 		test17.setWatermarkDescription("?a, ?b, ?c");
@@ -325,7 +326,7 @@ public class Main {
 				"Sets c to be max(a,b)", 3);
 		test21.setWatermarkDescription("?a, ?b, ?c");
 		test21.setCategory("3");
-		
+
 		BuiltinMethod test22 = new BuiltinMethod("product", "product",
 				"Sets c to be (ab).", 3);
 		test22.setWatermarkDescription("?a, ?b, ?c");
@@ -334,8 +335,8 @@ public class Main {
 				"Sets c to be (a/b).", 3);
 		test23.setWatermarkDescription("?a, ?b, ?c");
 		test23.setCategory("3");
-		
-		//---------------------------------------------------------------
+
+		// ---------------------------------------------------------------
 		BuiltinMethod test24 = new BuiltinMethod("strConcat", "strConcat",
 				"Concatenates the lexical form of all the arguments except the last,"
 						+ " then binds the last argument to a plain literal "
@@ -348,14 +349,19 @@ public class Main {
 						+ " a URI node with that lexical form.", 100);
 		test25.setWatermarkDescription("?a1, .. ?an, ?t");
 		test25.setCategory("3");
-		//---------------------------------------------------------------
-		//TODO
-		BuiltinMethod test26 = new BuiltinMethod("regex", "regex",
-				"regex", 1);
+		// ---------------------------------------------------------------
 		
-		test26.setWatermarkDescription("?t, ?p");		
-		
-		//--------------------------------------------------------------
+		String tooltip = "Matches the lexical form of a literal (?t) against a regular "
+				+ "expression pattern ginven by another literal (?p). If the match succeeds and if there are"
+				+ " any additional arguments the it will bind the first n capture groups to the arguments "
+				+ "?m1 to ?mn";
+		BuiltinMethod test26 = new BuiltinMethod("regex", "regex", tooltip, 1);
+
+		test26.setWatermarkDescription("?t, ?p");
+		test26.setCategory("10");
+
+
+		// --------------------------------------------------------------
 		BuiltinMethod test27 = new BuiltinMethod(
 				"now",
 				"now",
@@ -363,130 +369,197 @@ public class Main {
 				1);
 		test27.setWatermarkDescription("?x");
 		test27.setCategory("8");
-		//--------------------------------------------------------------
+		// --------------------------------------------------------------
 		BuiltinMethod test28 = new BuiltinMethod("makeTemp", "makeTemp",
 				"Binds ?x to a newly created blank node.", 1);
 		test28.setWatermarkDescription("?x");
 		test28.setCategory("9");
-		//--------------------------------------------------------------
+		// --------------------------------------------------------------
 		BuiltinMethod test29 = new BuiltinMethod(
 				"makeInstance",
 				"makeInstance",
 				"Binds ?v to be a blank node which is asserted as the value of the ?p property on resource ?x and optionally has type ?t.",
 				2);
-		test28.setWatermarkDescription("?x, ?p, ?v");
-		//--------------------------------------------------------------
+		test29.setWatermarkDescription("?x, ?p, ?t, ?v");
+		test29.setCategory("11");
 		
-		BuiltinMethod test30 = new BuiltinMethod("makeSkolem", "makeSkolem",
+		// --------------------------------------------------------------
+
+		BuiltinMethod test30 = new BuiltinMethod(
+				"makeSkolem",
+				"makeSkolem",
 				"Binds ?x to be a blank node."
-				+ " The blank node is generated based on the values of the"
-				+ " remain ?vi arguments, so the same combination of arguments"
-				+ " will generate the same bNode.",3);
+						+ " The blank node is generated based on the values of the"
+						+ " remain ?vi arguments, so the same combination of arguments"
+						+ " will generate the same bNode.", 3);
 		test30.setWatermarkDescription("Parameters : ?variable_name_of_new_Node,"
 				+ "?variable_name_of_classA,?variable_name_of_ClassB,...");
 		test30.setCategory("4");
-		//----------------------------------------------------------------
-		
-		//TODO: they remove statements, how can we handle it?
-		BuiltinMethod test31 = new BuiltinMethod("remove", "remove",
+		// ----------------------------------------------------------------
+
+		// they remove statements
+		BuiltinMethod test31 = new BuiltinMethod(
+				"remove",
+				"remove",
 				"Remove the statement (triple) which caused the"
-				+ " n'th body term of this (forward-only) rule to match."
-				+ " Remove will propagate the change to other consequent "
-				+ "rules including the firing rule (which must thus be guarded"
-				+ " by some other clauses).", 100);
-		
+						+ " n'th body term of this (forward-only) rule to match."
+						+ " Remove will propagate the change to other consequent "
+						+ "rules including the firing rule (which must thus be guarded"
+						+ " by some other clauses).", 100);
+
 		test31.setWatermarkDescription("List the number of connections to be removed e.g. n");
 		test31.setCategory("5");
-		BuiltinMethod test32 = new BuiltinMethod("drop", "drop",
+		BuiltinMethod test32 = new BuiltinMethod(
+				"drop",
+				"drop",
 				"Drop will silently remove the triple(s) "
-				+ "from the graph but not fire any rules as a consequence",
+						+ "from the graph but not fire any rules as a consequence",
 				100);
-		
+
 		test32.setWatermarkDescription("List the number of connections to be removed e.g. n");
 		test32.setCategory("5");
-		//------------------------------------------------------------------
-		
+		// ------------------------------------------------------------------
+
 		BuiltinMethod test35 = new BuiltinMethod("print", "print",
 				"Print (to standard out) a representation of each argument.", 1);
 		test35.setWatermarkDescription("Text to be printed");
 		test35.setCategory("7");
-		
-		BuiltinMethod test33 = new BuiltinMethod("isDType", "isDType",
-				"Tests if literal ?l is an instance of the datatype defined by resource ?t.", 1);
+
+		BuiltinMethod test33 = new BuiltinMethod(
+				"isDType",
+				"isDType",
+				"Tests if literal ?l is an instance of the datatype defined by resource ?t.",
+				1);
 		test33.setWatermarkDescription("?l, ?t");
-		
-		BuiltinMethod test34 = new BuiltinMethod("notDType", "notDType",
-				"Tests if literal ?l is not an instance of the datatype defined by resource ?t.", 1);
+
+		BuiltinMethod test34 = new BuiltinMethod(
+				"notDType",
+				"notDType",
+				"Tests if literal ?l is not an instance of the datatype defined by resource ?t.",
+				1);
 		test34.setWatermarkDescription("?l, ?t");
-		
-		//-------------------------------------------------------------------
-		BuiltinMethod test36 = new BuiltinMethod("listContains", "listContains",
+
+		// -------------------------------------------------------------------
+		BuiltinMethod test36 = new BuiltinMethod(
+				"listContains",
+				"listContains",
 				"Passes if ?l is a list which contains the element ?x,"
-				+ " both arguments must be ground, can not be used as a generator.", 1);
+						+ " both arguments must be ground, can not be used as a generator.",
+				1);
 		test36.setWatermarkDescription("?l, ?x");
-		
-		BuiltinMethod test37 = new BuiltinMethod("listNotContains", "listNotContains",
+
+		BuiltinMethod test37 = new BuiltinMethod(
+				"listNotContains",
+				"listNotContains",
 				"Passes if ?l is a list which does not contain the element ?x,"
-				+ " both arguments must be ground, can not be used as a generator.", 1);
+						+ " both arguments must be ground, can not be used as a generator.",
+				1);
 		test37.setWatermarkDescription("?l, ?x");
-		
-		//--------------------------------------------------------------------
-		BuiltinMethod test38 = new BuiltinMethod("listEntry", "listEntry",
+
+		// --------------------------------------------------------------------
+		BuiltinMethod test38 = new BuiltinMethod(
+				"listEntry",
+				"listEntry",
 				"Binds ?val to the ?index'th entry in the RDF list ?list."
-				+ " If there is no such entry the variable will be unbound and the call will fail."
-				+ " Only useable in rule bodies.", 1);
-		
+						+ " If there is no such entry the variable will be unbound and the call will fail."
+						+ " Only useable in rule bodies.", 1);
+
 		test38.setWatermarkDescription("?list, ?index, ?val");
-		//---------------------------------------------------------------------
+		// ---------------------------------------------------------------------
 		BuiltinMethod test39 = new BuiltinMethod("listLength", "listLength",
 				"Binds ?len to the length of the list ?l.", 1);
-		
+
 		test39.setWatermarkDescription("?l, ?len");
-		//---------------------------------------------------------------------
-		BuiltinMethod test40 = new BuiltinMethod("listEqual", "listEqual",
+		// ---------------------------------------------------------------------
+		BuiltinMethod test40 = new BuiltinMethod(
+				"listEqual",
+				"listEqual",
 				"listEqual tests if the two arguments are both lists and contain the same elements."
-				+ " The equality test is semantic equality on literals (sameValueAs) "
-				+ "but will not take into account owl:sameAs aliases.", 1);
+						+ " The equality test is semantic equality on literals (sameValueAs) "
+						+ "but will not take into account owl:sameAs aliases.",
+				1);
 		test40.setWatermarkDescription("?la, ?lb");
-		BuiltinMethod test41 = new BuiltinMethod("listNotEqual", "listNotEqual",
+		BuiltinMethod test41 = new BuiltinMethod("listNotEqual",
+				"listNotEqual",
 				"listNotEqual tests if the two arguments are not lists and do not contain the"
-				+ " same elements.", 1);
+						+ " same elements.", 1);
 		test41.setWatermarkDescription("?la, ?lb");
-		//-----------------------------------------------------------------------
-		BuiltinMethod test42 = new BuiltinMethod("listMapAsObject", "listMapAsObject",
-				"listMapAsObject", 1);
+		// -----------------------------------------------------------------------
+		BuiltinMethod test42 = new BuiltinMethod("listMapAsObject",
+				"listMapAsObject", "listMapAsObject", 1);
 		test42.setWatermarkDescription("?s, ?p ?l");
-		BuiltinMethod test43 = new BuiltinMethod("listMapAsSubject", "listMapAsSubject",
-				"listMapAsSubject", 1);
+		BuiltinMethod test43 = new BuiltinMethod("listMapAsSubject",
+				"listMapAsSubject", "listMapAsSubject", 1);
 		test43.setWatermarkDescription("?l, ?p, ?o");
-		//-------------------------------------------------------------------------
-		BuiltinMethod test44 = new BuiltinMethod("table", "table",
+		// -------------------------------------------------------------------------
+		BuiltinMethod test44 = new BuiltinMethod(
+				"table",
+				"table",
 				"Declare that all goals involving property ?p"
-				+ " (or all goals) should be tabled by the backward engine.", 1);
+						+ " (or all goals) should be tabled by the backward engine.",
+				1);
 		test44.setWatermarkDescription("?p");
 		BuiltinMethod test45 = new BuiltinMethod("tableAll", "tableAll",
 				"Declare that all goals involving property ?p (or all goals)"
-				+ " should be tabled by the backward engine.", 1);
+						+ " should be tabled by the backward engine.", 1);
 		test45.setFlag(false);
-		//-------------------------------------------------------------------------
-		BuiltinMethod test46 = new BuiltinMethod("hide", "hide",
+		// -------------------------------------------------------------------------
+		BuiltinMethod test46 = new BuiltinMethod(
+				"hide",
+				"hide",
 				"Declares that statements involving the predicate p should be hidden."
-				+ " Queries to the model will not report such statements."
-				+ " This is useful to enable non-monotonic forward rules to define flag"
-				+ " predicates which are only used for inference control and do not \"pollute\""
-				+ " the inference results.", 1);
+						+ " Queries to the model will not report such statements."
+						+ " This is useful to enable non-monotonic forward rules to define flag"
+						+ " predicates which are only used for inference control and do not \"pollute\""
+						+ " the inference results.", 1);
 		test46.setWatermarkDescription("p");
-		
-		list.add(test1);list.add(test2);list.add(test4);list.add(test5);list.add(test6);
-		list.add(test7);list.add(test8);list.add(test9);list.add(test10);list.add(test11);list.add(test12);
-		list.add(test13);list.add(test14);list.add(test15);list.add(test16);list.add(test17);list.add(test18);
-		list.add(test19);list.add(test20);list.add(test21);list.add(test22);list.add(test23);list.add(test24);list.add(test25);list.add(test26);list.add(test27);
-		list.add(test28);list.add(test29);list.add(test30);list.add(test31);list.add(test32);list.add(test33);
-		list.add(test34);list.add(test35);list.add(test36);list.add(test37);list.add(test38);list.add(test39);
-		list.add(test40);list.add(test41);list.add(test42);list.add(test43);list.add(test44);list.add(test45);list.add(test46);
-		
-	
-		
+
+		list.add(test1);
+		list.add(test2);
+		list.add(test4);
+		list.add(test5);
+		list.add(test6);
+		list.add(test7);
+		list.add(test8);
+		list.add(test9);
+		list.add(test10);
+		list.add(test11);
+		list.add(test12);
+		list.add(test13);
+		list.add(test14);
+		list.add(test15);
+		list.add(test16);
+		list.add(test17);
+		list.add(test18);
+		list.add(test19);
+		list.add(test20);
+		list.add(test21);
+		list.add(test22);
+		list.add(test23);
+		list.add(test24);
+		list.add(test25);
+		list.add(test26);
+		list.add(test27);
+		list.add(test28);
+		list.add(test29);
+		list.add(test30);
+		list.add(test31);
+		list.add(test32);
+		list.add(test33);
+		list.add(test34);
+		list.add(test35);
+		list.add(test36);
+		list.add(test37);
+		list.add(test38);
+		list.add(test39);
+		list.add(test40);
+		list.add(test41);
+		list.add(test42);
+		list.add(test43);
+		list.add(test44);
+		list.add(test45);
+		list.add(test46);
+
 		return list;
 	}
 
@@ -529,7 +602,5 @@ public class Main {
 	public void setAllSolutions(ArrayList<Solution> allSolutions) {
 		this.allSolutions = allSolutions;
 	}
-	
-	
-	
+
 }
