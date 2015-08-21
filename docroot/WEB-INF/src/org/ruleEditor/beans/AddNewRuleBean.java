@@ -138,6 +138,7 @@ public class AddNewRuleBean {
 	private UndirectedGraph<PointElement, DefaultEdge> conclusionsGraph = null;
 	private ArrayList<String> types = null;
 	private ArrayList<OntologyProperty> propertiesList = null;
+	private ArrayList<String> jenaLists = null;
 
 	public AddNewRuleBean() {
 		super();
@@ -189,7 +190,12 @@ public class AddNewRuleBean {
 
 		types = new ArrayList<String>();
 		types.add("-");
+		types.add("string");
+		types.add("long");
+		types.add("integer");
+
 		propertiesList = new ArrayList<OntologyProperty>();
+		jenaLists = new ArrayList<String>();
 
 		argument = "";
 		variables = new ArrayList<String>();
@@ -460,10 +466,16 @@ public class AddNewRuleBean {
 
 		if (cloneSelectedNode.getType() == Type.BUILTIN_METHOD) {
 			fillListsWithVariables();
+			// equal, notEqual
 			if (cloneSelectedNode.getMethod().getCategory().equals("2a")) {
 				gridType1 = cloneSelectedNode.getMethod().isFlag();
 				selectedClasses = !cloneSelectedNode.getMethod().isFlag();
 				selectedVariables = cloneSelectedNode.getMethod().isFlag();
+			}
+
+			// table
+			if (cloneSelectedNode.getMethod().getCategory().equals("16")) {
+				getAllPropertiesForAllClasses();
 			}
 		}
 
@@ -659,8 +671,8 @@ public class AddNewRuleBean {
 					usedVariablesForClasses.add(cloneSelectedNode.getMethod()
 							.getValue1().getValue());
 			} else if (category.equals("11")) {
-				
-				//TODO remove value3 if type is -. Find out types
+
+				// TODO remove value3 if type is -. Find out types
 				helpString = cloneSelectedNode.getMethod().getValue1()
 						.getValue()
 						+ ","
@@ -669,8 +681,36 @@ public class AddNewRuleBean {
 						+ cloneSelectedNode.getMethod().getValue3().getValue()
 						+ ","
 						+ cloneSelectedNode.getMethod().getValue4().getValue();
+			} else if (category.equals("12")) {
+				helpString = cloneSelectedNode.getMethod().getValue1()
+						.getValue()
+						+ ","
+						+ cloneSelectedNode.getMethod().getValue2().getValue();
+			} else if (category.equals("13") || category.equals("14")) {
+				helpString = cloneSelectedNode.getMethod().getValue1()
+						.getValue()
+						+ ","
+						+ cloneSelectedNode.getMethod().getValue2().getValue();
+			} else if (category.equals("16")) {
+				helpString = cloneSelectedNode.getMethod().getValue1()
+						.getValue();
+			} else if (category.equals("17")) {
+				helpString = cloneSelectedNode.getMethod().getValue1()
+						.getValue();
+			} else if (category.equals("18")) {
+				helpString = cloneSelectedNode.getMethod().getValue1()
+						.getValue()
+						+ ","
+						+ cloneSelectedNode.getMethod().getValue2().getValue();
+			} else if (category.equals("19")) {
+				helpString = cloneSelectedNode.getMethod().getValue1()
+						.getValue()
+						+ ","
+						+ cloneSelectedNode.getMethod().getValue2().getValue()
+						+ ","
+						+ cloneSelectedNode.getMethod().getValue3().getValue();
 			}
-			//TODO the category 10
+			// TODO the category 10
 
 			cloneSelectedNode.getMethod().setHelpString(helpString);
 		}
@@ -1357,6 +1397,13 @@ public class AddNewRuleBean {
 		return false;
 	}
 
+	public void getAllPropertiesForAllClasses() {
+		for (ArrayList<OntologyClass> temp : main.getAllClasses()) {
+			propertiesList.addAll(temp.get(0).getDataProperties());
+			propertiesList.addAll(temp.get(0).getObjectProperties());
+		}
+	}
+
 	public void createMethodElement(String panelID) {
 		PointElement methodEl = new PointElement();
 		methodEl.setElementName(this.selectedMethod.getUsingName().toString());
@@ -1803,6 +1850,14 @@ public class AddNewRuleBean {
 
 	public void setPropertiesList(ArrayList<OntologyProperty> propertiesList) {
 		this.propertiesList = propertiesList;
+	}
+
+	public ArrayList<String> getJenaLists() {
+		return jenaLists;
+	}
+
+	public void setJenaLists(ArrayList<String> jenaLists) {
+		this.jenaLists = jenaLists;
 	}
 
 }

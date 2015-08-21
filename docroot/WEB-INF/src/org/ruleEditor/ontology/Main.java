@@ -202,6 +202,16 @@ public class Main {
 		// category 8: now
 		// category 9: makeTemp
 		// category 10: regex
+		// category 11: makeInstance
+		// category 12: listContains/listNotContains
+		// category 13: listEqual/ listNotEqual
+		// category 14: listLength
+		// category 15: tableAll
+		// category 16 : table
+		// category 17 : hide
+		// category 18 : isDType/notDType
+		// category 19: listEntry
+		
 
 		BuiltinMethod test1 = new BuiltinMethod(
 				"equal",
@@ -431,6 +441,7 @@ public class Main {
 				"Tests if literal ?l is an instance of the datatype defined by resource ?t.",
 				1);
 		test33.setWatermarkDescription("?l, ?t");
+		test33.setCategory("18");
 
 		BuiltinMethod test34 = new BuiltinMethod(
 				"notDType",
@@ -438,6 +449,7 @@ public class Main {
 				"Tests if literal ?l is not an instance of the datatype defined by resource ?t.",
 				1);
 		test34.setWatermarkDescription("?l, ?t");
+		test34.setCategory("18");
 
 		// -------------------------------------------------------------------
 		BuiltinMethod test36 = new BuiltinMethod(
@@ -447,6 +459,7 @@ public class Main {
 						+ " both arguments must be ground, can not be used as a generator.",
 				1);
 		test36.setWatermarkDescription("?l, ?x");
+		test36.setCategory("12");
 
 		BuiltinMethod test37 = new BuiltinMethod(
 				"listNotContains",
@@ -455,6 +468,7 @@ public class Main {
 						+ " both arguments must be ground, can not be used as a generator.",
 				1);
 		test37.setWatermarkDescription("?l, ?x");
+		test37.setCategory("12");
 
 		// --------------------------------------------------------------------
 		BuiltinMethod test38 = new BuiltinMethod(
@@ -465,11 +479,13 @@ public class Main {
 						+ " Only useable in rule bodies.", 1);
 
 		test38.setWatermarkDescription("?list, ?index, ?val");
+		test38.setCategory("19");
 		// ---------------------------------------------------------------------
 		BuiltinMethod test39 = new BuiltinMethod("listLength", "listLength",
 				"Binds ?len to the length of the list ?l.", 1);
 
 		test39.setWatermarkDescription("?l, ?len");
+		test39.setCategory("14");
 		// ---------------------------------------------------------------------
 		BuiltinMethod test40 = new BuiltinMethod(
 				"listEqual",
@@ -479,11 +495,13 @@ public class Main {
 						+ "but will not take into account owl:sameAs aliases.",
 				1);
 		test40.setWatermarkDescription("?la, ?lb");
+		test40.setCategory("13");
 		BuiltinMethod test41 = new BuiltinMethod("listNotEqual",
 				"listNotEqual",
 				"listNotEqual tests if the two arguments are not lists and do not contain the"
 						+ " same elements.", 1);
 		test41.setWatermarkDescription("?la, ?lb");
+		test41.setCategory("13");
 		// -----------------------------------------------------------------------
 		BuiltinMethod test42 = new BuiltinMethod("listMapAsObject",
 				"listMapAsObject", "listMapAsObject", 1);
@@ -499,10 +517,13 @@ public class Main {
 						+ " (or all goals) should be tabled by the backward engine.",
 				1);
 		test44.setWatermarkDescription("?p");
+		test44.setCategory("16");
+		
 		BuiltinMethod test45 = new BuiltinMethod("tableAll", "tableAll",
 				"Declare that all goals involving property ?p (or all goals)"
 						+ " should be tabled by the backward engine.", 1);
 		test45.setFlag(false);
+		test45.setCategory("15");
 		// -------------------------------------------------------------------------
 		BuiltinMethod test46 = new BuiltinMethod(
 				"hide",
@@ -513,6 +534,7 @@ public class Main {
 						+ " predicates which are only used for inference control and do not \"pollute\""
 						+ " the inference results.", 1);
 		test46.setWatermarkDescription("p");
+		test46.setCategory("17");
 
 		list.add(test1);
 		list.add(test2);
