@@ -351,12 +351,12 @@ Values
 						and (addNewRuleBean.cloneSelectedNode.method.category=='2b')}"
 						columns="3" columnClasses="output,label,value">
 
-						<p:panelGrid id="gridType2b" columns="2"
+						<p:panelGrid id="gridType2b" columns="4" rows="2"
 							columnClasses="label,value">
 							<f:facet name="header">
-Values
+Select or fill values
 </f:facet>
-
+							<h:outputText value="Select first Value: " />
 							<p:selectOneMenu
 								value="#{addNewRuleBean.cloneSelectedNode.method.value1.value}">
 								<f:selectItems var="item" itemLabel="#{item}"
@@ -365,11 +365,12 @@ Values
 
 							</p:selectOneMenu>
 
-
+							<h:outputText value="or fill first Value: " />
 							<p:inputText style="width: 300px;" autocomplete="off"
 								value="#{addNewRuleBean.cloneSelectedNode.method.value3.value}">
 							</p:inputText>
 
+							<h:outputText value="Select second Value: " />
 							<p:selectOneMenu
 								value="#{addNewRuleBean.cloneSelectedNode.method.value2.value}">
 								<f:selectItems var="item" itemLabel="#{item}"
@@ -377,6 +378,7 @@ Values
 									value="#{addNewRuleBean.cloneSelectedNode.method.listOfVarValuesLists[1]}" />
 							</p:selectOneMenu>
 
+							<h:outputText value="or fill second Value: " />
 							<p:inputText style="width: 300px;" autocomplete="off"
 								value="#{addNewRuleBean.cloneSelectedNode.method.value4.value}">
 							</p:inputText>
@@ -769,7 +771,7 @@ Values
 						and (addNewRuleBean.cloneSelectedNode.method.category=='18')}"
 						columns="1" columnClasses="output">
 
-						<p:panelGrid id="gridTypeisDType" columns="2" rows ="2"
+						<p:panelGrid id="gridTypeisDType" columns="2" rows="2"
 							columnClasses="label,value">
 
 							<h:outputText value="Literal: " />
@@ -779,13 +781,12 @@ Values
 									itemValue="#{item}"
 									value="#{addNewRuleBean.cloneSelectedNode.method.listOfVarValuesLists[0]}" />
 							</p:selectOneMenu>
-							
+
 							<h:outputText value="Type: " />
 							<p:selectOneMenu
 								value="#{addNewRuleBean.cloneSelectedNode.method.value2.value}">
 								<f:selectItems var="item" itemLabel="#{item}"
-									itemValue="#{item}"
-									value="#{addNewRuleBean.types}" />
+									itemValue="#{item}" value="#{addNewRuleBean.types}" />
 							</p:selectOneMenu>
 						</p:panelGrid>
 					</h:panelGrid>
@@ -795,27 +796,89 @@ Values
 						and (addNewRuleBean.cloneSelectedNode.method.category=='19')}"
 						columns="1" columnClasses="output">
 
-						<p:panelGrid id="gridTypeListEntry" columns="2" rows ="3"
+						<p:panelGrid id="gridTypeListEntry" columns="2" rows="3"
 							columnClasses="label,value">
 
 							<h:outputText value="List: " />
 							<p:selectOneMenu
 								value="#{addNewRuleBean.cloneSelectedNode.method.value1.value}">
 								<f:selectItems var="item" itemLabel="#{item}"
-									itemValue="#{item}"
-									value="#{addNewRuleBean.jenaLists}" />
+									itemValue="#{item}" value="#{addNewRuleBean.jenaLists}" />
 							</p:selectOneMenu>
-							
+
 							<h:outputText value="Index: " />
 							<p:inputText style="width: 100px;" autocomplete="off"
 								value="#{addNewRuleBean.cloneSelectedNode.method.value2.value}">
 							</p:inputText>
-							
+
 							<h:outputText value="Value: " />
 							<p:inputText style="width: 100px;" autocomplete="off"
 								value="#{addNewRuleBean.cloneSelectedNode.method.value3.value}">
 							</p:inputText>
-							
+
+						</p:panelGrid>
+					</h:panelGrid>
+					<!-- listMapAsObject method, category 20-->
+					<h:panelGrid id="selections20"
+						rendered="#{addNewRuleBean.cloneSelectedNode.type=='BUILTIN_METHOD'
+						and (addNewRuleBean.cloneSelectedNode.method.category=='20')}"
+						columns="1" columnClasses="output">
+
+						<p:panelGrid id="gridTypeListMapAsObject" columns="2" rows="3"
+							columnClasses="label,value">
+
+							<h:outputText value="Value: " />
+							<p:inputText style="width: 100px;" autocomplete="off"
+								value="#{addNewRuleBean.cloneSelectedNode.method.value1.value}">
+							</p:inputText>
+
+							<h:outputText value="Property: " />
+							<p:selectOneMenu
+								value="#{addNewRuleBean.cloneSelectedNode.method.value2.value}">
+								<f:selectItems var="item"
+									itemLabel="#{item.propertyName} (#{item.className})"
+									itemValue="#{item.propertyName}"
+									value="#{addNewRuleBean.propertiesList}" />
+							</p:selectOneMenu>
+
+							<h:outputText value="List: " />
+							<p:selectOneMenu
+								value="#{addNewRuleBean.cloneSelectedNode.method.value3.value}">
+								<f:selectItems var="item" itemLabel="#{item}"
+									itemValue="#{item}" value="#{addNewRuleBean.jenaLists}" />
+							</p:selectOneMenu>
+
+						</p:panelGrid>
+					</h:panelGrid>
+					<!-- listMapAsSubject method, category 21-->
+					<h:panelGrid id="selections21"
+						rendered="#{addNewRuleBean.cloneSelectedNode.type=='BUILTIN_METHOD'
+						and (addNewRuleBean.cloneSelectedNode.method.category=='21')}"
+						columns="1" columnClasses="output">
+
+						<p:panelGrid id="gridTypeListMapAsSubject" columns="2" rows="3"
+							columnClasses="label,value">
+
+							<h:outputText value="List: " />
+							<p:selectOneMenu
+								value="#{addNewRuleBean.cloneSelectedNode.method.value1.value}">
+								<f:selectItems var="item" itemLabel="#{item}"
+									itemValue="#{item}" value="#{addNewRuleBean.jenaLists}" />
+							</p:selectOneMenu>
+
+							<h:outputText value="Property: " />
+							<p:selectOneMenu
+								value="#{addNewRuleBean.cloneSelectedNode.method.value2.value}">
+								<f:selectItems var="item"
+									itemLabel="#{item.propertyName} (#{item.className})"
+									itemValue="#{item.propertyName}"
+									value="#{addNewRuleBean.propertiesList}" />
+							</p:selectOneMenu>
+
+							<h:outputText value="Value: " />
+							<p:inputText style="width: 100px;" autocomplete="off"
+								value="#{addNewRuleBean.cloneSelectedNode.method.value3.value}">
+							</p:inputText>
 						</p:panelGrid>
 					</h:panelGrid>
 					<h:panelGrid id="propertyPanel" columns="2"

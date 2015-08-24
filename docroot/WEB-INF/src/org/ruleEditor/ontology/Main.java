@@ -211,6 +211,8 @@ public class Main {
 		// category 17 : hide
 		// category 18 : isDType/notDType
 		// category 19: listEntry
+		// category 20: listMapAsObject
+		// category 21: listMapAsSubject
 		
 
 		BuiltinMethod test1 = new BuiltinMethod(
@@ -506,9 +508,11 @@ public class Main {
 		BuiltinMethod test42 = new BuiltinMethod("listMapAsObject",
 				"listMapAsObject", "listMapAsObject", 1);
 		test42.setWatermarkDescription("?s, ?p ?l");
+		test42.setCategory("20");
 		BuiltinMethod test43 = new BuiltinMethod("listMapAsSubject",
 				"listMapAsSubject", "listMapAsSubject", 1);
 		test43.setWatermarkDescription("?l, ?p, ?o");
+		test43.setCategory("21");
 		// -------------------------------------------------------------------------
 		BuiltinMethod test44 = new BuiltinMethod(
 				"table",

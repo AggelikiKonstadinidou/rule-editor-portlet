@@ -41,12 +41,12 @@ public class BuiltinMethod {
 //		this.selectedValues = new ArrayList<HelpObject>();
 		// create lists according to number(1st) of parameters and type of
 		// parameters (2nd step)
-		this.value1 = new HelpObject("", "");
-		this.value2 = new HelpObject("", "");
-		this.value3 = new HelpObject("", "");
-		this.value4 = new HelpObject("", "");
-		this.value5 = new HelpObject("", "");
-		this.value6 = new HelpObject("", "");
+		this.value1 = new HelpObject("-", "-");
+		this.value2 = new HelpObject("-", "-");
+		this.value3 = new HelpObject("-", "-");
+		this.value4 = new HelpObject("-", "-");
+		this.value5 = new HelpObject("-", "-");
+		this.value6 = new HelpObject("-", "-");
 		
 		HelpObject temp = null;
 		ArrayList<String> tempList;

@@ -185,8 +185,10 @@ public class AddNewRuleBean {
 		correlatedFiles.add(msg);
 
 		usedVariablesForClasses = new ArrayList<String>();
+		usedVariablesForClasses.add("-");
 
 		usedVariablesForValues = new ArrayList<String>();
+		usedVariablesForValues.add("-");
 
 		types = new ArrayList<String>();
 		types.add("-");
@@ -474,7 +476,9 @@ public class AddNewRuleBean {
 			}
 
 			// table
-			if (cloneSelectedNode.getMethod().getCategory().equals("16")) {
+			if (cloneSelectedNode.getMethod().getCategory().equals("16")
+					|| cloneSelectedNode.getMethod().getCategory().equals("20")
+					|| cloneSelectedNode.getMethod().getCategory().equals("21")) {
 				getAllPropertiesForAllClasses();
 			}
 		}
@@ -568,6 +572,11 @@ public class AddNewRuleBean {
 
 	public void saveEditOfNode() {
 
+		boolean value1Flag = false;
+		boolean value2Flag = false;
+		boolean value3Flag = false;
+		boolean value4Flag = false;
+
 		if (cloneSelectedNode.getType() == Type.DATA_PROPERTY) {
 
 			DataProperty property = (DataProperty) cloneSelectedNode
@@ -614,101 +623,75 @@ public class AddNewRuleBean {
 		if (cloneSelectedNode.getType() == Type.BUILTIN_METHOD) {
 			String helpString = "";
 			String category = cloneSelectedNode.getMethod().getCategory();
+			String value1 = cloneSelectedNode.getMethod().getValue1()
+					.getValue();
+			String value2 = cloneSelectedNode.getMethod().getValue2()
+					.getValue();
+			String value3 = cloneSelectedNode.getMethod().getValue3()
+					.getValue();
+			String value4 = cloneSelectedNode.getMethod().getValue4()
+					.getValue();
+			String value5 = cloneSelectedNode.getMethod().getValue5()
+					.getValue();
+			String value6 = cloneSelectedNode.getMethod().getValue6()
+					.getValue();
 			if (category.equals("1")) {
-				helpString = cloneSelectedNode.getMethod().getValue1()
-						.getValue();
+				helpString = value1;
 
 			} else if (category.equals("2a")) {
 
 				if (!gridType1)
-					helpString = cloneSelectedNode.getMethod().getValue1()
-							.getValue()
-							+ ","
-							+ cloneSelectedNode.getMethod().getValue2()
-									.getValue();
+					helpString = value1 + "," + value2;
 				else if (gridType1)
-					helpString = cloneSelectedNode.getMethod().getValue3()
-							.getValue()
-							+ ","
-							+ cloneSelectedNode.getMethod().getValue4()
-									.getValue();
+					helpString = value3 + "," + value4;
 
 			} else if (category.equals("2b")) {
 
-				helpString = cloneSelectedNode.getMethod().getValue1()
-						.getValue()
-						+ ","
-						+ cloneSelectedNode.getMethod().getValue2().getValue();
+				value3 = "\"" + value3 + "\"";
+				value4 = "\"" + value4 + "\"";
+				helpString = value1 + "," + value2 + "," + value3 + ","
+						+ value4;
+				helpString = makeReplaces(helpString);		
 
 			} else if (category.equals("3")) {
 
-				helpString = cloneSelectedNode.getMethod().getValue1()
-						.getValue()
-						+ ","
-						+ cloneSelectedNode.getMethod().getValue2().getValue()
-						+ ","
-						+ cloneSelectedNode.getMethod().getValue3().getValue();
+				helpString = value1 + "," + value2 + "," + value3;
 
 			} else if (category.equals("4")) {
 
-				helpString = cloneSelectedNode.getMethod().getValue1()
-						.getValue()
-						+ ","
-						+ cloneSelectedNode.getMethod().getValue2().getValue()
-						+ ","
-						+ cloneSelectedNode.getMethod().getValue3().getValue();
+				helpString = value1 + "," + value2 + "," + value3;
 
 			} else if (category.equals("5") || category.equals("7")
 					|| category.equals("8") || category.equals("9")
 					|| category.equals("6")) {
-				helpString = cloneSelectedNode.getMethod().getValue1()
-						.getValue();
+				helpString = value1;
 
 				if (category.equals("8"))
-					usedVariablesForValues.add(cloneSelectedNode.getMethod()
-							.getValue1().getValue());
+					usedVariablesForValues.add(value1);
 				else if (category.equals("9"))
-					usedVariablesForClasses.add(cloneSelectedNode.getMethod()
-							.getValue1().getValue());
+					usedVariablesForClasses.add(value1);
 			} else if (category.equals("11")) {
 
 				// TODO remove value3 if type is -. Find out types
-				helpString = cloneSelectedNode.getMethod().getValue1()
-						.getValue()
-						+ ","
-						+ cloneSelectedNode.getMethod().getValue2().getValue()
-						+ ","
-						+ cloneSelectedNode.getMethod().getValue3().getValue()
-						+ ","
-						+ cloneSelectedNode.getMethod().getValue4().getValue();
+				helpString = value1 + "," + value2 + "," + value3 + ","
+						+ value4;
 			} else if (category.equals("12")) {
-				helpString = cloneSelectedNode.getMethod().getValue1()
-						.getValue()
-						+ ","
-						+ cloneSelectedNode.getMethod().getValue2().getValue();
+				helpString = value1 + "," + value2;
 			} else if (category.equals("13") || category.equals("14")) {
-				helpString = cloneSelectedNode.getMethod().getValue1()
-						.getValue()
-						+ ","
-						+ cloneSelectedNode.getMethod().getValue2().getValue();
+				helpString = value1 + "," + value2;
 			} else if (category.equals("16")) {
-				helpString = cloneSelectedNode.getMethod().getValue1()
-						.getValue();
+				helpString = value1;
 			} else if (category.equals("17")) {
-				helpString = cloneSelectedNode.getMethod().getValue1()
-						.getValue();
+				helpString = value1;
 			} else if (category.equals("18")) {
-				helpString = cloneSelectedNode.getMethod().getValue1()
-						.getValue()
-						+ ","
-						+ cloneSelectedNode.getMethod().getValue2().getValue();
+				helpString = value1 + "," + value2;
 			} else if (category.equals("19")) {
-				helpString = cloneSelectedNode.getMethod().getValue1()
-						.getValue()
-						+ ","
-						+ cloneSelectedNode.getMethod().getValue2().getValue()
-						+ ","
-						+ cloneSelectedNode.getMethod().getValue3().getValue();
+				helpString = value1 + "," + value2 + "," + value3;
+			} else if (category.equals("20") || category.equals("21")) {
+				helpString = value1 + "," + value2 // TODO value 2 is a
+													// property, how to handle
+													// it
+						+ "," + value3;
 			}
 			// TODO the category 10
 
@@ -780,6 +763,15 @@ public class AddNewRuleBean {
 			conclusionsModel.getElements().add(index, el);
 		}
 
+	}
+	
+	public String makeReplaces(String helpString){
+		helpString = helpString.replace("\"-\",", "");
+		helpString = helpString.replace(",\"-\"", "");
+		helpString = helpString.replace("-", "");
+		helpString = helpString.replace(",-", "");
+		helpString = helpString.replace(",,", ",");
+		return helpString;
 	}
 
 	public DefaultDiagramModel getConclusionsModel() {
