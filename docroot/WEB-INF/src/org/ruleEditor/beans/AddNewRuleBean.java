@@ -640,22 +640,55 @@ public class AddNewRuleBean {
 
 			} else if (category.equals("2a")) {
 
+				value5 = "\"" + value5 + "\"";
+				value6 = "\"" + value6 + "\"";
+
 				if (!gridType1)
 					helpString = value1 + "," + value2;
-				else if (gridType1)
-					helpString = value3 + "," + value4;
+				else if (gridType1) {
+					if (!value3.equals("-"))
+						helpString = value3 + ",";
+					else if (!value5.equals("\"-\""))
+						helpString = value5 + ",";
+
+					if (!value4.equals("-"))
+						helpString = helpString + value4;
+					else
+						helpString = helpString + value6;
+
+				}
 
 			} else if (category.equals("2b")) {
 
 				value3 = "\"" + value3 + "\"";
 				value4 = "\"" + value4 + "\"";
-				helpString = value1 + "," + value2 + "," + value3 + ","
-						+ value4;
-				helpString = makeReplaces(helpString);		
+
+				if (!value1.equals("-"))
+					helpString = value1 + ",";
+				else if (!value3.equals("\"-\""))
+					helpString = value3 + ",";
+
+				if (!value2.equals("-"))
+					helpString = helpString + value2 + ",";
+				else
+					helpString = helpString + value4;
 
 			} else if (category.equals("3")) {
 
-				helpString = value1 + "," + value2 + "," + value3;
+				if (!value1.equals("-"))
+					helpString = value1 + ",";
+				else
+					helpString = value4 + ",";
+
+				if (!value2.equals("-"))
+					helpString = helpString + value2 + ",";
+				else
+					helpString = helpString + value5 + ",";
+
+				if (!value3.equals("-"))
+					helpString = helpString + value3;
+				else
+					helpString = helpString + value6;
 
 			} else if (category.equals("4")) {
 
@@ -670,11 +703,13 @@ public class AddNewRuleBean {
 					usedVariablesForValues.add(value1);
 				else if (category.equals("9"))
 					usedVariablesForClasses.add(value1);
+			} else if (category.equals("10")) {
+				helpString = value1 + "," + value2;
 			} else if (category.equals("11")) {
-
-				// TODO remove value3 if type is -. Find out types
-				helpString = value1 + "," + value2 + "," + value3 + ","
-						+ value4;
+				helpString = value1 + "," + value2 + ",";
+				if (!value3.equals("-"))
+					helpString = helpString + value3 + ",";
+				helpString = helpString + value4 + ",";
 			} else if (category.equals("12")) {
 				helpString = value1 + "," + value2;
 			} else if (category.equals("13") || category.equals("14")) {
@@ -763,15 +798,6 @@ public class AddNewRuleBean {
 			conclusionsModel.getElements().add(index, el);
 		}
 
-	}
-	
-	public String makeReplaces(String helpString){
-		helpString = helpString.replace("\"-\",", "");
-		helpString = helpString.replace(",\"-\"", "");
-		helpString = helpString.replace("-", "");
-		helpString = helpString.replace(",-", "");
-		helpString = helpString.replace(",,", ",");
-		return helpString;
 	}
 
 	public DefaultDiagramModel getConclusionsModel() {

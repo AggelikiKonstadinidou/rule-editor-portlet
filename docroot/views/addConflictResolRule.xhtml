@@ -390,12 +390,13 @@ Select or fill values
 						and (addNewRuleBean.cloneSelectedNode.method.category=='3')}"
 						columns="3" columnClasses="output,label,value">
 
-						<p:panelGrid id="gridType3" columns="2"
+						<p:panelGrid id="gridType3" columns="4" rows="3"
 							columnClasses="label,value">
 							<f:facet name="header">
-Values
+Select or fill Values
 </f:facet>
 
+							<h:outputText value="Select the first Value: " />
 							<p:selectOneMenu
 								value="#{addNewRuleBean.cloneSelectedNode.method.value1.value}">
 								<f:selectItems var="item" itemLabel="#{item}"
@@ -403,10 +404,12 @@ Values
 									value="#{addNewRuleBean.cloneSelectedNode.method.listOfVarValuesLists[0]}" />
 							</p:selectOneMenu>
 
+							<h:outputText value="or fill the first Value: " />
 							<p:inputText style="width: 300px;" autocomplete="off"
 								value="#{addNewRuleBean.cloneSelectedNode.method.value4.value}">
 							</p:inputText>
 
+							<h:outputText value="Select the second Value: " />
 							<p:selectOneMenu
 								value="#{addNewRuleBean.cloneSelectedNode.method.value2.value}">
 								<f:selectItems var="item" itemLabel="#{item}"
@@ -414,10 +417,12 @@ Values
 									value="#{addNewRuleBean.cloneSelectedNode.method.listOfVarValuesLists[1]}" />
 							</p:selectOneMenu>
 
+							<h:outputText value="or fill the second Value: " />
 							<p:inputText style="width: 300px;" autocomplete="off"
 								value="#{addNewRuleBean.cloneSelectedNode.method.value5.value}">
 							</p:inputText>
 
+							<h:outputText value="Select the variable to assign the result: " />
 							<p:selectOneMenu
 								value="#{addNewRuleBean.cloneSelectedNode.method.value3.value}">
 								<f:selectItems var="item" itemLabel="#{item}"
@@ -425,6 +430,7 @@ Values
 									value="#{addNewRuleBean.cloneSelectedNode.method.listOfVarValuesLists[2]}" />
 							</p:selectOneMenu>
 
+							<h:outputText value="or fill the variable to assign the result: " />
 							<p:inputText style="width: 300px;" autocomplete="off"
 								value="#{addNewRuleBean.cloneSelectedNode.method.value6.value}">
 							</p:inputText>
@@ -438,11 +444,12 @@ Values
 						and (addNewRuleBean.cloneSelectedNode.method.category=='4')}"
 						columns="2" columnClasses="output,label">
 
-						<p:panelGrid id="gridType4" columns="3"
+						<p:panelGrid id="gridType4" columns="2" rows="3"
 							columnClasses="label,value1,value2">
 							<f:facet name="header">
-Classes
+Select Classes
 </f:facet>
+							<h:outputText value="Blank Node: " />
 							<p:selectOneMenu
 								value="#{addNewRuleBean.cloneSelectedNode.method.value1.value}">
 								<f:selectItems var="item" itemLabel="#{item}"
@@ -455,6 +462,7 @@ Classes
 
 							</p:selectOneMenu>
 
+							<h:outputText value="First Value: " />
 							<p:selectOneMenu
 								value="#{addNewRuleBean.cloneSelectedNode.method.value2.value}">
 								<f:selectItems var="item" itemLabel="#{item}"
@@ -466,6 +474,7 @@ Classes
 
 							</p:selectOneMenu>
 
+							<h:outputText value="Second Value: " />
 							<p:selectOneMenu
 								value="#{addNewRuleBean.cloneSelectedNode.method.value3.value}">
 								<f:selectItems var="item" itemLabel="#{item}"
@@ -506,11 +515,8 @@ Classes
 
 						<p:panelGrid id="gridType6" columns="2"
 							columnClasses="label,value">
-							<f:facet name="header">
-Classes
-</f:facet>
 							<h:outputText
-								value="Enter the order number of the triple to remove: "
+								value="Order number of the triple to remove: "
 								id="tripleToRemove" />
 							<p:inputText label="tripleToRemove" style="width: 100px;"
 								id="tripleValue" autocomplete="off"
@@ -527,7 +533,7 @@ Classes
 						<p:panelGrid id="gridType7" columns="2"
 							columnClasses="label,value">
 
-							<h:outputText value="Enter the order number of the triple: " />
+							<h:outputText value="Order number of the triple: " />
 							<p:inputText label="tripleToRemove" style="width: 100px;"
 								autocomplete="off"
 								value="#{addNewRuleBean.cloneSelectedNode.method.value1.value}">
@@ -542,7 +548,7 @@ Classes
 
 						<p:panelGrid id="gridTypePrint" columns="2"
 							columnClasses="label,value">
-							<h:outputText value="Enter text to be printed: " />
+							<h:outputText value="Text to be printed: " />
 							<h:inputTextarea label="tripleToRemove" style="width: 200px;"
 								autocomplete="off"
 								value="#{addNewRuleBean.cloneSelectedNode.method.value1.value}">
@@ -558,7 +564,7 @@ Classes
 						<p:panelGrid id="gridTypeNow" columns="2"
 							columnClasses="label,value">
 							<h:outputText
-								value="Enter variable to be binded to the current time: " />
+								value="Variable to be binded to the current time: " />
 							<p:inputText style="width: 100px;" autocomplete="off"
 								value="#{addNewRuleBean.cloneSelectedNode.method.value1.value}">
 							</p:inputText>
@@ -572,7 +578,7 @@ Classes
 
 						<p:panelGrid id="gridTypeMakeTemp" columns="2"
 							columnClasses="label,value">
-							<h:outputText value="Enter variable to be binded to a new node: " />
+							<h:outputText value="Variable to be binded to a new node: " />
 							<p:inputText style="width: 100px;" autocomplete="off"
 								value="#{addNewRuleBean.cloneSelectedNode.method.value1.value}">
 							</p:inputText>
@@ -584,35 +590,19 @@ Classes
 						and (addNewRuleBean.cloneSelectedNode.method.category=='10')}"
 						columns="1" columnClasses="output">
 
-						<p:panelGrid id="gridTypeRegex" columns="2"
+						<p:panelGrid id="gridTypeRegex" columns="2" rows="2"
 							columnClasses="label,value">
-							<f:facet name="header">
-Values
-</f:facet>
 
-							<p:selectOneMenu
+							<h:outputText value="First Literal: " />
+							<p:inputText style="width: 300px;" autocomplete="off"
 								value="#{addNewRuleBean.cloneSelectedNode.method.value1.value}">
-								<f:selectItems var="item" itemLabel="#{item}"
-									itemValue="#{item}"
-									value="#{addNewRuleBean.cloneSelectedNode.method.listOfVarValuesLists[0]}" />
-
-							</p:selectOneMenu>
-
-
-							<p:inputText style="width: 300px;" autocomplete="off"
-								value="#{addNewRuleBean.cloneSelectedNode.method.value3.value}">
 							</p:inputText>
 
-							<p:selectOneMenu
+							<h:outputText value="Second Literal: " />
+							<p:inputText style="width: 300px;" autocomplete="off"
 								value="#{addNewRuleBean.cloneSelectedNode.method.value2.value}">
-								<f:selectItems var="item" itemLabel="#{item}"
-									itemValue="#{item}"
-									value="#{addNewRuleBean.cloneSelectedNode.method.listOfVarValuesLists[1]}" />
-							</p:selectOneMenu>
-
-							<p:inputText style="width: 300px;" autocomplete="off"
-								value="#{addNewRuleBean.cloneSelectedNode.method.value4.value}">
 							</p:inputText>
+
 						</p:panelGrid>
 					</h:panelGrid>
 					<!-- makeInstance method, category 11-->
