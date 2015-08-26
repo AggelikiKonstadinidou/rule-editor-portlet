@@ -69,8 +69,8 @@
 						<p:dataTable id="instances" var="data"
 							value="#{addNewRuleBean.instances}" rowKey="#{data}"
 							selectionMode="single"
-							selection="#{addNewRuleBean.selectedInstance}"
-							scrollable="true" scrollHeight="50">
+							selection="#{addNewRuleBean.selectedInstance}" scrollable="true"
+							scrollHeight="50">
 
 							<p:column headerText="Instances">
 								<h:outputText value="#{data.instanceName}" />
@@ -80,17 +80,26 @@
 
 						<p:dataTable id="methods" var="method" value="#{main.methods}"
 							rowKey="#{method.originalName}" selectionMode="single"
-							selection="#{addNewRuleBean.selectedMethod}"
-							scrollable="true" scrollHeight="100">
+							selection="#{addNewRuleBean.selectedMethod}" scrollable="true"
+							scrollHeight="100">
 							<p:column headerText="Primitive Methods">
-								<h:outputText value="#{method.usingName}"
-									id="method" />
-								<p:tooltip id="toolTipGrow" for="method" value="#{method.description}"
-                                showEffect="clip" hideEffect="explode" />
+								<h:outputText value="#{method.usingName}" id="method" />
+								<p:tooltip id="toolTipGrow" for="method"
+									value="#{method.description}" showEffect="clip"
+									hideEffect="explode" />
 							</p:column>
 						</p:dataTable>
 
 					</h:panelGrid>
+
+					<p:contextMenu for="tree">
+						<p:menuitem value="Move to conditions"
+							update=":#{p:component('pan1')}"
+							actionListener="#{addNewRuleBean.createClassElement('pan1')}" />
+						<p:menuitem value="Move to conclusions"
+							update=":#{p:component('pan2')}"
+							actionListener="#{addNewRuleBean.createClassElement('pan2')}" />
+					</p:contextMenu>
 
 					<p:contextMenu for="methods">
 						<p:menuitem value="Move to conditions"
@@ -118,57 +127,59 @@
 
 				</h:panelGrid>
 
-					<p:panel header="conditions" id="pan1"
-						style="height:700px;">
-						<f:facet name="header">
-							<h:outputText value="Conditions" />
+				<p:panel header="conditions" id="pan1" style="height:700px;">
+					<f:facet name="header">
+						<h:outputText value="Conditions" />
+					</f:facet>
+					<p:diagram value="#{addNewRuleBean.conditionsModel}"
+						id="conditionsDiagram" style="height:650px;"
+						styleClass="ui-widget-content" var="item">
+
+						<f:facet name="element">
+							<p:panel id="pnl1" header="#{item.label}: #{item.elementName}">
+								<h:panelGrid columns="1" columnClasses="label" id="elementGrid1">
+
+									<h:outputText value="Order: #{item.order}"
+										rendered="#{item.order!=0}" />
+
+									<h:outputText label="varName"
+										rendered="#{item.method.originalName!=''}"
+										style="width: 80px;" autocomplete="off"
+										value="Arguments: #{item.method.helpString}" />
+
+									<h:outputText label="varName" rendered="#{item.label=='Class'}"
+										style="width: 80px;" autocomplete="off"
+										value="Var: #{item.classVariable}" />
+
+									<h:outputText label="varName"
+										rendered="#{item.property.ontologyURI!=''}"
+										style="width: 80px;" autocomplete="off"
+										value="Var: #{item.property.classVar}" />
+
+									<h:outputText label="value" rendered="#{item.editValue}"
+										id="value" style="width: 80px;" autocomplete="off"
+										value="Value: #{item.property.value}" />
+
+
+								</h:panelGrid>
+								<p:commandButton oncomplete="PF('editDialog').show()"
+									actionListener="#{addNewRuleBean.editNode}" title="View"
+									icon="ui-icon-search" update=":#{p:component('editDialog')}">
+									<f:param name="id" value="#{item.id}" />
+									<f:param name="panel" value="conditions" />
+								</p:commandButton>
+							</p:panel>
 						</f:facet>
-						<p:diagram value="#{addNewRuleBean.conditionsModel}"
-							id="conditionsDiagram" style="height:650px;"
-							styleClass="ui-widget-content" var="item">
 
-							<f:facet name="element">
-								<p:panel id="pnl1" header="#{item.label}: #{item.elementName}">
-									<h:panelGrid columns="1" columnClasses="label"
-										id="elementGrid1">
-
-										<h:outputText value="Order: #{item.order}"
-											rendered="#{item.order!=0}" />
-
-										<h:outputText label="varName"
-											rendered="#{item.method.originalName!=''}"
-											style="width: 80px;" autocomplete="off"
-											value="Arguments: #{item.method.helpString}" />
-
-										<h:outputText label="varName"
-											rendered="#{item.property.ontologyURI!=''}" id="classVar"
-											style="width: 80px;" autocomplete="off"
-											value="Var: #{item.property.classVar}" />
-
-										<h:outputText label="value" rendered="#{item.editValue}"
-											id="value" style="width: 80px;" autocomplete="off"
-											value="Value: #{item.property.value}" />
-
-
-									</h:panelGrid>
-									<p:commandButton oncomplete="PF('editDialog').show()"
-										actionListener="#{addNewRuleBean.editNode}" title="View"
-										icon="ui-icon-search" update=":#{p:component('editDialog')}">
-										<f:param name="id" value="#{item.id}" />
-										<f:param name="panel" value="conditions" />
-									</p:commandButton>
-								</p:panel>
-							</f:facet>
-
-							<p:ajax event="connect" listener="#{addNewRuleBean.onConnect}"
-								update=":#{p:component('conditionsDiagram')}" />
-							<p:ajax event="disconnect"
-								listener="#{addNewRuleBean.onDisconnect}" />
-							<p:ajax event="connectionChange"
-								listener="#{addNewRuleBean.onConnectionChange}"
-								update=":#{p:component('conditionsDiagram')}" />
-						</p:diagram>
-					</p:panel>
+						<p:ajax event="connect" listener="#{addNewRuleBean.onConnect}"
+							update=":#{p:component('conditionsDiagram')}" />
+						<p:ajax event="disconnect"
+							listener="#{addNewRuleBean.onDisconnect}" />
+						<p:ajax event="connectionChange"
+							listener="#{addNewRuleBean.onConnectionChange}"
+							update=":#{p:component('conditionsDiagram')}" />
+					</p:diagram>
+				</p:panel>
 
 				<p:commandButton actionListener="#{addRuleStep1Bean.init}"
 					action="/views/addRuleStep1Bean.xhtml?javax.portlet.faces.PortletMode=view&amp;javax.portlet.faces.WindowState=normal"
@@ -182,10 +193,10 @@
 				</p:commandButton>
 				<p:commandButton actionListener="#{addMessageBean.init(true)}"
 					action="/views/addMessage.xhtml?javax.portlet.faces.PortletMode=view&amp;javax.portlet.faces.WindowState=normal"
-					title="Move to the next step of the creation of the rule" id="nextBut" ajax="false"
-					value="Next step">
+					title="Move to the next step of the creation of the rule"
+					id="nextBut" ajax="false" value="Next step">
 				</p:commandButton>
-				
+
 
 			</p:panel>
 
@@ -252,7 +263,7 @@ Values
 								<f:selectItems var="item2" itemLabel="#{item2}"
 									itemValue="#{item2}"
 									value="#{addNewRuleBean.cloneSelectedNode.method.listOfVarValuesLists[0]}" />
-								<p:ajax event="change" process="@this"/>
+								<p:ajax event="change" process="@this" />
 
 							</p:selectOneMenu>
 
@@ -268,7 +279,7 @@ Values
 								<f:selectItems var="item3" itemLabel="#{item3}"
 									itemValue="#{item3}"
 									value="#{addNewRuleBean.cloneSelectedNode.method.listOfVarValuesLists[0]}" />
-								<p:ajax event="change" process="@this"/>
+								<p:ajax event="change" process="@this" />
 							</p:selectOneMenu>
 
 							<p:inputText disabled="#{!addNewRuleBean.gridType1}"
@@ -285,12 +296,12 @@ Values
 						and (addNewRuleBean.cloneSelectedNode.method.category=='2b')}"
 						columns="3" columnClasses="output,label,value">
 
-						<p:panelGrid id="gridType2b" columns="2"
+						<p:panelGrid id="gridType2b" columns="4" rows="2"
 							columnClasses="label,value">
 							<f:facet name="header">
-Values
+Select or fill values
 </f:facet>
-
+							<h:outputText value="Select first Value: " />
 							<p:selectOneMenu
 								value="#{addNewRuleBean.cloneSelectedNode.method.value1.value}">
 								<f:selectItems var="item" itemLabel="#{item}"
@@ -299,11 +310,12 @@ Values
 
 							</p:selectOneMenu>
 
-
+							<h:outputText value="or fill first Value: " />
 							<p:inputText style="width: 300px;" autocomplete="off"
 								value="#{addNewRuleBean.cloneSelectedNode.method.value3.value}">
 							</p:inputText>
 
+							<h:outputText value="Select second Value: " />
 							<p:selectOneMenu
 								value="#{addNewRuleBean.cloneSelectedNode.method.value2.value}">
 								<f:selectItems var="item" itemLabel="#{item}"
@@ -311,6 +323,7 @@ Values
 									value="#{addNewRuleBean.cloneSelectedNode.method.listOfVarValuesLists[1]}" />
 							</p:selectOneMenu>
 
+							<h:outputText value="or fill second Value: " />
 							<p:inputText style="width: 300px;" autocomplete="off"
 								value="#{addNewRuleBean.cloneSelectedNode.method.value4.value}">
 							</p:inputText>
@@ -322,12 +335,13 @@ Values
 						and (addNewRuleBean.cloneSelectedNode.method.category=='3')}"
 						columns="3" columnClasses="output,label,value">
 
-						<p:panelGrid id="gridType3" columns="2"
+						<p:panelGrid id="gridType3" columns="4" rows="3"
 							columnClasses="label,value">
 							<f:facet name="header">
-Values
+Select or fill Values
 </f:facet>
 
+							<h:outputText value="Select the first Value: " />
 							<p:selectOneMenu
 								value="#{addNewRuleBean.cloneSelectedNode.method.value1.value}">
 								<f:selectItems var="item" itemLabel="#{item}"
@@ -335,10 +349,12 @@ Values
 									value="#{addNewRuleBean.cloneSelectedNode.method.listOfVarValuesLists[0]}" />
 							</p:selectOneMenu>
 
+							<h:outputText value="or fill the first Value: " />
 							<p:inputText style="width: 300px;" autocomplete="off"
 								value="#{addNewRuleBean.cloneSelectedNode.method.value4.value}">
 							</p:inputText>
 
+							<h:outputText value="Select the second Value: " />
 							<p:selectOneMenu
 								value="#{addNewRuleBean.cloneSelectedNode.method.value2.value}">
 								<f:selectItems var="item" itemLabel="#{item}"
@@ -346,10 +362,12 @@ Values
 									value="#{addNewRuleBean.cloneSelectedNode.method.listOfVarValuesLists[1]}" />
 							</p:selectOneMenu>
 
+							<h:outputText value="or fill the second Value: " />
 							<p:inputText style="width: 300px;" autocomplete="off"
 								value="#{addNewRuleBean.cloneSelectedNode.method.value5.value}">
 							</p:inputText>
 
+							<h:outputText value="Select the variable to assign the result: " />
 							<p:selectOneMenu
 								value="#{addNewRuleBean.cloneSelectedNode.method.value3.value}">
 								<f:selectItems var="item" itemLabel="#{item}"
@@ -357,6 +375,7 @@ Values
 									value="#{addNewRuleBean.cloneSelectedNode.method.listOfVarValuesLists[2]}" />
 							</p:selectOneMenu>
 
+							<h:outputText value="or fill the variable to assign the result: " />
 							<p:inputText style="width: 300px;" autocomplete="off"
 								value="#{addNewRuleBean.cloneSelectedNode.method.value6.value}">
 							</p:inputText>
@@ -370,11 +389,12 @@ Values
 						and (addNewRuleBean.cloneSelectedNode.method.category=='4')}"
 						columns="2" columnClasses="output,label">
 
-						<p:panelGrid id="gridType4" columns="3"
+						<p:panelGrid id="gridType4" columns="2" rows="3"
 							columnClasses="label,value1,value2">
 							<f:facet name="header">
-Classes
+Select Classes
 </f:facet>
+							<h:outputText value="Blank Node: " />
 							<p:selectOneMenu
 								value="#{addNewRuleBean.cloneSelectedNode.method.value1.value}">
 								<f:selectItems var="item" itemLabel="#{item}"
@@ -387,6 +407,7 @@ Classes
 
 							</p:selectOneMenu>
 
+							<h:outputText value="First Value: " />
 							<p:selectOneMenu
 								value="#{addNewRuleBean.cloneSelectedNode.method.value2.value}">
 								<f:selectItems var="item" itemLabel="#{item}"
@@ -398,6 +419,7 @@ Classes
 
 							</p:selectOneMenu>
 
+							<h:outputText value="Second Value: " />
 							<p:selectOneMenu
 								value="#{addNewRuleBean.cloneSelectedNode.method.value3.value}">
 								<f:selectItems var="item" itemLabel="#{item}"
@@ -438,11 +460,7 @@ Classes
 
 						<p:panelGrid id="gridType6" columns="2"
 							columnClasses="label,value">
-							<f:facet name="header">
-Classes
-</f:facet>
-							<h:outputText
-								value="Enter the order number of the triple to remove: "
+							<h:outputText value="Order number of the triple to remove: "
 								id="tripleToRemove" />
 							<p:inputText label="tripleToRemove" style="width: 100px;"
 								id="tripleValue" autocomplete="off"
@@ -458,8 +476,8 @@ Classes
 
 						<p:panelGrid id="gridType7" columns="2"
 							columnClasses="label,value">
-							
-							<h:outputText value="Enter the order number of the triple: " />
+
+							<h:outputText value="Order number of the triple: " />
 							<p:inputText label="tripleToRemove" style="width: 100px;"
 								autocomplete="off"
 								value="#{addNewRuleBean.cloneSelectedNode.method.value1.value}">
@@ -474,7 +492,7 @@ Classes
 
 						<p:panelGrid id="gridTypePrint" columns="2"
 							columnClasses="label,value">
-							<h:outputText value="Enter text to be printed: " />
+							<h:outputText value="Text to be printed: " />
 							<h:inputTextarea label="tripleToRemove" style="width: 200px;"
 								autocomplete="off"
 								value="#{addNewRuleBean.cloneSelectedNode.method.value1.value}">
@@ -489,9 +507,8 @@ Classes
 
 						<p:panelGrid id="gridTypeNow" columns="2"
 							columnClasses="label,value">
-							<h:outputText value="Enter variable to be binded to the current time: " />
-							<p:inputText style="width: 100px;"
-								autocomplete="off"
+							<h:outputText value="Variable to be binded to the current time: " />
+							<p:inputText style="width: 100px;" autocomplete="off"
 								value="#{addNewRuleBean.cloneSelectedNode.method.value1.value}">
 							</p:inputText>
 						</p:panelGrid>
@@ -504,10 +521,309 @@ Classes
 
 						<p:panelGrid id="gridTypeMakeTemp" columns="2"
 							columnClasses="label,value">
-							<h:outputText value="Enter variable to be binded to a new node: " />
-							<p:inputText style="width: 100px;"
-								autocomplete="off"
+							<h:outputText value="Variable to be binded to a new node: " />
+							<p:inputText style="width: 100px;" autocomplete="off"
 								value="#{addNewRuleBean.cloneSelectedNode.method.value1.value}">
+							</p:inputText>
+						</p:panelGrid>
+					</h:panelGrid>
+					<!-- regex method, category 10-->
+					<h:panelGrid id="selections10"
+						rendered="#{addNewRuleBean.cloneSelectedNode.type=='BUILTIN_METHOD'
+						and (addNewRuleBean.cloneSelectedNode.method.category=='10')}"
+						columns="1" columnClasses="output">
+
+						<p:panelGrid id="gridTypeRegex" columns="2" rows="2"
+							columnClasses="label,value">
+
+							<h:outputText value="First Literal: " />
+							<p:inputText style="width: 300px;" autocomplete="off"
+								value="#{addNewRuleBean.cloneSelectedNode.method.value1.value}">
+							</p:inputText>
+
+							<h:outputText value="Second Literal: " />
+							<p:inputText style="width: 300px;" autocomplete="off"
+								value="#{addNewRuleBean.cloneSelectedNode.method.value2.value}">
+							</p:inputText>
+
+						</p:panelGrid>
+					</h:panelGrid>
+					<!-- makeInstance method, category 11-->
+					<h:panelGrid id="selections11"
+						rendered="#{addNewRuleBean.cloneSelectedNode.type=='BUILTIN_METHOD'
+						and (addNewRuleBean.cloneSelectedNode.method.category=='11')}"
+						columns="1" columnClasses="output">
+
+						<p:panelGrid id="gridTypeMakeInstance" columns="2" rows="4"
+							columnClasses="label,value">
+
+							<h:outputText value="Resource: " />
+							<p:selectOneMenu
+								value="#{addNewRuleBean.cloneSelectedNode.method.value1.value}">
+								<f:selectItems var="item" itemLabel="#{item}"
+									itemValue="#{item}"
+									value="#{addNewRuleBean.cloneSelectedNode.method.listOfVarClassesLists[0]}" />
+								<p:ajax event="change" update="propertiesSpinner"
+									listener="#{addNewRuleBean.updatePropertiesList}" />
+
+							</p:selectOneMenu>
+
+							<h:outputText value="Property: " />
+							<p:selectOneMenu id="propertiesSpinner"
+								value="#{addNewRuleBean.cloneSelectedNode.method.value2.value}">
+								<f:selectItems var="item" itemLabel="#{item.propertyName}"
+									itemValue="#{item.propertyName}"
+									value="#{addNewRuleBean.propertiesList}" />
+							</p:selectOneMenu>
+
+							<h:outputText value="Type(optional): " />
+							<p:selectOneMenu
+								value="#{addNewRuleBean.cloneSelectedNode.method.value3.value}">
+								<f:selectItems var="item" itemLabel="#{item}"
+									itemValue="#{item}" value="#{addNewRuleBean.types}" />
+							</p:selectOneMenu>
+
+							<h:outputText value="Blank Node: " />
+							<p:inputText style="width: 150px;" autocomplete="off"
+								value="#{addNewRuleBean.cloneSelectedNode.method.value4.value}">
+							</p:inputText>
+						</p:panelGrid>
+					</h:panelGrid>
+					<!-- listContains/listNotContains method, category 12-->
+					<h:panelGrid id="selections12"
+						rendered="#{addNewRuleBean.cloneSelectedNode.type=='BUILTIN_METHOD'
+						and (addNewRuleBean.cloneSelectedNode.method.category=='12')}"
+						columns="1" columnClasses="output">
+
+						<p:panelGrid id="gridTypeListContains" columns="2" rows="2"
+							columnClasses="label,value">
+
+							<h:outputText value="List: " />
+							<p:selectOneMenu
+								value="#{addNewRuleBean.cloneSelectedNode.method.value1.value}">
+								<f:selectItems var="item" itemLabel="#{item}"
+									itemValue="#{item}" value="#{addNewRuleBean.jenaLists}" />
+							</p:selectOneMenu>
+
+							<h:outputText value="Element: " />
+							<p:inputText style="width: 150px;" autocomplete="off"
+								value="#{addNewRuleBean.cloneSelectedNode.method.value2.value}">
+							</p:inputText>
+
+						</p:panelGrid>
+					</h:panelGrid>
+					<!-- listEqual/listNotEqual method, category 13-->
+					<h:panelGrid id="selections13"
+						rendered="#{addNewRuleBean.cloneSelectedNode.type=='BUILTIN_METHOD'
+						and (addNewRuleBean.cloneSelectedNode.method.category=='13')}"
+						columns="1" columnClasses="output">
+
+						<p:panelGrid id="gridTypeListEquality" columns="4"
+							columnClasses="label,value">
+
+							<h:outputText value="First List: " />
+							<p:selectOneMenu
+								value="#{addNewRuleBean.cloneSelectedNode.method.value1.value}">
+								<f:selectItems var="item" itemLabel="#{item}"
+									itemValue="#{item}" value="#{addNewRuleBean.jenaLists}" />
+							</p:selectOneMenu>
+
+							<h:outputText value="Second List: " />
+							<p:selectOneMenu
+								value="#{addNewRuleBean.cloneSelectedNode.method.value2.value}">
+								<f:selectItems var="item" itemLabel="#{item}"
+									itemValue="#{item}" value="#{addNewRuleBean.jenaLists}" />
+							</p:selectOneMenu>
+
+						</p:panelGrid>
+					</h:panelGrid>
+					<!-- listLength method, category 14-->
+					<h:panelGrid id="selections14"
+						rendered="#{addNewRuleBean.cloneSelectedNode.type=='BUILTIN_METHOD'
+						and (addNewRuleBean.cloneSelectedNode.method.category=='14')}"
+						columns="1" columnClasses="output">
+
+						<p:panelGrid id="gridTypeListLength" columns="4"
+							columnClasses="label,value">
+
+							<h:outputText value="List: " />
+							<p:selectOneMenu
+								value="#{addNewRuleBean.cloneSelectedNode.method.value1.value}">
+								<f:selectItems var="item" itemLabel="#{item}"
+									itemValue="#{item}" value="#{addNewRuleBean.jenaLists}" />
+							</p:selectOneMenu>
+
+							<h:outputText
+								value="Node to be binded to the length of the list: " />
+							<p:inputText style="width: 150px;" autocomplete="off"
+								value="#{addNewRuleBean.cloneSelectedNode.method.value2.value}">
+							</p:inputText>
+
+						</p:panelGrid>
+					</h:panelGrid>
+					<!-- table method, category 16-->
+					<h:panelGrid id="selections16"
+						rendered="#{addNewRuleBean.cloneSelectedNode.type=='BUILTIN_METHOD'
+						and (addNewRuleBean.cloneSelectedNode.method.category=='16')}"
+						columns="1" columnClasses="output">
+
+						<p:panelGrid id="gridTypeTable" columns="2"
+							columnClasses="label,value">
+
+							<h:outputText value="Property: " />
+							<p:selectOneMenu
+								value="#{addNewRuleBean.cloneSelectedNode.method.value1.value}">
+								<f:selectItems var="item"
+									itemLabel="#{item.propertyName} (#{item.className})"
+									itemValue="#{item.propertyName}"
+									value="#{addNewRuleBean.propertiesList}" />
+							</p:selectOneMenu>
+						</p:panelGrid>
+					</h:panelGrid>
+					<!-- hide method, category 17-->
+					<h:panelGrid id="selections17"
+						rendered="#{addNewRuleBean.cloneSelectedNode.type=='BUILTIN_METHOD'
+						and (addNewRuleBean.cloneSelectedNode.method.category=='17')}"
+						columns="1" columnClasses="output">
+
+						<p:panelGrid id="gridTypeHide" columns="2"
+							columnClasses="label,value">
+
+							<h:outputText value="Predicate to be hidden: " />
+							<p:selectOneMenu
+								value="#{addNewRuleBean.cloneSelectedNode.method.value1.value}">
+								<f:selectItems var="item" itemLabel="#{item}"
+									itemValue="#{item}"
+									value="#{addNewRuleBean.cloneSelectedNode.method.listOfVarClassesLists[0]}" />
+							</p:selectOneMenu>
+						</p:panelGrid>
+					</h:panelGrid>
+					<!-- isDType/notDType method, category 18-->
+					<h:panelGrid id="selections18"
+						rendered="#{addNewRuleBean.cloneSelectedNode.type=='BUILTIN_METHOD'
+						and (addNewRuleBean.cloneSelectedNode.method.category=='18')}"
+						columns="1" columnClasses="output">
+
+						<p:panelGrid id="gridTypeisDType" columns="2" rows="2"
+							columnClasses="label,value">
+
+							<h:outputText value="Literal: " />
+							<p:selectOneMenu
+								value="#{addNewRuleBean.cloneSelectedNode.method.value1.value}">
+								<f:selectItems var="item" itemLabel="#{item}"
+									itemValue="#{item}"
+									value="#{addNewRuleBean.cloneSelectedNode.method.listOfVarValuesLists[0]}" />
+							</p:selectOneMenu>
+
+							<h:outputText value="Type: " />
+							<p:selectOneMenu
+								value="#{addNewRuleBean.cloneSelectedNode.method.value2.value}">
+								<f:selectItems var="item" itemLabel="#{item}"
+									itemValue="#{item}" value="#{addNewRuleBean.types}" />
+							</p:selectOneMenu>
+						</p:panelGrid>
+					</h:panelGrid>
+					<!-- listEntry method, category 19-->
+					<h:panelGrid id="selections19"
+						rendered="#{addNewRuleBean.cloneSelectedNode.type=='BUILTIN_METHOD'
+						and (addNewRuleBean.cloneSelectedNode.method.category=='19')}"
+						columns="1" columnClasses="output">
+
+						<p:panelGrid id="gridTypeListEntry" columns="2" rows="3"
+							columnClasses="label,value">
+
+							<h:outputText value="List: " />
+							<p:selectOneMenu
+								value="#{addNewRuleBean.cloneSelectedNode.method.value1.value}">
+								<f:selectItems var="item" itemLabel="#{item}"
+									itemValue="#{item}" value="#{addNewRuleBean.jenaLists}" />
+							</p:selectOneMenu>
+
+							<h:outputText value="Index: " />
+							<p:inputText style="width: 100px;" autocomplete="off"
+								value="#{addNewRuleBean.cloneSelectedNode.method.value2.value}">
+							</p:inputText>
+
+							<h:outputText value="Value: " />
+							<p:inputText style="width: 100px;" autocomplete="off"
+								value="#{addNewRuleBean.cloneSelectedNode.method.value3.value}">
+							</p:inputText>
+
+						</p:panelGrid>
+					</h:panelGrid>
+					<!-- listMapAsObject method, category 20-->
+					<h:panelGrid id="selections20"
+						rendered="#{addNewRuleBean.cloneSelectedNode.type=='BUILTIN_METHOD'
+						and (addNewRuleBean.cloneSelectedNode.method.category=='20')}"
+						columns="1" columnClasses="output">
+
+						<p:panelGrid id="gridTypeListMapAsObject" columns="2" rows="3"
+							columnClasses="label,value">
+
+							<h:outputText value="Value: " />
+							<p:inputText style="width: 100px;" autocomplete="off"
+								value="#{addNewRuleBean.cloneSelectedNode.method.value1.value}">
+							</p:inputText>
+
+							<h:outputText value="Property: " />
+							<p:selectOneMenu
+								value="#{addNewRuleBean.cloneSelectedNode.method.value2.value}">
+								<f:selectItems var="item"
+									itemLabel="#{item.propertyName} (#{item.className})"
+									itemValue="#{item.propertyName}"
+									value="#{addNewRuleBean.propertiesList}" />
+							</p:selectOneMenu>
+
+							<h:outputText value="List: " />
+							<p:selectOneMenu
+								value="#{addNewRuleBean.cloneSelectedNode.method.value3.value}">
+								<f:selectItems var="item" itemLabel="#{item}"
+									itemValue="#{item}" value="#{addNewRuleBean.jenaLists}" />
+							</p:selectOneMenu>
+
+						</p:panelGrid>
+					</h:panelGrid>
+					<!-- listMapAsSubject method, category 21-->
+					<h:panelGrid id="selections21"
+						rendered="#{addNewRuleBean.cloneSelectedNode.type=='BUILTIN_METHOD'
+						and (addNewRuleBean.cloneSelectedNode.method.category=='21')}"
+						columns="1" columnClasses="output">
+
+						<p:panelGrid id="gridTypeListMapAsSubject" columns="2" rows="3"
+							columnClasses="label,value">
+
+							<h:outputText value="List: " />
+							<p:selectOneMenu
+								value="#{addNewRuleBean.cloneSelectedNode.method.value1.value}">
+								<f:selectItems var="item" itemLabel="#{item}"
+									itemValue="#{item}" value="#{addNewRuleBean.jenaLists}" />
+							</p:selectOneMenu>
+
+							<h:outputText value="Property: " />
+							<p:selectOneMenu
+								value="#{addNewRuleBean.cloneSelectedNode.method.value2.value}">
+								<f:selectItems var="item"
+									itemLabel="#{item.propertyName} (#{item.className})"
+									itemValue="#{item.propertyName}"
+									value="#{addNewRuleBean.propertiesList}" />
+							</p:selectOneMenu>
+
+							<h:outputText value="Value: " />
+							<p:inputText style="width: 100px;" autocomplete="off"
+								value="#{addNewRuleBean.cloneSelectedNode.method.value3.value}">
+							</p:inputText>
+						</p:panelGrid>
+					</h:panelGrid>
+					<!-- Class element -->
+					<h:panelGrid id="classGrid"
+						rendered="#{addNewRuleBean.cloneSelectedNode.type=='CLASS'}"
+						columns="1" columnClasses="output">
+						<p:panelGrid id="gridTypeClass" columns="2"
+							columnClasses="label,value">
+
+							<h:outputText value="Class variable name: " />
+							<p:inputText style="width: 200px;" autocomplete="off"
+								value="#{addNewRuleBean.cloneSelectedNode.classVariable}">
 							</p:inputText>
 						</p:panelGrid>
 					</h:panelGrid>
@@ -515,18 +831,14 @@ Classes
 						columnClasses="label,value"
 						rendered="#{addNewRuleBean.cloneSelectedNode.type=='DATA_PROPERTY' or
 					 addNewRuleBean.cloneSelectedNode.type=='OBJECT_PROPERTY'}">
-						<h:outputText value="Variable name: " id="clonedVar"
+						<h:outputText value="Class variable name: " id="clonedVar"
 							rendered="#{addNewRuleBean.cloneSelectedNode.editVar}" />
-						<p:inputText label="Rule name" style="width: 300px;"
-							id="clonedVar1" autocomplete="off"
+						<p:selectOneMenu
 							rendered="#{addNewRuleBean.cloneSelectedNode.editVar}"
-							value="#{addNewRuleBean.cloneSelectedNode.property.classVar}"
-							required="true">
-						</p:inputText>
-						<p:watermark for="clonedVar1"
-							value="Insert a variable name e.g ?Sol" id="watermarkVar" />
-						<!--  	<h:outputText value="Value: " id="clonedValue" required="false"
-						rendered="#{addNewRuleBean.cloneSelectedNode.editValue}" />-->
+							value="#{addNewRuleBean.cloneSelectedNode.property.classVar}">
+							<f:selectItems var="item" itemLabel="#{item}" itemValue="#{item}"
+								value="#{addNewRuleBean.tempClassVariableList}" />
+						</p:selectOneMenu>
 
 						<h:outputText value="Value: " id="clonedValue" required="false"
 							rendered="#{addNewRuleBean.cloneSelectedNode.editValue}" />
@@ -555,16 +867,23 @@ Classes
 						rendered="#{addNewRuleBean.cloneSelectedNode.editValue}" />-->
 					</h:panelGrid>
 
-					<p:commandButton action="#{addNewRuleBean.saveEditOfNode}"
-						icon="ui-icon-save" title="Save changes"
-						update=":#{p:component('pan1')},:#{p:component('selections')}"
-						value="Save" oncomplete="PF('editDialog').hide()">
-					</p:commandButton>
-					<p:commandButton action="#{addNewRuleBean.removeNode}"
-						icon="ui-icon-close" title="Remove node"
-						update=":#{p:component('pan1')}"
-						value="Delete" oncomplete="PF('editDialog').hide()">
-					</p:commandButton>
+					<h:panelGrid id="buttons" columns="3" columnClasses="label">
+
+						<p:commandButton action="#{addNewRuleBean.saveEditOfNode}"
+							icon="ui-icon-save" title="Save changes"
+							update=":#{p:component('pan1')},:#{p:component('pan2')},:#{p:component('selections')}"
+							value="Save" oncomplete="PF('editDialog').hide()">
+						</p:commandButton>
+						<p:commandButton icon="ui-icon-close" title="Cancel"
+							update=":#{p:component('pan1')},:#{p:component('pan2')}"
+							value="Cancel" oncomplete="PF('editDialog').hide()">
+						</p:commandButton>
+						<p:commandButton action="#{addNewRuleBean.removeNode}"
+							icon="ui-icon-close" title="Remove node"
+							update=":#{p:component('pan1')},:#{p:component('pan2')}"
+							value="Delete" oncomplete="PF('editDialog').hide()">
+						</p:commandButton>
+					</h:panelGrid>
 				</h:panelGrid>
 			</p:dialog>
 		</h:form>

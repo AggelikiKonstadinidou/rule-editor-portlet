@@ -91,6 +91,15 @@
 
 					</h:panelGrid>
 
+					<p:contextMenu for="tree">
+						<p:menuitem value="Move to conditions"
+							update=":#{p:component('pan1')}"
+							actionListener="#{addNewRuleBean.createClassElement('pan1')}" />
+						<p:menuitem value="Move to conclusions"
+							update=":#{p:component('pan2')}"
+							actionListener="#{addNewRuleBean.createClassElement('pan2')}" />
+					</p:contextMenu>
+
 					<p:contextMenu for="methods">
 						<p:menuitem value="Move to conditions"
 							update=":#{p:component('pan1')}"
@@ -155,7 +164,11 @@
 											value="Arguments: #{item.method.helpString}" />
 
 										<h:outputText label="varName"
-											rendered="#{item.property.ontologyURI!=''}" id="classVar"
+											rendered="#{item.label=='Class'}" style="width: 80px;"
+											autocomplete="off" value="Var: #{item.classVariable}" />
+
+										<h:outputText label="varName"
+											rendered="#{item.property.ontologyURI!=''}"
 											style="width: 80px;" autocomplete="off"
 											value="Var: #{item.property.classVar}" />
 
@@ -203,7 +216,11 @@
 											value="Arguments: #{item.method.helpString}" />
 
 										<h:outputText label="varName"
-											rendered="#{item.property.ontologyURI!=''}" id="classVar2"
+											rendered="#{item.label=='Class'}" style="width: 80px;"
+											autocomplete="off" value="Var: #{item.classVariable}" />
+
+										<h:outputText label="varName"
+											rendered="#{item.property.ontologyURI!=''}"
 											style="width: 80px;" autocomplete="off"
 											value="Var: #{item.property.classVar}" />
 
@@ -515,8 +532,7 @@ Classes
 
 						<p:panelGrid id="gridType6" columns="2"
 							columnClasses="label,value">
-							<h:outputText
-								value="Order number of the triple to remove: "
+							<h:outputText value="Order number of the triple to remove: "
 								id="tripleToRemove" />
 							<p:inputText label="tripleToRemove" style="width: 100px;"
 								id="tripleValue" autocomplete="off"
@@ -563,8 +579,7 @@ Classes
 
 						<p:panelGrid id="gridTypeNow" columns="2"
 							columnClasses="label,value">
-							<h:outputText
-								value="Variable to be binded to the current time: " />
+							<h:outputText value="Variable to be binded to the current time: " />
 							<p:inputText style="width: 100px;" autocomplete="off"
 								value="#{addNewRuleBean.cloneSelectedNode.method.value1.value}">
 							</p:inputText>
@@ -871,60 +886,139 @@ Classes
 							</p:inputText>
 						</p:panelGrid>
 					</h:panelGrid>
-					<h:panelGrid id="propertyPanel" columns="2"
-						columnClasses="label,value"
-						rendered="#{addNewRuleBean.cloneSelectedNode.type=='DATA_PROPERTY' or
-					 addNewRuleBean.cloneSelectedNode.type=='OBJECT_PROPERTY'}">
-						<h:outputText value="Variable name: " id="clonedVar"
-							rendered="#{addNewRuleBean.cloneSelectedNode.editVar}" />
-						<p:inputText label="Rule name" style="width: 300px;"
-							id="clonedVar1" autocomplete="off"
-							rendered="#{addNewRuleBean.cloneSelectedNode.editVar}"
-							value="#{addNewRuleBean.cloneSelectedNode.property.classVar}"
-							required="true">
-						</p:inputText>
-						<p:watermark for="clonedVar1"
-							value="Insert a variable name e.g ?Sol" id="watermarkVar" />
-						<!--  	<h:outputText value="Value: " id="clonedValue" required="false"
-						rendered="#{addNewRuleBean.cloneSelectedNode.editValue}" />-->
+					<!-- Class element -->
+					<h:panelGrid id="classGrid"
+						rendered="#{addNewRuleBean.cloneSelectedNode.type=='CLASS'}"
+						columns="1" columnClasses="output">
+						<p:panelGrid id="gridTypeClass" columns="2"
+							columnClasses="label,value">
 
-						<h:outputText value="Value: " id="clonedValue" required="false"
-							rendered="#{addNewRuleBean.cloneSelectedNode.editValue}" />
-						<p:inputText
-							rendered="#{addNewRuleBean.cloneSelectedNode.editValue}"
-							style="width: 300px;" id="clonedValue1" autocomplete="off"
-							value="#{addNewRuleBean.cloneSelectedNode.property.value}">
-						</p:inputText>
-						<p:watermark for="clonedValue1"
-							value="Insert a value e.g ?value or 
-					'test'"
-							id="watermarkValue" />
-						<!--  	<h:outputText value="Value: " id="clonedValue" required="false"
-						rendered="#{addNewRuleBean.cloneSelectedNode.editValue}" />-->
-						<h:outputText value="Value: " id="helpStr" required="false"
-							rendered="#{addNewRuleBean.cloneSelectedNode.method.flag}" />
-						<p:inputText
-							rendered="#{addNewRuleBean.cloneSelectedNode.method.flag}"
-							style="width: 300px;" id="helpStr1" autocomplete="off"
-							value="#{addNewRuleBean.cloneSelectedNode.method.helpString}">
-						</p:inputText>
-						<p:watermark for="helpStr1"
-							value="#{addNewRuleBean.cloneSelectedNode.method.watermarkDescription}"
-							id="watermarkValue1" />
-						<!--  	<h:outputText value="Value: " id="clonedValue" required="false"
-						rendered="#{addNewRuleBean.cloneSelectedNode.editValue}" />-->
+							<h:outputText value="Class variable name: " />
+							<p:inputText style="width: 200px;" autocomplete="off"
+								value="#{addNewRuleBean.cloneSelectedNode.classVariable}">
+							</p:inputText>
+						</p:panelGrid>
+					</h:panelGrid>
+					<h:panelGrid id="dataPropertyPanel"
+						rendered="#{addNewRuleBean.cloneSelectedNode.type=='DATA_PROPERTY'}">
+
+						<h:outputText value="This property refers to: " />
+						<h:panelGrid columns="2" cellpadding="5">
+
+							<p:selectOneRadio id="options" value="#{addNewRuleBean.option}"
+								layout="pageDirection">
+								<f:selectItem itemLabel=" a class variable" itemValue="class" />
+								<f:selectItem itemLabel=" an instance" itemValue="instance" />
+								<p:ajax update=":#{p:component('comboboxes')}" />
+							</p:selectOneRadio>
+
+
+							<h:panelGrid columns="1" cellpadding="5" id="comboboxes">
+
+								<p:selectOneMenu disabled="#{addNewRuleBean.option=='instance'}"
+									value="#{addNewRuleBean.cloneSelectedNode.property.classVar}">
+									<f:selectItems var="item" itemLabel="#{item}"
+										itemValue="#{item}"
+										value="#{addNewRuleBean.tempClassVariableList}" />
+								</p:selectOneMenu>
+
+								<p:selectOneMenu disabled="#{addNewRuleBean.option=='class'}"
+									value="#{addNewRuleBean.cloneSelectedNode.property.classVar}">
+									<f:selectItems var="item" itemLabel="#{item}"
+										itemValue="#{item}"
+										value="#{addNewRuleBean.tempClassVariableList}" />
+								</p:selectOneMenu>
+							</h:panelGrid>
+
+							<h:outputText value="Value: " />
+							<p:inputText style="width: 300px;" id="clonedValue1"
+								autocomplete="off"
+								value="#{addNewRuleBean.cloneSelectedNode.property.value}">
+							</p:inputText>
+
+						</h:panelGrid>
+
 					</h:panelGrid>
 
-					<p:commandButton action="#{addNewRuleBean.saveEditOfNode}"
-						icon="ui-icon-save" title="Save changes"
-						update=":#{p:component('pan1')},:#{p:component('pan2')},:#{p:component('selections')}"
-						value="Save" oncomplete="PF('editDialog').hide()">
-					</p:commandButton>
-					<p:commandButton action="#{addNewRuleBean.removeNode}"
-						icon="ui-icon-close" title="Remove node"
-						update=":#{p:component('pan1')},:#{p:component('pan2')}"
-						value="Delete" oncomplete="PF('editDialog').hide()">
-					</p:commandButton>
+					<h:panelGrid id="objectPropertyPanel"
+						rendered="#{addNewRuleBean.cloneSelectedNode.type=='OBJECT_PROPERTY'}">
+
+						<h:outputText value="This property refers to: " />
+						<h:panelGrid columns="2" cellpadding="5">
+
+							<p:selectOneRadio id="options3" value="#{addNewRuleBean.option}"
+								layout="pageDirection">
+								<f:selectItem itemLabel=" a class variable" itemValue="class" />
+								<f:selectItem itemLabel=" an instance" itemValue="instance" />
+								<p:ajax update=":#{p:component('comboboxes3')}" />
+							</p:selectOneRadio>
+
+
+							<h:panelGrid columns="1" cellpadding="5" id="comboboxes3">
+
+								<p:selectOneMenu disabled="#{addNewRuleBean.option=='instance'}"
+									value="#{addNewRuleBean.cloneSelectedNode.property.classVar}">
+									<f:selectItems var="item" itemLabel="#{item}"
+										itemValue="#{item}"
+										value="#{addNewRuleBean.tempClassVariableList}" />
+								</p:selectOneMenu>
+
+								<p:selectOneMenu disabled="#{addNewRuleBean.option=='class'}"
+									value="#{addNewRuleBean.cloneSelectedNode.property.classVar}">
+									<f:selectItems var="item" itemLabel="#{item}"
+										itemValue="#{item}"
+										value="#{addNewRuleBean.tempClassVariableList}" />
+								</p:selectOneMenu>
+							</h:panelGrid>
+						</h:panelGrid>
+
+						<h:outputText value="The value of this property refers to: " />
+						<h:panelGrid columns="2" cellpadding="5">
+
+							<p:selectOneRadio id="options2" value="#{addNewRuleBean.option}"
+								layout="pageDirection">
+								<f:selectItem itemLabel=" a class variable" itemValue="class" />
+								<f:selectItem itemLabel=" an instance" itemValue="instance" />
+								<p:ajax update=":#{p:component('comboboxes2')}" />
+							</p:selectOneRadio>
+
+
+							<h:panelGrid columns="1" cellpadding="5" id="comboboxes2">
+
+								<p:selectOneMenu disabled="#{addNewRuleBean.option=='instance'}"
+									value="#{addNewRuleBean.cloneSelectedNode.property.classVar}">
+									<f:selectItems var="item" itemLabel="#{item}"
+										itemValue="#{item}"
+										value="#{addNewRuleBean.tempClassVariableList}" />
+								</p:selectOneMenu>
+
+								<p:selectOneMenu disabled="#{addNewRuleBean.option=='class'}"
+									value="#{addNewRuleBean.cloneSelectedNode.property.classVar}">
+									<f:selectItems var="item" itemLabel="#{item}"
+										itemValue="#{item}"
+										value="#{addNewRuleBean.tempClassVariableList}" />
+								</p:selectOneMenu>
+							</h:panelGrid>
+						</h:panelGrid>
+					</h:panelGrid>
+
+					<h:panelGrid id="buttons" columns="3" columnClasses="label">
+
+						<p:commandButton action="#{addNewRuleBean.saveEditOfNode}"
+							icon="ui-icon-save" title="Save changes"
+							update=":#{p:component('pan1')},:#{p:component('pan2')},:#{p:component('selections')}"
+							value="Save" oncomplete="PF('editDialog').hide()">
+						</p:commandButton>
+						<p:commandButton icon="ui-icon-close" title="Cancel"
+							update=":#{p:component('pan1')},:#{p:component('pan2')}"
+							value="Cancel" oncomplete="PF('editDialog').hide()">
+						</p:commandButton>
+						<p:commandButton action="#{addNewRuleBean.removeNode}"
+							icon="ui-icon-close" title="Remove node"
+							update=":#{p:component('pan1')},:#{p:component('pan2')}"
+							value="Delete" oncomplete="PF('editDialog').hide()">
+						</p:commandButton>
+					</h:panelGrid>
 				</h:panelGrid>
 			</p:dialog>
 

@@ -181,10 +181,18 @@ public class RuleCreationUtilities {
 		String rule = "";
 		String tripleString = "";
 
-		// work on conditions
 		for (PointElement el : list) {
 
-			if (el.getType() == PointElement.Type.DATA_PROPERTY) {
+			if (el.getType() == PointElement.Type.CLASS) {
+                String className = el.getElementName();
+                String classVar = el.getClassVariable();
+                rule = rule + "(" + classVar + " rdf:type c4a:"
+						+ className + ")\n";
+                if(!declaredClassVariables.contains(classVar))
+                	declaredClassVariables.add(classVar);
+			}
+
+			else if (el.getType() == PointElement.Type.DATA_PROPERTY) {
 
 				OntologyProperty property = (DataProperty) el.getProperty();
 				String value = ((DataProperty) property).getValue();
@@ -202,8 +210,8 @@ public class RuleCreationUtilities {
 				if (classVar.contains("?"))
 					if (!declaredClassVariables.contains(classVar)
 							&& !declaredObjectVariables.contains(classVar)) {
-						rule = rule + "(" + classVar + " rdf:type c4a:"
-								+ property.getClassName() + ")\n";
+//						rule = rule + "(" + classVar + " rdf:type c4a:"
+//								+ property.getClassName() + ")\n";
 						declaredClassVariables.add(classVar);
 					}
 
@@ -239,8 +247,8 @@ public class RuleCreationUtilities {
 					if (!declaredClassVariables.contains(source)
 							&& !source.isEmpty()
 							&& !declaredObjectVariables.contains(source)) {
-						rule = rule + "(" + source + " rdf:type c4a:"
-								+ property.getClassName() + ")\n";
+//						rule = rule + "(" + source + " rdf:type c4a:"
+//								+ property.getClassName() + ")\n";
 						declaredClassVariables.add(source);
 					}
 

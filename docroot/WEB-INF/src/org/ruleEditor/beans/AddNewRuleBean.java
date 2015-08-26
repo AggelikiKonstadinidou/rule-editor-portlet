@@ -139,6 +139,8 @@ public class AddNewRuleBean {
 	private ArrayList<String> types = null;
 	private ArrayList<OntologyProperty> propertiesList = null;
 	private ArrayList<String> jenaLists = null;
+	private ArrayList<String> tempClassVariableList = null;
+	private String option = "";
 
 	public AddNewRuleBean() {
 		super();
@@ -183,6 +185,7 @@ public class AddNewRuleBean {
 		msg.setLanguage("fileName");
 		msg.setText("rule");
 		correlatedFiles.add(msg);
+		option="class";
 
 		usedVariablesForClasses = new ArrayList<String>();
 		usedVariablesForClasses.add("-");
@@ -190,6 +193,9 @@ public class AddNewRuleBean {
 		usedVariablesForValues = new ArrayList<String>();
 		usedVariablesForValues.add("-");
 
+		tempClassVariableList = new ArrayList<String>();
+		tempClassVariableList.add("-");
+		
 		types = new ArrayList<String>();
 		types.add("-");
 		types.add("string");
@@ -448,6 +454,7 @@ public class AddNewRuleBean {
 		String nodeForRemoveId = params.get("id");
 		String panel = params.get("panel");
 
+		//find the node that is going to be edited
 		if (panel.equalsIgnoreCase("conditions")) {
 			for (PointElement el : conditions) {
 				if (el.getId().equals(nodeForRemoveId)) {
@@ -465,7 +472,32 @@ public class AddNewRuleBean {
 			}
 
 		}
+		// preparations in case of PROPERTY
+		if (cloneSelectedNode.getType() == Type.DATA_PROPERTY
+				|| cloneSelectedNode.getType() == Type.OBJECT_PROPERTY) {
+			tempClassVariableList = new ArrayList<String>();
+			tempClassVariableList.add("-");
 
+			String tempClassName = cloneSelectedNode.getProperty()
+					.getClassName();
+			ArrayList<PointElement> tempList = new ArrayList<PointElement>();
+			if (panel.equalsIgnoreCase("conditions"))
+				tempList = (ArrayList<PointElement>) conditions.clone();
+			else
+				tempList = (ArrayList<PointElement>) conclusions.clone();
+
+			for (PointElement el : tempList) {
+				if (el.getType() == PointElement.Type.CLASS) {
+					if (el.getElementName().equalsIgnoreCase(tempClassName)) {
+						if (!el.getClassVariable().equals("empty"))
+							tempClassVariableList.add(el.getClassVariable());
+					}
+				}
+			}
+
+		}
+ 
+		//preparations in case of BUILTIN METHOD
 		if (cloneSelectedNode.getType() == Type.BUILTIN_METHOD) {
 			fillListsWithVariables();
 			// equal, notEqual
@@ -572,11 +604,6 @@ public class AddNewRuleBean {
 
 	public void saveEditOfNode() {
 
-		boolean value1Flag = false;
-		boolean value2Flag = false;
-		boolean value3Flag = false;
-		boolean value4Flag = false;
-
 		if (cloneSelectedNode.getType() == Type.DATA_PROPERTY) {
 
 			DataProperty property = (DataProperty) cloneSelectedNode
@@ -605,10 +632,15 @@ public class AddNewRuleBean {
 					return;
 				}
 		}
-
+		//case of PROPERTIES, CLASSES
 		// get the used variables for classes and generally for values
 		String s = cloneSelectedNode.getProperty().getClassVar();
 		String value = cloneSelectedNode.getProperty().getValue();
+		String classVar = cloneSelectedNode.getClassVariable();
+		
+		if(!usedVariablesForClasses.contains(classVar) && classVar.contains("?"))
+			usedVariablesForClasses.add(classVar);
+		
 		if (!usedVariablesForClasses.contains(s) && s.contains("?"))
 			usedVariablesForClasses.add(s);
 
@@ -619,6 +651,9 @@ public class AddNewRuleBean {
 		if (cloneSelectedNode.getType() == Type.OBJECT_PROPERTY)
 			if (!usedVariablesForClasses.contains(value) && value.contains("?"))
 				usedVariablesForClasses.add(value);
+		//----------------------------------------------------------------
+		
+		//case of BUILTIN METHOD
 
 		if (cloneSelectedNode.getType() == Type.BUILTIN_METHOD) {
 			String helpString = "";
@@ -1421,6 +1456,32 @@ public class AddNewRuleBean {
 			propertiesList.addAll(temp.get(0).getObjectProperties());
 		}
 	}
+	
+	public void createClassElement(String panelID){
+		PointElement classEl = new PointElement();
+		classEl.setElementName(this.selectedNode.getData().toString());
+		classEl.setType(Type.CLASS);
+		classEl.setLabel("Class");
+		classEl.setId(setVariableName());
+		classEl = setPosition(classEl);
+		// define the order
+		int order = -1;
+		if (panelID.equalsIgnoreCase("pan1")) {
+			order = orderConditionsCounter;
+			orderConditionsCounter++;
+		} else {
+			order = orderConclusionsCounter;
+			orderConclusionsCounter++;
+		}
+		classEl.setOrder(order);
+		Element element = new Element(classEl, String.valueOf(classEl.getX()
+				+ "em"), String.valueOf(classEl.getY() + "em"));
+		EndPoint endPointCA = Utils
+				.createRectangleEndPoint(EndPointAnchor.BOTTOM);
+		endPointCA.setSource(true);
+		element.addEndPoint(endPointCA);
+		moveToPanel(panelID, classEl, element);
+	}
 
 	public void createMethodElement(String panelID) {
 		PointElement methodEl = new PointElement();
@@ -1626,7 +1687,7 @@ public class AddNewRuleBean {
 
 		return className;
 	}
-
+	
 	public Main getMain() {
 		return main;
 	}
@@ -1877,5 +1938,22 @@ public class AddNewRuleBean {
 	public void setJenaLists(ArrayList<String> jenaLists) {
 		this.jenaLists = jenaLists;
 	}
+
+	public ArrayList<String> getTempClassVariableList() {
+		return tempClassVariableList;
+	}
+
+	public void setTempClassVariableList(ArrayList<String> tempClassVariableList) {
+		this.tempClassVariableList = tempClassVariableList;
+	}
+
+	public String getOption() {
+		return option;
+	}
+
+	public void setOption(String option) {
+		this.option = option;
+	}
+	
 
 }

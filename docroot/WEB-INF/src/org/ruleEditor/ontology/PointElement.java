@@ -18,6 +18,7 @@ public class PointElement {
 	private boolean enableEdit;
 	private int order;
 	private String label;
+	private String classVariable;
 
 	public PointElement() {
 		super();
@@ -37,8 +38,16 @@ public class PointElement {
 		this.enableEdit = false;
 		this.order = 0;
 		this.label = "";
+		this.classVariable = "empty";
 	}
 	
+	public String getClassVariable() {
+		return classVariable;
+	}
+
+	public void setClassVariable(String classVariable) {
+		this.classVariable = classVariable;
+	}
 	public String getLabel() {
 		return label;
 	}
@@ -202,6 +211,7 @@ public class PointElement {
 		el.setInstance(this.getInstance().clone());
 		el.setOrder(this.getOrder());
 		el.setLabel(this.getLabel());
+		el.setClassVariable(this.getClassVariable());
 
 		return el;
 	}
