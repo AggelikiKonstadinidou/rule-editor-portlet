@@ -571,7 +571,8 @@ public class Utils {
 		String varName = "";
 		String propertyName = "";
 		for (PointElement el : conditions) {
-			if (el.getType() != PointElement.Type.BUILTIN_METHOD)
+			if (el.getType() != PointElement.Type.BUILTIN_METHOD
+					&& el.getType() != PointElement.Type.CLASS)
 				if (el.getProperty().getClassName().isEmpty()
 						&& (!el.getProperty().getClassVar().isEmpty() || el
 								.getLabel().isEmpty())) {
@@ -627,12 +628,21 @@ public class Utils {
 		String range = "";
 
 		// declaration of a property
-		if (line.contains("rdf:type")) {
+		if (line.contains("rdf:type c4a")) {
 			splitted = line.split(" ");
 			varName = splitted[0].replace("(", "");
 			className = splitted[2].replace("c4a:", "").replace(")", "");
 			usedVariablesForClasses.put(varName, className);
-			element = null;
+			element.setId(setUniqueID());
+			element = setPosition(element);
+			element.setPanel(panel);
+			element.setClassVariable(varName);
+			element.setElementName(className);
+			element.setLabel("Class");
+			element.setType(PointElement.Type.CLASS);
+			element.setOrder(orderCounter);
+			orderCounter++;
+
 		} else if (!line.contains("rdf:type") && line.contains("c4a")
 				&& !line.contains("noValue")) {
 
@@ -1198,5 +1208,5 @@ public class Utils {
 				DefaultEdge.class);
 		return g;
 	}
-	
+
 }

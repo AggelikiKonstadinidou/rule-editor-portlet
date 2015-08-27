@@ -152,38 +152,56 @@
 
 							<f:facet name="element">
 								<p:panel id="pnl1" header="#{item.label}: #{item.elementName}">
-									<h:panelGrid columns="1" columnClasses="label"
-										id="elementGrid1">
+									<h:panelGrid columns="2">
+										<p:panelGrid columns="2" columnClasses="label,value"
+											id="elementGrid1">
 
-										<h:outputText value="Order: #{item.order}"
-											rendered="#{item.order!=0}" />
-
-										<h:outputText label="varName"
-											rendered="#{item.method.originalName!=''}"
-											style="width: 80px;" autocomplete="off"
-											value="Arguments: #{item.method.helpString}" />
-
-										<h:outputText label="varName"
-											rendered="#{item.label=='Class'}" style="width: 80px;"
-											autocomplete="off" value="Var: #{item.classVariable}" />
-
-										<h:outputText label="varName"
-											rendered="#{item.property.ontologyURI!=''}"
-											style="width: 80px;" autocomplete="off"
-											value="Var: #{item.property.classVar}" />
-
-										<h:outputText label="value" rendered="#{item.editValue}"
-											id="value" style="width: 80px;" autocomplete="off"
-											value="Value: #{item.property.value}" />
+											<h:outputLabel value="Order:" rendered="#{item.order!=0}" />
+											<h:outputText value="#{item.order}"
+												rendered="#{item.order!=0}" />
 
 
+											<h:outputLabel label="varName"
+												rendered="#{item.method.originalName!=''}"
+												style="width: 80px;" autocomplete="off" value="Arguments:" />
+											<h:outputText label="varName"
+												rendered="#{item.method.originalName!=''}"
+												style="width: 80px;" autocomplete="off"
+												value="#{item.method.helpString}" />
+
+
+											<h:outputLabel label="varName"
+												rendered="#{item.label=='Class'}" style="width: 80px;"
+												autocomplete="off" value="Var:" />
+											<h:outputText label="varName"
+												rendered="#{item.label=='Class'}" style="width: 80px;"
+												autocomplete="off" value="#{item.classVariable}" />
+
+
+											<h:outputLabel label="varName"
+												rendered="#{item.property.ontologyURI!=''}"
+												style="width: 80px;" autocomplete="off" value="Var:" />
+											<h:outputText label="varName"
+												rendered="#{item.property.ontologyURI!=''}"
+												style="width: 80px;" autocomplete="off"
+												value="#{item.property.classVar}" />
+
+
+											<h:outputLabel label="value" rendered="#{item.editValue}"
+												style="width: 80px;" autocomplete="off" value="Value:" />
+											<h:outputText label="value" rendered="#{item.editValue}"
+												style="width: 80px;" autocomplete="off"
+												value="#{item.property.value}" />
+
+
+										</p:panelGrid>
+										<p:commandButton oncomplete="PF('editDialog').show()"
+											actionListener="#{addNewRuleBean.editNode}" title="View"
+											icon="ui-icon-search" update=":#{p:component('editDialog')}">
+											<f:param name="id" value="#{item.id}" />
+											<f:param name="panel" value="conditions" />
+										</p:commandButton>
 									</h:panelGrid>
-									<p:commandButton oncomplete="PF('editDialog').show()"
-										actionListener="#{addNewRuleBean.editNode}" title="View"
-										icon="ui-icon-search" update=":#{p:component('editDialog')}">
-										<f:param name="id" value="#{item.id}" />
-										<f:param name="panel" value="conditions" />
-									</p:commandButton>
 								</p:panel>
 							</f:facet>
 
@@ -204,29 +222,49 @@
 							var="item">
 							<f:facet name="element">
 								<p:panel id="pnl2" header="#{item.label}: #{item.elementName}">
-									<h:panelGrid columns="1" columnClasses="label"
-										id="elementGrid2">
+									<h:panelGrid columns="2">
+										<p:panelGrid columns="2" columnClasses="label,value"
+											id="elementGrid2">
 
-										<h:outputText value="Order: #{item.order}"
-											rendered="#{item.order!=0}" />
+											<h:outputLabel value="Order:" rendered="#{item.order!=0}" />
+											<h:outputText value="#{item.order}"
+												rendered="#{item.order!=0}" />
 
-										<h:outputText label="varName"
-											rendered="#{item.method.originalName!=''}"
-											style="width: 80px;" autocomplete="off"
-											value="Arguments: #{item.method.helpString}" />
 
-										<h:outputText label="varName"
-											rendered="#{item.label=='Class'}" style="width: 80px;"
-											autocomplete="off" value="Var: #{item.classVariable}" />
+											<h:outputLabel label="varName"
+												rendered="#{item.method.originalName!=''}"
+												style="width: 80px;" autocomplete="off" value="Arguments:" />
+											<h:outputText label="varName"
+												rendered="#{item.method.originalName!=''}"
+												style="width: 80px;" autocomplete="off"
+												value="#{item.method.helpString}" />
 
-										<h:outputText label="varName"
-											rendered="#{item.property.ontologyURI!=''}"
-											style="width: 80px;" autocomplete="off"
-											value="Var: #{item.property.classVar}" />
 
-										<h:outputText label="value" rendered="#{item.editValue}"
-											id="value2" style="width: 80px;" autocomplete="off"
-											value="Value: #{item.property.value}" />
+											<h:outputLabel label="varName"
+												rendered="#{item.label=='Class'}" style="width: 80px;"
+												autocomplete="off" value="Var:" />
+											<h:outputText label="varName"
+												rendered="#{item.label=='Class'}" style="width: 80px;"
+												autocomplete="off" value="#{item.classVariable}" />
+
+
+											<h:outputLabel label="varName"
+												rendered="#{item.property.ontologyURI!=''}"
+												style="width: 80px;" autocomplete="off" value="Var:" />
+											<h:outputText label="varName"
+												rendered="#{item.property.ontologyURI!=''}"
+												style="width: 80px;" autocomplete="off"
+												value="#{item.property.classVar}" />
+
+
+											<h:outputLabel label="value" rendered="#{item.editValue}"
+												style="width: 80px;" autocomplete="off" value="Value:" />
+											<h:outputText label="value" rendered="#{item.editValue}"
+												style="width: 80px;" autocomplete="off"
+												value="#{item.property.value}" />
+
+
+										</p:panelGrid>
 										<p:commandButton oncomplete="PF('editDialog').show()"
 											actionListener="#{addNewRuleBean.editNode}" title="View"
 											icon="ui-icon-search" update=":#{p:component('editDialog')}">
@@ -903,7 +941,7 @@ Classes
 						rendered="#{addNewRuleBean.cloneSelectedNode.type=='DATA_PROPERTY'}">
 
 						<h:outputText value="This property refers to: " />
-						<h:panelGrid columns="2" cellpadding="5">
+						<p:panelGrid columns="2" cellpadding="5">
 
 							<p:selectOneRadio id="options" value="#{addNewRuleBean.option}"
 								layout="pageDirection">
@@ -919,14 +957,14 @@ Classes
 									value="#{addNewRuleBean.cloneSelectedNode.property.classVar}">
 									<f:selectItems var="item" itemLabel="#{item}"
 										itemValue="#{item}"
-										value="#{addNewRuleBean.tempClassVariableList}" />
+										value="#{addNewRuleBean.tempVariablesForClasses}" />
 								</p:selectOneMenu>
 
 								<p:selectOneMenu disabled="#{addNewRuleBean.option=='class'}"
 									value="#{addNewRuleBean.cloneSelectedNode.property.classVar}">
 									<f:selectItems var="item" itemLabel="#{item}"
 										itemValue="#{item}"
-										value="#{addNewRuleBean.tempClassVariableList}" />
+										value="#{addNewRuleBean.tempInstancesForClasses}" />
 								</p:selectOneMenu>
 							</h:panelGrid>
 
@@ -936,7 +974,7 @@ Classes
 								value="#{addNewRuleBean.cloneSelectedNode.property.value}">
 							</p:inputText>
 
-						</h:panelGrid>
+						</p:panelGrid>
 
 					</h:panelGrid>
 
@@ -944,7 +982,7 @@ Classes
 						rendered="#{addNewRuleBean.cloneSelectedNode.type=='OBJECT_PROPERTY'}">
 
 						<h:outputText value="This property refers to: " />
-						<h:panelGrid columns="2" cellpadding="5">
+						<p:panelGrid columns="2" cellpadding="5">
 
 							<p:selectOneRadio id="options3" value="#{addNewRuleBean.option}"
 								layout="pageDirection">
@@ -954,26 +992,26 @@ Classes
 							</p:selectOneRadio>
 
 
-							<h:panelGrid columns="1" cellpadding="5" id="comboboxes3">
+							<p:panelGrid columns="1" cellpadding="5" id="comboboxes3">
 
 								<p:selectOneMenu disabled="#{addNewRuleBean.option=='instance'}"
 									value="#{addNewRuleBean.cloneSelectedNode.property.classVar}">
 									<f:selectItems var="item" itemLabel="#{item}"
 										itemValue="#{item}"
-										value="#{addNewRuleBean.tempClassVariableList}" />
+										value="#{addNewRuleBean.tempVariablesForClasses}" />
 								</p:selectOneMenu>
 
 								<p:selectOneMenu disabled="#{addNewRuleBean.option=='class'}"
 									value="#{addNewRuleBean.cloneSelectedNode.property.classVar}">
 									<f:selectItems var="item" itemLabel="#{item}"
 										itemValue="#{item}"
-										value="#{addNewRuleBean.tempClassVariableList}" />
+										value="#{addNewRuleBean.tempInstancesForClasses}" />
 								</p:selectOneMenu>
-							</h:panelGrid>
-						</h:panelGrid>
+							</p:panelGrid>
+						</p:panelGrid>
 
 						<h:outputText value="The value of this property refers to: " />
-						<h:panelGrid columns="2" cellpadding="5">
+						<p:panelGrid columns="2" cellpadding="5">
 
 							<p:selectOneRadio id="options2" value="#{addNewRuleBean.option}"
 								layout="pageDirection">
@@ -983,25 +1021,31 @@ Classes
 							</p:selectOneRadio>
 
 
-							<h:panelGrid columns="1" cellpadding="5" id="comboboxes2">
+							<p:panelGrid columns="1" cellpadding="5" id="comboboxes2">
 
 								<p:selectOneMenu disabled="#{addNewRuleBean.option=='instance'}"
-									value="#{addNewRuleBean.cloneSelectedNode.property.classVar}">
+									value="#{addNewRuleBean.cloneSelectedNode.property.value}">
 									<f:selectItems var="item" itemLabel="#{item}"
 										itemValue="#{item}"
-										value="#{addNewRuleBean.tempClassVariableList}" />
+										value="#{addNewRuleBean.tempVariablesForValues}" />
 								</p:selectOneMenu>
 
 								<p:selectOneMenu disabled="#{addNewRuleBean.option=='class'}"
-									value="#{addNewRuleBean.cloneSelectedNode.property.classVar}">
+									value="#{addNewRuleBean.cloneSelectedNode.property.value}">
 									<f:selectItems var="item" itemLabel="#{item}"
 										itemValue="#{item}"
-										value="#{addNewRuleBean.tempClassVariableList}" />
+										value="#{addNewRuleBean.tempInstancesForValues}" />
 								</p:selectOneMenu>
-							</h:panelGrid>
-						</h:panelGrid>
+							</p:panelGrid>
+						</p:panelGrid>
 					</h:panelGrid>
 
+					<p:panelGrid columns="2" columnClasses="label">
+						<h:outputText value="Order: " />
+						<p:inputText style="width: 150px;" autocomplete="off"
+							value="#{addNewRuleBean.cloneSelectedNode.order}">
+						</p:inputText>
+					</p:panelGrid>
 					<h:panelGrid id="buttons" columns="3" columnClasses="label">
 
 						<p:commandButton action="#{addNewRuleBean.saveEditOfNode}"

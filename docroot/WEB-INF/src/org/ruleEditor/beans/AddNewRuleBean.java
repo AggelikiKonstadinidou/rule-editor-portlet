@@ -110,6 +110,7 @@ public class AddNewRuleBean {
 	private PointElement originalTargetElement = null;
 	private PointElement clonedOriginalTargetElement = null;
 	private PointElement cloneSelectedNode = null;
+	private PointElement selectedNodeOriginal = null;
 	private BuiltinMethod selectedMethod = null;
 	private boolean flag = false;// false : for simple rule
 									// true : for feedback rule
@@ -139,7 +140,10 @@ public class AddNewRuleBean {
 	private ArrayList<String> types = null;
 	private ArrayList<OntologyProperty> propertiesList = null;
 	private ArrayList<String> jenaLists = null;
-	private ArrayList<String> tempClassVariableList = null;
+	private ArrayList<String> tempVariablesForClasses = null;
+	private ArrayList<String> tempVariablesForValues = null;
+	private ArrayList<String> tempInstancesForClasses = null;
+	private ArrayList<String> tempInstancesForValues = null;
 	private String option = "";
 
 	public AddNewRuleBean() {
@@ -185,7 +189,7 @@ public class AddNewRuleBean {
 		msg.setLanguage("fileName");
 		msg.setText("rule");
 		correlatedFiles.add(msg);
-		option="class";
+		option = "class";
 
 		usedVariablesForClasses = new ArrayList<String>();
 		usedVariablesForClasses.add("-");
@@ -193,9 +197,18 @@ public class AddNewRuleBean {
 		usedVariablesForValues = new ArrayList<String>();
 		usedVariablesForValues.add("-");
 
-		tempClassVariableList = new ArrayList<String>();
-		tempClassVariableList.add("-");
-		
+		tempVariablesForClasses = new ArrayList<String>();
+		tempVariablesForClasses.add("-");
+
+		tempVariablesForValues = new ArrayList<String>();
+		tempVariablesForValues.add("-");
+
+		tempInstancesForClasses = new ArrayList<String>();
+		tempInstancesForClasses.add("-");
+
+		tempInstancesForValues = new ArrayList<String>();
+		tempInstancesForValues.add("-");
+
 		types = new ArrayList<String>();
 		types.add("-");
 		types.add("string");
@@ -258,6 +271,9 @@ public class AddNewRuleBean {
 
 		// fill graphs with point elements from conditions and conclusions
 		// of the new rule
+		// Initialization of graphs
+		conditionsGraph = Utils.createGraph();
+		conclusionsGraph = Utils.createGraph();
 		fillGraphsWithPointElements();
 
 		counter = 0;
@@ -318,7 +334,17 @@ public class AddNewRuleBean {
 		// create the diagram models with the point elements
 		for (PointElement el : list) {
 
-			if (el.getType() == Type.DATA_PROPERTY
+			if (el.getType() == Type.CLASS) {
+				element = new Element(el, String.valueOf(el.getX() + "em"),
+						String.valueOf(el.getY() + "em"));
+
+				endPointCA = Utils
+						.createRectangleEndPoint(EndPointAnchor.BOTTOM);
+				endPointCA.setTarget(true);
+				element.addEndPoint(endPointCA);
+			}
+
+			else if (el.getType() == Type.DATA_PROPERTY
 					|| el.getType() == Type.OBJECT_PROPERTY) {
 
 				element = new Element(el, String.valueOf(el.getX() + "em"),
@@ -454,11 +480,12 @@ public class AddNewRuleBean {
 		String nodeForRemoveId = params.get("id");
 		String panel = params.get("panel");
 
-		//find the node that is going to be edited
+		// find the node that is going to be edited
 		if (panel.equalsIgnoreCase("conditions")) {
 			for (PointElement el : conditions) {
 				if (el.getId().equals(nodeForRemoveId)) {
 					cloneSelectedNode = el.clone();
+					selectedNodeOriginal = el.clone();
 					break;
 				}
 			}
@@ -467,6 +494,7 @@ public class AddNewRuleBean {
 			for (PointElement el : conclusions) {
 				if (el.getId().equals(nodeForRemoveId)) {
 					cloneSelectedNode = el.clone();
+					selectedNodeOriginal = el.clone();
 					break;
 				}
 			}
@@ -475,8 +503,14 @@ public class AddNewRuleBean {
 		// preparations in case of PROPERTY
 		if (cloneSelectedNode.getType() == Type.DATA_PROPERTY
 				|| cloneSelectedNode.getType() == Type.OBJECT_PROPERTY) {
-			tempClassVariableList = new ArrayList<String>();
-			tempClassVariableList.add("-");
+			tempVariablesForClasses = new ArrayList<String>();
+			tempInstancesForClasses = new ArrayList<String>();
+			tempVariablesForValues = new ArrayList<String>();
+			tempInstancesForValues = new ArrayList<String>();
+			tempVariablesForClasses.add("-");
+			tempInstancesForClasses.add("-");
+			tempVariablesForValues.add("-");
+			tempInstancesForValues.add("-");
 
 			String tempClassName = cloneSelectedNode.getProperty()
 					.getClassName();
@@ -490,14 +524,47 @@ public class AddNewRuleBean {
 				if (el.getType() == PointElement.Type.CLASS) {
 					if (el.getElementName().equalsIgnoreCase(tempClassName)) {
 						if (!el.getClassVariable().equals("empty"))
-							tempClassVariableList.add(el.getClassVariable());
+							tempVariablesForClasses.add(el.getClassVariable());
+					}
+				}
+
+				if (el.getType() == PointElement.Type.INSTANCE) {
+					if (el.getInstance().getClassName()
+							.equalsIgnoreCase(tempClassName)) {
+						tempInstancesForClasses.add(el.getInstance()
+								.getInstanceName());
+					}
+				}
+			}
+
+			// more specifically in case of OBJECT_PROPERTY
+			if (cloneSelectedNode.getType() == Type.OBJECT_PROPERTY) {
+				OntologyProperty objProp = (ObjectProperty) cloneSelectedNode
+						.getProperty();
+				String classRange = ((ObjectProperty) objProp)
+						.getRangeOfClasses().get(0);
+				for (PointElement el : tempList) {
+					if (el.getType() == PointElement.Type.CLASS) {
+						if (el.getElementName().equalsIgnoreCase(classRange)) {
+							if (!el.getClassVariable().equals("empty"))
+								tempVariablesForValues.add(el
+										.getClassVariable());
+						}
+					}
+
+					if (el.getType() == PointElement.Type.INSTANCE) {
+						if (el.getInstance().getClassName()
+								.equalsIgnoreCase(classRange)) {
+							tempInstancesForValues.add(el.getInstance()
+									.getInstanceName());
+						}
 					}
 				}
 			}
 
 		}
- 
-		//preparations in case of BUILTIN METHOD
+
+		// preparations in case of BUILTIN METHOD
 		if (cloneSelectedNode.getType() == Type.BUILTIN_METHOD) {
 			fillListsWithVariables();
 			// equal, notEqual
@@ -604,43 +671,16 @@ public class AddNewRuleBean {
 
 	public void saveEditOfNode() {
 
-		if (cloneSelectedNode.getType() == Type.DATA_PROPERTY) {
-
-			DataProperty property = (DataProperty) cloneSelectedNode
-					.getProperty();
-			if (property.getValue().trim().equals("")) {
-				FacesContext.getCurrentInstance().addMessage(
-						"msgs",
-						new FacesMessage(FacesMessage.SEVERITY_ERROR,
-								"Please provide a value for the property", ""));
-
-				return;
-			}
-
-			if (property.getDataRange().equalsIgnoreCase("boolean"))
-				if (!property.getValue().trim().equals("true")
-						&& !property.getValue().trim().equals("false")) {
-					FacesContext
-							.getCurrentInstance()
-							.addMessage(
-									"msgs",
-									new FacesMessage(
-											FacesMessage.SEVERITY_ERROR,
-											"Please provide a boolean value for the property",
-											""));
-
-					return;
-				}
-		}
-		//case of PROPERTIES, CLASSES
+		// case of PROPERTIES, CLASSES
 		// get the used variables for classes and generally for values
 		String s = cloneSelectedNode.getProperty().getClassVar();
 		String value = cloneSelectedNode.getProperty().getValue();
 		String classVar = cloneSelectedNode.getClassVariable();
-		
-		if(!usedVariablesForClasses.contains(classVar) && classVar.contains("?"))
+
+		if (!usedVariablesForClasses.contains(classVar)
+				&& classVar.contains("?"))
 			usedVariablesForClasses.add(classVar);
-		
+
 		if (!usedVariablesForClasses.contains(s) && s.contains("?"))
 			usedVariablesForClasses.add(s);
 
@@ -651,9 +691,9 @@ public class AddNewRuleBean {
 		if (cloneSelectedNode.getType() == Type.OBJECT_PROPERTY)
 			if (!usedVariablesForClasses.contains(value) && value.contains("?"))
 				usedVariablesForClasses.add(value);
-		//----------------------------------------------------------------
-		
-		//case of BUILTIN METHOD
+		// ----------------------------------------------------------------
+
+		// case of BUILTIN METHOD
 
 		if (cloneSelectedNode.getType() == Type.BUILTIN_METHOD) {
 			String helpString = "";
@@ -788,27 +828,57 @@ public class AddNewRuleBean {
 		}
 
 		// update the variable of a class in all connections
-		int pos = -1;
-		if (cloneSelectedNode.getType() == Type.CLASS)
-			for (PointElement el : clonedList) {
-				if (el.getType() == Type.DATA_PROPERTY
-						|| el.getType() == Type.OBJECT_PROPERTY) {
-					for (PointElement connEl : el.getConnections()) {
-						if (connEl.getId().equalsIgnoreCase(
-								cloneSelectedNode.getId())) {
-							pos = el.getConnections().indexOf(connEl);
-							break;
+		if (cloneSelectedNode.getType() == Type.CLASS) {
+			String oldName = selectedNodeOriginal.getClassVariable();
+			String newName = cloneSelectedNode.getClassVariable();
+
+			if (!newName.equals("empty") && !oldName.equals("empty")) {
+				// if the class variable of the CLASS node has been edited,
+				// update the properties
+				// that have already used it
+				if (!newName.equals(oldName)) {
+					for (PointElement el : clonedList) {
+						if (el.getType() == Type.DATA_PROPERTY) {
+							if (el.getProperty().getClassVar().equals(oldName))
+								el.getProperty().setClassVar(newName);
+
+						} else if (el.getType() == Type.OBJECT_PROPERTY) {
+
+							if (el.getProperty().getClassVar().equals(oldName))
+								el.getProperty().setClassVar(newName);
+							if (el.getProperty().getValue().equals(oldName))
+								el.getProperty().setValue(newName);
+
+						} else if (el.getType() == Type.BUILTIN_METHOD) {
+
+							// TODO select the builtins that take
+							// as parameter a class variable
 						}
 					}
-
-					if (pos != -1) {
-						el.getConnections().remove(pos);
-						el.getConnections().add(pos, cloneSelectedNode);
-					}
-
-					pos = -1;
 				}
 			}
+		}
+		// int pos = -1;
+		// if (cloneSelectedNode.getType() == Type.CLASS)
+		// for (PointElement el : clonedList) {
+		// if (el.getType() == Type.DATA_PROPERTY
+		// || el.getType() == Type.OBJECT_PROPERTY) {
+		// for (PointElement connEl : el.getConnections()) {
+		// if (connEl.getId().equalsIgnoreCase(
+		// cloneSelectedNode.getId())) {
+		// pos = el.getConnections().indexOf(connEl);
+		// break;
+		// }
+		// }
+		//
+		// if (pos != -1) {
+		// el.getConnections().remove(pos);
+		// el.getConnections().add(pos, cloneSelectedNode);
+		// }
+		//
+		// pos = -1;
+		// }
+		// }
 
 		// update the corresponding list
 		if (cloneSelectedNode.getPanel().equals("conditions"))
@@ -1456,8 +1526,8 @@ public class AddNewRuleBean {
 			propertiesList.addAll(temp.get(0).getObjectProperties());
 		}
 	}
-	
-	public void createClassElement(String panelID){
+
+	public void createClassElement(String panelID) {
 		PointElement classEl = new PointElement();
 		classEl.setElementName(this.selectedNode.getData().toString());
 		classEl.setType(Type.CLASS);
@@ -1687,7 +1757,7 @@ public class AddNewRuleBean {
 
 		return className;
 	}
-	
+
 	public Main getMain() {
 		return main;
 	}
@@ -1939,14 +2009,6 @@ public class AddNewRuleBean {
 		this.jenaLists = jenaLists;
 	}
 
-	public ArrayList<String> getTempClassVariableList() {
-		return tempClassVariableList;
-	}
-
-	public void setTempClassVariableList(ArrayList<String> tempClassVariableList) {
-		this.tempClassVariableList = tempClassVariableList;
-	}
-
 	public String getOption() {
 		return option;
 	}
@@ -1954,6 +2016,41 @@ public class AddNewRuleBean {
 	public void setOption(String option) {
 		this.option = option;
 	}
-	
+
+	public ArrayList<String> getTempVariablesForClasses() {
+		return tempVariablesForClasses;
+	}
+
+	public void setTempVariablesForClasses(
+			ArrayList<String> tempVariablesForClasses) {
+		this.tempVariablesForClasses = tempVariablesForClasses;
+	}
+
+	public ArrayList<String> getTempVariablesForValues() {
+		return tempVariablesForValues;
+	}
+
+	public void setTempVariablesForValues(
+			ArrayList<String> tempVariablesForValues) {
+		this.tempVariablesForValues = tempVariablesForValues;
+	}
+
+	public ArrayList<String> getTempInstancesForClasses() {
+		return tempInstancesForClasses;
+	}
+
+	public void setTempInstancesForClasses(
+			ArrayList<String> tempInstancesForClasses) {
+		this.tempInstancesForClasses = tempInstancesForClasses;
+	}
+
+	public ArrayList<String> getTempInstancesForValues() {
+		return tempInstancesForValues;
+	}
+
+	public void setTempInstancesForValues(
+			ArrayList<String> tempInstancesForValues) {
+		this.tempInstancesForValues = tempInstancesForValues;
+	}
 
 }
