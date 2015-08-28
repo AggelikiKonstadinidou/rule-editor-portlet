@@ -88,6 +88,13 @@ public class Utils {
 	private static HashMap<String, String> usedVariables; // values and objects
 	private static int orderCounter;
 
+	public static void initializeLists() {
+		conditions = new ArrayList<PointElement>();
+		conclusions = new ArrayList<PointElement>();
+		usedVariablesForClasses = new HashMap<String, String>();
+		usedVariables = new HashMap<String, String>();
+	}
+
 	public static EndPoint createDotEndPoint(EndPointAnchor anchor) {
 		DotEndPoint endPoint = new DotEndPoint(anchor);
 		endPoint.setScope("panel");
@@ -587,9 +594,8 @@ public class Utils {
 
 					if (property instanceof DataProperty) {
 						DataProperty dataProp = (DataProperty) property.clone();
-						// value = splitted[2].replace(")", "");
-						// dataProp.setValue(value);
-						// dataProp.setClassVar(varName);
+						dataProp.setClassVar(varName);
+						dataProp.setValue(el.getProperty().getValue());
 						el.setType(PointElement.Type.DATA_PROPERTY);
 						el.setProperty(dataProp);
 						// usedVariables.put(value, value);
@@ -597,14 +603,13 @@ public class Utils {
 						el.setType(PointElement.Type.OBJECT_PROPERTY);
 						ObjectProperty objProp = (ObjectProperty) property
 								.clone();
-						// String objectValue = splitted[2].replace(")", "");
-						//
-						// if (objectValue.contains("?"))
-						// usedVariablesForClasses.put(objectValue,
-						// objProp.getRangeOfClasses()
-						// .get(0));
-						//
-						// objProp.setValue(objectValue);
+
+						if (el.getProperty().getValue().contains("?"))
+							usedVariablesForClasses.put(el.getProperty()
+									.getValue(), objProp.getRangeOfClasses()
+									.get(0));
+						
+						objProp.setValue(el.getProperty().getValue());
 						objProp.setClassVar(varName);
 
 						// TODO: case of instance
@@ -696,6 +701,7 @@ public class Utils {
 			// the case where the declaration of the class
 			// follows the declaration of the property
 			if (className.isEmpty()) {
+				element.setType(PointElement.Type.DATA_PROPERTY);
 				element.getProperty().setClassVar(varName);
 				// case of e.g. noValue(?config c4a:solPreferred)
 				if (splitted.length > 2)
@@ -1018,12 +1024,19 @@ public class Utils {
 		String feedbackClass = "";
 		String feedbackScope = "";
 		String feedbackID = "";
+		int counter = 0;
+		boolean flag = true;
 
 		while ((line = reader.readLine()) != null) {
+			if (line.contains("//") && !line.contains("//registry.gpii.net"))
+				flag = false;
+
 			if (!line.equalsIgnoreCase(prefix_c4a)
-					&& !line.equalsIgnoreCase(prefix_rdfs)
-					&& !line.contains("//") && !line.isEmpty())
+					&& !line.equalsIgnoreCase(prefix_rdfs) && !line.isEmpty()
+					&& flag)
 				out.append(line.trim() + "\n");
+
+			flag = true;
 		}
 
 		String stringFile = out.toString().trim();
@@ -1061,10 +1074,11 @@ public class Utils {
 			} else
 				ruleType = RuleType.CONFLICT;
 
-			rule = new Rule(name, body, ruleType);
+			rule = new Rule(name, body, ruleType, counter);
 			rule.setFeedbackClass(feedbackClass);
 			rule.setFeedbackScope(feedbackScope);
 			rule.setFeedbackID(feedbackID);
+			counter++;
 
 			list.add(rule);
 		}

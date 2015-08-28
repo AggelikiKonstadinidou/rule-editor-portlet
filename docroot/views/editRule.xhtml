@@ -199,12 +199,6 @@
 											<f:param name="panel" value="conditions" />
 										</p:commandButton>
 									</h:panelGrid>
-									<p:commandButton oncomplete="PF('editDialog').show()"
-										actionListener="#{addNewRuleBean.editNode}" title="View"
-										icon="ui-icon-search" update=":#{p:component('editDialog')}">
-										<f:param name="id" value="#{item.id}" />
-										<f:param name="panel" value="conditions" />
-									</p:commandButton>
 								</p:panel>
 							</f:facet>
 

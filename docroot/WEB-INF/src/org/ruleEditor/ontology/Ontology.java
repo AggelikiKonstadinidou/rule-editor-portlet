@@ -439,7 +439,7 @@ public class Ontology implements Serializable {
 
 	public List<String> setDataPropertiesToClass(String name) {
 
-		List<String> solutions = Arrays.asList("name", "id", "class");
+		List<String> solutions = Arrays.asList("name", "id");
 		// properties from ontology
 		// Arrays.asList("hasSolutionName", "id",
 		// "hasSolutionDescription", "hasSolutionVersion",
@@ -447,7 +447,7 @@ public class Ontology implements Serializable {
 		// "hasCapabilitiesTransformations", "hasContraints");
 		List<String> installedSolution = Arrays.asList("name", "id");
 		List<String> preference = Arrays.asList("id", "name", "type", "value");
-		List<String> metadata = Arrays.asList("value", "messageType", "scope");
+		List<String> metadata = Arrays.asList("value", "messageType", "scope","type","refersTo");
 		List<String> setting = Arrays.asList("name", "id", "value");
 		List<String> inferredConfiguration = Arrays.asList("id", "name");
 		List<String> configuration = Arrays.asList("id", "name", "isActive",
@@ -509,7 +509,7 @@ public class Ontology implements Serializable {
 	}
 
 	public List<String> setObjectPropertiesToClass(String name) {
-		List<String> solutions = Arrays.asList("settings_Settings");// runsOnDevice_Devices,runsOnPlatform_Platforms
+		List<String> solutions = Arrays.asList("settings_Settings","class_AssistiveTechnology");// runsOnDevice_Devices,runsOnPlatform_Platforms
 		List<String> setting = Arrays.asList("refersTo_?"); // TODO refers to
 		List<String> metadata = new ArrayList<String>();
 		List<String> conflict = Arrays.asList("refersTo_Configuration");// hasResolution_?,
@@ -533,7 +533,7 @@ public class Ontology implements Serializable {
 																			// se
 																			// installedSolution
 				"settings_Setting", "hasConflict_Conflict");
-		List<String> preference = Arrays.asList("settings_Setting");
+		List<String> preference = Arrays.asList("setting_Setting");
 
 		if (name.equalsIgnoreCase("Solutions"))
 			return solutions;

@@ -184,12 +184,12 @@ public class RuleCreationUtilities {
 		for (PointElement el : list) {
 
 			if (el.getType() == PointElement.Type.CLASS) {
-                String className = el.getElementName();
-                String classVar = el.getClassVariable();
-                rule = rule + "(" + classVar + " rdf:type c4a:"
-						+ className + ")\n";
-                if(!declaredClassVariables.contains(classVar))
-                	declaredClassVariables.add(classVar);
+				String className = el.getElementName();
+				String classVar = el.getClassVariable();
+				rule = rule + "(" + classVar + " rdf:type c4a:" + className
+						+ ")\n";
+				if (!declaredClassVariables.contains(classVar))
+					declaredClassVariables.add(classVar);
 			}
 
 			else if (el.getType() == PointElement.Type.DATA_PROPERTY) {
@@ -210,8 +210,8 @@ public class RuleCreationUtilities {
 				if (classVar.contains("?"))
 					if (!declaredClassVariables.contains(classVar)
 							&& !declaredObjectVariables.contains(classVar)) {
-//						rule = rule + "(" + classVar + " rdf:type c4a:"
-//								+ property.getClassName() + ")\n";
+						// rule = rule + "(" + classVar + " rdf:type c4a:"
+						// + property.getClassName() + ")\n";
 						declaredClassVariables.add(classVar);
 					}
 
@@ -247,8 +247,8 @@ public class RuleCreationUtilities {
 					if (!declaredClassVariables.contains(source)
 							&& !source.isEmpty()
 							&& !declaredObjectVariables.contains(source)) {
-//						rule = rule + "(" + source + " rdf:type c4a:"
-//								+ property.getClassName() + ")\n";
+						// rule = rule + "(" + source + " rdf:type c4a:"
+						// + property.getClassName() + ")\n";
 						declaredClassVariables.add(source);
 					}
 
@@ -269,7 +269,7 @@ public class RuleCreationUtilities {
 				if (categoryOfMethods_7.contains(el.getMethod()
 						.getOriginalName())) {
 					s = el.getMethod().getHelpString();
-					el.getMethod().setHelpString("\"" + s + "\"");
+					el.getMethod().setHelpString(s);
 				}
 
 				// case of makeInstance method, find the order number of the
@@ -291,16 +291,21 @@ public class RuleCreationUtilities {
 					// TODO create the triple
 					tripleString = getTripleFromElement(triple);
 					rule = rule.replace(tripleString, "");
+					tripleString = tripleString.replace(" \"\"", "");
 				}
 
 				if (!categoryOfMethods_6.contains(el.getMethod()
 						.getOriginalName()))
 					rule = rule + el.getMethod().getOriginalName() + "("
-							+ el.getMethod().getHelpString() + ")\n";
-				else
+							+ el.getMethod().getHelpString() + ")";
+				else {
+					tripleString = tripleString.replace("(", "")
+							.replace(")", "").replace("\n", "");
 					rule = rule + el.getMethod().getOriginalName() + "("
-							+ tripleString.replace("(", "").replace(")", "")
-							+ ")\n";
+							+ tripleString + ")";
+				}
+
+				rule = rule + "\n";
 
 			}
 

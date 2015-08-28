@@ -4,12 +4,13 @@ public class Rule {
 
 	private String name;
 	private String body;
+	private int uniqueID;
 	private RuleType ruleType;
 	private String feedbackClass;
 	private String feedbackScope;
 	private String feedbackID;
 	
-	public Rule(String name, String body, RuleType ruleType) {
+	public Rule(String name, String body, RuleType ruleType,int uniqueID) {
 		super();
 		this.name = name;
 		this.body = body;
@@ -17,6 +18,15 @@ public class Rule {
 		this.feedbackClass ="";
 		this.feedbackScope ="";
 		this.feedbackID = "";
+		this.uniqueID = uniqueID;
+	}
+	
+	public int getUniqueID() {
+		return uniqueID;
+	}
+
+	public void setUniqueID(int uniqueID) {
+		this.uniqueID = uniqueID;
 	}
 
 	public String getName() {

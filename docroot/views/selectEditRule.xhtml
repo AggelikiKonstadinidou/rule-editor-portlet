@@ -23,7 +23,7 @@
 				</p:fileUpload>
 
 				<p:dataTable id="rulesList" var="rule"
-					value="#{editRuleStep1Bean.rulesList}" rowKey="#{rule.name}"
+					value="#{editRuleStep1Bean.rulesList}" rowKey="#{rule.uniqueID}"
 					selectionMode="single"
 					selection="#{editRuleStep1Bean.selectedRule}" scrollable="true"
 					scrollHeight="300">

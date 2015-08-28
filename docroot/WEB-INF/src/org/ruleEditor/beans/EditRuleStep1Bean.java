@@ -47,7 +47,7 @@ public class EditRuleStep1Bean {
 		fileStream = null;
 		counter = 0;
 		rulesList = new ArrayList<Rule>();
-		selectedRule = new Rule("", "", null);
+		selectedRule = new Rule("", "", null, -1);
 	}
 
 	public void onFileUpload(FileUploadEvent event) throws IOException {
@@ -65,13 +65,14 @@ public class EditRuleStep1Bean {
 	}
 
 	public void reload() {
-		this.selectedRule = new Rule("", "", null);;
+		this.selectedRule = new Rule("", "", null, -1);
 		this.formCompleted = true;
 	}
 
 	public void submitOption() throws IOException {
 
 		if (counter == 0) {
+			Utils.initializeLists();
 			List<List<PointElement>> list = Utils.convertRuleToDiagram(
 					selectedRule, main.getAllClasses(), main.getMethods());
 			conditions = (ArrayList<PointElement>) list.get(0);
@@ -88,8 +89,8 @@ public class EditRuleStep1Bean {
 				.getApplication().evaluateExpressionGet(context,
 						"#{addNewRuleBean}", AddNewRuleBean.class);
 
-		//get the lists with the variables for the rule that is
-		//going to be edited
+		// get the lists with the variables for the rule that is
+		// going to be edited
 		addNewRuleBean.setUsedVariablesForClasses(Utils
 				.getUsedVariablesForClassesList());
 		addNewRuleBean.setUsedVariablesForValues(Utils
@@ -99,7 +100,7 @@ public class EditRuleStep1Bean {
 		if (rule.contains("message"))
 			flag = true;
 
-		//make initializations
+		// make initializations
 		addNewRuleBean.editRule(flag, conditions, conclusions, selectedRule,
 				rulesList);
 
