@@ -45,8 +45,11 @@ public class Ontology implements Serializable {
 			"Metadata", "Setting", "InstalledSolution",
 			"InferredConfiguration", "Configuration", "Conflict",
 			"OperatingSystem", "Solutions", "AccessibilitySolution",
-			"AccessibilitySetting", "AssistiveTechnology",
-			"Settings");
+			"AccessibilitySetting", "AssistiveTechnology", "Settings",
+			"SolutionConflict", "PreferenceSubstituteSet", "Transformation",
+			"Range", "PreferenceSubstitute", "Recommendation", "Message",
+			"Tutorial", "MetadataScope", "MultiUserPreferenceConflict",
+			"ContextInference", "Service", "ServiceSetting");
 
 	public void loadOntology() {
 
@@ -445,17 +448,26 @@ public class Ontology implements Serializable {
 		// "hasSolutionDescription", "hasSolutionVersion",
 		// "hasStartCommand", "hasStopCommand", "hasCapabilities",
 		// "hasCapabilitiesTransformations", "hasContraints");
+		List<String> serviceSetting  = Arrays.asList("serviceName","priority");
+		List<String> service = Arrays.asList("id","priority");
+		List<String> contextInference = Arrays.asList("id","condition","affects");
+		List<String> multiUserPreferenceConflict = Arrays.asList("id","affects","resolution");
+		List<String> metadataScope = Arrays.asList("id","name","addition");
+		List<String> tutorial = Arrays.asList("language","link");
+		List<String> preferenceSubstituteSet = Arrays.asList("id","scope");
+		List<String> solutionConflict = Arrays.asList("refersTo");
 		List<String> installedSolution = Arrays.asList("name", "id");
-		List<String> preference = Arrays.asList("id", "name", "type", "value");
-		List<String> metadata = Arrays.asList("value", "messageType", "scope","type","refersTo");
-		List<String> setting = Arrays.asList("name", "id", "value");
+		List<String> preference = Arrays.asList("id", "name", "type", "value","status");
+		List<String> metadata = Arrays.asList("value", "messageType", "type","refersTo"
+				,"fromServiceName","fromVariableName","toServiceName","toVariableName");
+		List<String> setting = Arrays.asList("name", "id", "value","type","default");
 		List<String> inferredConfiguration = Arrays.asList("id", "name");
 		List<String> configuration = Arrays.asList("id", "name", "isActive",
 				"solPreferred");
 		List<String> conflict = Arrays.asList("name", "class", "activated",
-				"deactivated");// id
+				"deactivated","affects");// id
 		List<String> conflictResolution = Arrays.asList("id", "name");
-		List<String> preferenceSet = Arrays.asList("id", "name");
+		List<String> preferenceSet = Arrays.asList("id", "name","user","prefList","hasCondition");
 
 		List<String> operatingSystem = Arrays.asList("name", "version");
 		List<String> environment = Arrays.asList("hasEnvironmentName");
@@ -468,11 +480,39 @@ public class Ontology implements Serializable {
 		// assistiveTechnology
 		// as the three of them have tha same property name
 		List<String> accessibilitySolution = Arrays.asList("name");
-		
+		List<String> assistiveTechnology = Arrays.asList("name","ranking","refersTo");
+		List<String> range = Arrays.asList("min","max");
+		List<String> recommendation = Arrays.asList("id","value");
+		List<String> preferenceSubstitute = Arrays.asList("rating");
+		List<String> message = Arrays.asList("id","messageType","language","text","learnMore");
 		
 
 		if (name.equalsIgnoreCase("Solutions"))
 			return solutions;
+		else if(name.equalsIgnoreCase("serviceSetting"))
+			return serviceSetting;
+		else if(name.equalsIgnoreCase("service"))
+			return service;
+		else if(name.equalsIgnoreCase("contextInference"))
+			return contextInference;
+		else if(name.equalsIgnoreCase("multiUserPreferenceConflict"))
+			return multiUserPreferenceConflict;
+		else if(name.equalsIgnoreCase("MetadataScope"))
+			return metadataScope;
+		else if(name.equalsIgnoreCase("Tutorial"))
+			return tutorial;
+		else if(name.equalsIgnoreCase("Message"))
+			return message;
+		else if(name.equalsIgnoreCase("PreferenceSubstitute"))
+			return preferenceSubstitute;
+		else if(name.equalsIgnoreCase("recommendation"))
+			return recommendation;
+		else if(name.equalsIgnoreCase("range"))
+			return range;
+		else if(name.equalsIgnoreCase("preferenceSubstituteSet"))
+			return preferenceSubstituteSet;
+		else if(name.equalsIgnoreCase("solutionConflict"))
+			return solutionConflict;
 		else if (name.equalsIgnoreCase("InstalledSolution"))
 			return installedSolution;
 		else if (name.equalsIgnoreCase("Preference"))
@@ -500,18 +540,20 @@ public class Ontology implements Serializable {
 		else if (name.equalsIgnoreCase("PreferenceSet"))
 			return preferenceSet;
 		else if (name.equalsIgnoreCase("accessibilitySolution")
-				|| name.equalsIgnoreCase("accessibilitySetting")
-				|| name.equalsIgnoreCase("assistiveTechnology"))
+				|| name.equalsIgnoreCase("accessibilitySetting"))
 			return accessibilitySolution;
+		else if(name.equalsIgnoreCase("assistiveTechnology"))
+			return assistiveTechnology;
 		else
 			return new ArrayList<String>();
 
 	}
 
 	public List<String> setObjectPropertiesToClass(String name) {
-		List<String> solutions = Arrays.asList("settings_Settings","class_AssistiveTechnology");// runsOnDevice_Devices,runsOnPlatform_Platforms
+		List<String> solutions = Arrays.asList("settings_Settings","class_AssistiveTechnology",
+				"tutorial_Tutorial");// runsOnDevice_Devices,runsOnPlatform_Platforms
 		List<String> setting = Arrays.asList("refersTo_?"); // TODO refers to
-		List<String> metadata = new ArrayList<String>();
+		List<String> metadata = Arrays.asList("messages_Message","scope_MetadataScope");
 		List<String> conflict = Arrays.asList("refersTo_Configuration");// hasResolution_?,
 																	// TODO
 																	// refersTo
@@ -532,11 +574,33 @@ public class Ontology implements Serializable {
 																			// refersTo
 																			// se
 																			// installedSolution
-				"settings_Setting", "hasConflict_Conflict");
+				"settings_Setting", "hasConflict_Conflict","refersTo_Recommendation");
 		List<String> preference = Arrays.asList("setting_Setting");
+		List<String> preferenceSubstituteSet = Arrays.asList("transform_Transformation");
+		List<String> Transformation = Arrays.asList("valueRange_Range","subsitute_Substitute");
+		List<String> PreferenceSubstitute = Arrays.asList("recommend_Recommendation");
+		List<String> recommendation = Arrays.asList("refersTo_PreferenceSubstituteSet",
+				"refersTo_PreferenceSubstitute");
+		List<String> message = Arrays.asList("messages_Message");
+		List<String> service = Arrays.asList("settings_Setting");
+		List<String> serviceSetting = Arrays.asList("serviceInput_Setting");
 
 		if (name.equalsIgnoreCase("Solutions"))
 			return solutions;
+		else if(name.equalsIgnoreCase("serviceSetting"))
+			return serviceSetting;
+		else if(name.equalsIgnoreCase("Service"))
+			return service;
+		else if (name.equalsIgnoreCase("message"))
+			return message;
+		else if (name.equalsIgnoreCase("recommendation"))
+			return recommendation;
+		else if(name.equalsIgnoreCase("PreferenceSubstitute"))
+			return PreferenceSubstitute;
+		else if(name.equalsIgnoreCase("transformation"))
+			return Transformation;
+		else if(name.equalsIgnoreCase("preferenceSubstituteSet"))
+			return preferenceSubstituteSet;
 		else if (name.equalsIgnoreCase("Setting"))
 			return setting;
 		else if (name.equalsIgnoreCase("Conflict"))
