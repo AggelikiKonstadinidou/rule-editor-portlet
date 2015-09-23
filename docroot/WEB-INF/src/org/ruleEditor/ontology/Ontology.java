@@ -7,10 +7,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
-
 import javax.faces.context.FacesContext;
 import javax.servlet.ServletContext;
-
 import org.ruleEditor.ontology.OntologyProperty.DataProperty;
 import org.ruleEditor.ontology.OntologyProperty.ObjectProperty;
 import org.ruleEditor.utils.Utils;
@@ -45,7 +43,7 @@ public class Ontology implements Serializable {
 			"Metadata", "Setting", "InstalledSolution",
 			"InferredConfiguration", "Configuration", "Conflict",
 			"OperatingSystem", "Solutions", "AccessibilitySolution",
-			"AccessibilitySetting", "AssistiveTechnology", "Settings",
+			"AccessibilitySetting", "AssistiveTechnology",
 			"SolutionConflict", "PreferenceSubstituteSet", "Transformation",
 			"Range", "PreferenceSubstitute", "Recommendation", "Message",
 			"Tutorial", "MetadataScope", "MultiUserPreferenceConflict",
@@ -344,7 +342,7 @@ public class Ontology implements Serializable {
 
 		ArrayList<DataProperty> dataProperties = new ArrayList<DataProperty>();
 		ArrayList<ObjectProperty> objectProperties = new ArrayList<ObjectProperty>();
-//		ArrayList<Instance> tempInstances = new ArrayList<Instance>();
+		ArrayList<Instance> tempInstances = new ArrayList<Instance>();
 
 		String className = myClass.getClassName();
 
@@ -352,23 +350,27 @@ public class Ontology implements Serializable {
 		List<String> objectPropertiesNames = setObjectPropertiesToClass(motherClassName);
 
 		OntClass cl = ontologyModel.getOntClass(NS + myClass.getClassName());
+		ArrayList<IndividualImpl> instances = (ArrayList<IndividualImpl>) cl
+				.listInstances(true).toList();
 
-		// get instances
-//		for (IndividualImpl in : instances) {
-//			String categoryName = in.getOntClass().toString().split("#")[1];
-//			if (categoryName.equalsIgnoreCase(className)) {
-//				String instanceName = in.getURI().replace(NS, "");
-//				if (instanceName.contains("_"))
-//					instanceName = instanceName.split("_")[0];
-//				
-//				//TODO load the id for every instance
-//				Instance inst = new Instance();
-//				inst.setClassName(className);
-//				inst.setInstanceName(Utils.splitCamelCase(instanceName));
-//				inst.setId(in.getURI());
-//				tempInstances.add(inst);
-//			}
-//		}
+		if (!motherClassName.equalsIgnoreCase("Settings")
+				&& motherClassName.equalsIgnoreCase("Service")
+				&& !motherClassName.equalsIgnoreCase("Solutions")
+				&& !myClass.getClassName().equalsIgnoreCase("settings"))
+			for (int i = 0; i < instances.size(); i++) {
+				IndividualImpl tmpInstance = instances.get(i);
+				String instanceName = tmpInstance.getURI().replace(NS, "");
+				if (instanceName.contains("_"))
+					instanceName = instanceName.split("_")[0];
+
+				Instance inst = new Instance();
+				inst.setClassName(className);
+				inst.setInstanceName(Utils.splitCamelCase(instanceName));
+				inst.setId(tmpInstance.getURI());
+				tempInstances.add(inst);
+
+			}
+
 
 		// prepare properties
 		// data properties
@@ -402,7 +404,7 @@ public class Ontology implements Serializable {
 
 		myClass.setDataProperties(dataProperties);
 		myClass.setObjectProperties(objectProperties);
-//		myClass.setInstances(tempInstances);
+		myClass.setInstances(tempInstances);
 	}
 
 	public List<IndividualImpl> getAllIndividualsForClass(String className) {

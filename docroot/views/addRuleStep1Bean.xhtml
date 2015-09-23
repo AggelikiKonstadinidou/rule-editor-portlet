@@ -17,14 +17,16 @@
 			<br />
 			<br />
 
-				<p:selectOneRadio id="options" value="#{addRuleStep1Bean.selectedOption}"
-					layout="pageDirection">
+				<p:selectOneRadio id="options"
+					value="#{addRuleStep1Bean.selectedOption}" layout="pageDirection">
 					<f:selectItem itemLabel=" will resolve a conflict situation."
 						itemValue="/views/addConflictResolRule.xhtml?javax.portlet.faces.PortletMode=view&amp;javax.portlet.faces.WindowState=normal" />
 					<f:selectItem itemLabel=" will send a message to the user."
 						itemValue="/views/addFeedbackRule.xhtml?javax.portlet.faces.PortletMode=view&amp;javax.portlet.faces.WindowState=normal" />
-					<!--  <f:selectItem itemLabel=" both options." itemValue="both options" /> -->
-					<p:ajax listener="#{addRuleStep1Bean.handleChange}" update=":#{p:component('nextBut')}" />
+					<f:selectItem itemLabel=" has no specific scope."
+						itemValue="/views/addGeneralRule.xhtml?javax.portlet.faces.PortletMode=view&amp;javax.portlet.faces.WindowState=normal" />
+					<p:ajax listener="#{addRuleStep1Bean.handleChange}"
+						update=":#{p:component('nextBut')}" />
 				</p:selectOneRadio>
 
 

@@ -8,6 +8,7 @@ import java.util.List;
 import javax.faces.application.FacesMessage;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.SessionScoped;
+import javax.faces.context.ExternalContext;
 import javax.faces.context.FacesContext;
 
 import org.primefaces.event.FileUploadEvent;
@@ -37,6 +38,7 @@ public class AddMessageBean {
 	private String ruleName = "";       //true if the bean is called for a feedback rule
     private String oldFileName = "";
     private String newFileName = "";
+    private String previousStep = "";
 	 
 	public AddMessageBean() {
 		super();
@@ -49,7 +51,7 @@ public class AddMessageBean {
 
 	}
 
-	public void init(boolean flag) {
+	public void init(boolean flag, String step) {
 		isFeedback = flag;
 		jsonString = "";
 		feedbackClass = "";
@@ -63,6 +65,13 @@ public class AddMessageBean {
 		messages = new ArrayList<Message>();
 		messages.add(emptyMessage);
 		messageForRemove = new Message();
+		previousStep = step;
+	}
+	
+	public void moveToPreviousStep() throws IOException{
+		ExternalContext externalContext = FacesContext.getCurrentInstance()
+				.getExternalContext();
+		externalContext.redirect(previousStep);
 	}
 	
 	public void onFileUpload(FileUploadEvent event) throws IOException {
@@ -216,6 +225,14 @@ public class AddMessageBean {
 
 	public void setNewFileName(String newFileName) {
 		this.newFileName = newFileName;
+	}
+
+	public String getPreviousStep() {
+		return previousStep;
+	}
+
+	public void setPreviousStep(String previousStep) {
+		this.previousStep = previousStep;
 	}
 	
 

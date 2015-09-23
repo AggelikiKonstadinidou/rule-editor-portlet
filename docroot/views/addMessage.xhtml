@@ -92,8 +92,7 @@
 				</p:panel>
 
 
-				<p:commandButton actionListener="#{addRuleStep1Bean.init}"
-					action="/views/addRuleStep1Bean.xhtml?javax.portlet.faces.PortletMode=view&amp;javax.portlet.faces.WindowState=normal"
+				<p:commandButton actionListener="#{addMessageBean.moveToPreviousStep}"
 					title="Go to previous step of the creation of the rule" id="prevBut" ajax="false"
 					value="Previous step">
 				</p:commandButton>

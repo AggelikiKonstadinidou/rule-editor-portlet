@@ -16,7 +16,7 @@
 
 				<br />
 
-				<p:fileUpload style="width: 600px;" mode="advanced" label="Select a file"
+				<p:fileUpload style="width: 600px;" mode="advanced" label="Select rule file (e.g.testData\rules\example.rules)"
 					value="#{editRuleStep1Bean.fileName}" auto="true"
 					fileUploadListener="#{editRuleStep1Bean.onFileUpload}"
 					allowTypes="/(\.|\/)(rules)$/" update=":#{p:component('rulesList')}">

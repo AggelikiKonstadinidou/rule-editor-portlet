@@ -22,22 +22,24 @@
 						id="newRuleName" autocomplete="off"
 						value="#{addNewRuleBean.ruleName}">
 					</p:inputText>
-				</h:panelGrid>
-				<p:fileUpload style="width: 600px;" mode="advanced"
-					label="Select an existing rule file"
-					value="#{addNewRuleBean.oldFileName}" auto="true"
-					fileUploadListener="#{addNewRuleBean.uploadFileForSaveAs}"
-					allowTypes="/(\.|\/)(rules)$/">
-				</p:fileUpload>
-				<h:panelGrid columns="2" columnClasses="label,value"
-					styleClass="grid">
-					<h:outputText value="Or create a new file " id="FileName"
+					<h:outputText value="Upload an existing file or create a new file " id="FileName"
 						required="false" />
-					<p:inputText label="File Name" style="width: 300px;"
-						id="newFileName" autocomplete="off"
-						value="#{addNewRuleBean.newFileName}">
-					</p:inputText>
+					<h:panelGrid columns="2" columnClasses="label,value"
+						styleClass="grid">
+						<p:fileUpload style="width: 500px;" mode="advanced"
+							label="Existing rule file (e.g.testData\rules\example.rules)"
+							value="#{addNewRuleBean.oldFileName}" auto="true"
+							fileUploadListener="#{addNewRuleBean.uploadFileForSaveAs}"
+							allowTypes="/(\.|\/)(rules)$/">
+						</p:fileUpload>
 
+
+						<p:inputText label="File Name" style="width: 300px;"
+							id="newFileName" autocomplete="off"
+							value="#{addNewRuleBean.newFileName}">
+						</p:inputText>
+
+					</h:panelGrid>
 				</h:panelGrid>
 				<p:commandButton value="Previous Step" id="previousStep"
 					actionListener="#{addNewRuleBean.goToPreviousStep}" ajax="false" />

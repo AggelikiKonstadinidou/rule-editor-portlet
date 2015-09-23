@@ -20,7 +20,7 @@
 					style="margin-bottom:20px">
 					<h:panelGrid columns="2" id="grid1">
 						<p:fileUpload style="width: 600px;" mode="advanced"
-							label="Select configuration file of RBMM"
+							label="Select configuration file of RBMM (e.g. webapp\WEB-INF\config.properties)"
 							value="#{configurateOrderBean.propertiesFileName}" auto="true"
 							multiple="true"
 							fileUploadListener="#{configurateOrderBean.onPropertiesFileUpload}"
@@ -50,7 +50,7 @@
 					style="margin-bottom:20px">
 					<h:panelGrid columns="2" id="grid2">
 						<p:fileUpload style="width: 600px;" mode="advanced"
-							label="Select a rule file"
+							label="Select a rule file (e.g.testData\rules\example.rules)"
 							value="#{configurateOrderBean.propertiesFileName}" auto="true"
 							multiple="true"
 							fileUploadListener="#{configurateOrderBean.onRuleFileUpload}"
@@ -74,6 +74,22 @@
 					actionListener="#{configurateOrderBean.exportRuleFile}"
 					title="Save and export the changes that were made in the configuation file" />
 				</p:panel>
+
+				<div align="right">
+					<p:commandButton
+						action="/views/configurationStep1.xhtml?javax.portlet.faces.PortletMode=view&amp;javax.portlet.faces.WindowState=normal"
+						title="Go to the previous step" id="previousStep"
+						style="align: right"
+						ajax="false" 
+						value="Previous step">
+					</p:commandButton>
+					<p:commandButton
+						action="/views/initialMenu.xhtml?javax.portlet.faces.PortletMode=view&amp;javax.portlet.faces.WindowState=normal"
+						title="Go to initial menu" id="prevBut" style="align: right"
+						ajax="false" value="Initial menu">
+					</p:commandButton>
+
+				</div>
 
 			</p:panel>
 		</h:form>

@@ -14,25 +14,24 @@
 			<br />
 			<br />
 			<p:commandButton id="addNewRule"
-			    actionListener="#{addRuleStep1Bean.init}"
+				actionListener="#{addRuleStep1Bean.init}"
 				action="/views/addRuleStep1Bean.xhtml?javax.portlet.faces.PortletMode=view&amp;javax.portlet.faces.WindowState=normal"
 				ajax="false" value="Add new rule"
-				title="Add a new conflict/resolution or feedback rule">
+				title="Create a new rule for the Rule-based Matchmaker, using the knowledge base (classes,properties) that are used by the Rule-based Matchmaker. Each rule consists of an optional name, a list of body terms (conditions) and a list of head terms(conclusions). A rule can be categorized according to the situation that refers to in general rules, conflict/resolution rules and feedback rules. A newly created rule can be saved and exported in a new or an uploaded existing rule file.">
 			</p:commandButton>
 			<br />
 			<br />
-			<p:commandButton id="edit"
-			    actionListener="#{editRuleStep1Bean.init}"
+			<p:commandButton id="edit" actionListener="#{editRuleStep1Bean.init}"
 				action="/views/selectEditRule.xhtml?javax.portlet.faces.PortletMode=view&amp;javax.portlet.faces.WindowState=normal"
 				ajax="false" value="Edit an existing rule"
-				title="Edit an already existing rule">
+				title="Edit an already existing rule, by modifying a rule according to your needs. The user can upload any rule file, select the preferred rule, make modifications and finally save and export the rule in a new or in an uploaded existing rule file.">
 			</p:commandButton>
 			<br />
 			<br />
 			<p:commandButton id="configuration" value="Configurations"
 				actionListener="#{configurationStep1Bean.init}" ajax="false"
 				action="/views/configurationStep1.xhtml?javax.portlet.faces.PortletMode=view&amp;javax.portlet.faces.WindowState=normal"
-				title="Configurations">
+				title="Configurate the operation of the Rule-based matchmaker. A user can either change the order of execution of a set of rules by uploading the corresponding config.properties file or change the order of execution of rules within a specific set of rules by uploading the corresponding rule set and the export the altered file. Also, the user can configurate core knowledge sets of the Rule-based Matchmaker by uploading and editing the corresponding jsonld files.">
 			</p:commandButton>
 
 		</h:form>

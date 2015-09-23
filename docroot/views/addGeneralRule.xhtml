@@ -11,7 +11,7 @@
 		<h:form id="form" enctype="multipart/form-data">
 			<p:panel id="informationPanel">
 				<f:facet name="header">
-					<h:outputText value="Step2: Create a conflict/resolution Rule" />
+					<h:outputText value="Step2: Create a Rule" />
 				</f:facet>
 
 				<h:panelGrid columns="2" id="grid1">
@@ -1076,7 +1076,7 @@ Classes
 				position="center,center">
 				<h:panelGrid columns="2" columnClasses="label,value"
 					styleClass="grid">
-					<p:commandButton actionListener="#{addMessageBean.init(false,'/views/addConflictResolRule.xhtml?javax.portlet.faces.PortletMode=view&amp;javax.portlet.faces.WindowState=normal')}"
+					<p:commandButton actionListener="#{addMessageBean.init(false,'/views/addGeneralRule.xhtml?javax.portlet.faces.PortletMode=view&amp;javax.portlet.faces.WindowState=normal')}"
 						icon="ui-icon-save" title="Move to next step to add a message"
 						ajax="false"
 						action="/views/addMessage.xhtml?javax.portlet.faces.PortletMode=view&amp;javax.portlet.faces.WindowState=normal"
@@ -1084,7 +1084,7 @@ Classes
 					</p:commandButton>
 					<p:commandButton icon="ui-icon-close" ajax="false"
 						title="Save the rule withount adding a message" value="No"
-						actionListener="#{addNewRuleBean.getPreviousStep('/views/addConflictResolRule.xhtml?javax.portlet.faces.PortletMode=view&amp;javax.portlet.faces.WindowState=normal')}"
+						actionListener="#{addNewRuleBean.getPreviousStep('/views/addGeneralRule.xhtml?javax.portlet.faces.PortletMode=view&amp;javax.portlet.faces.WindowState=normal')}"
 						action="/views/saveRule.xhtml?javax.portlet.faces.PortletMode=view&amp;javax.portlet.faces.WindowState=normal">
 					</p:commandButton>
 				</h:panelGrid>

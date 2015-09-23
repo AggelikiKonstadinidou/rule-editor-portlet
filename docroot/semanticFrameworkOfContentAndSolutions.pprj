@@ -1,4 +1,4 @@
-; Thu Jul 16 08:43:18 GMT 2015
+; Wed Sep 23 08:45:53 GMT 2015
 ; 
 ;+ (version "3.4.4")
 ;+ (build "Build 579")
@@ -6,11 +6,11 @@
 ([BROWSER_SLOT_NAMES] of  Property_List
 
 	(properties
-		[semanticFrameworkOfContentAndSolutions_ProjectKB_Class66]
-		[semanticFrameworkOfContentAndSolutions_ProjectKB_Class67]
-		[semanticFrameworkOfContentAndSolutions_ProjectKB_Class68]
-		[semanticFrameworkOfContentAndSolutions_ProjectKB_Class69]
-		[semanticFrameworkOfContentAndSolutions_ProjectKB_Class70]))
+		[semanticFrameworkOfContentAndSolutions_ProjectKB_Class254]
+		[semanticFrameworkOfContentAndSolutions_ProjectKB_Class255]
+		[semanticFrameworkOfContentAndSolutions_ProjectKB_Class256]
+		[semanticFrameworkOfContentAndSolutions_ProjectKB_Class257]
+		[semanticFrameworkOfContentAndSolutions_ProjectKB_Class258]))
 
 ([CLSES_TAB] of  Widget
 
@@ -5603,13 +5603,241 @@
 ([semanticFrameworkOfContentAndSolutions_ProjectKB_Class10] of  Property_List
 )
 
+([semanticFrameworkOfContentAndSolutions_ProjectKB_Class101] of  Widget
+
+	(is_hidden FALSE)
+	(name "http://www.cloud4all.eu/SemanticFrameworkForContentAndSolutions.owl#cat1Settings")
+	(property_list [semanticFrameworkOfContentAndSolutions_ProjectKB_Class104])
+	(widget_class_name "edu.stanford.smi.protegex.owl.ui.widget.OWLFormWidget"))
+
+([semanticFrameworkOfContentAndSolutions_ProjectKB_Class104] of  Property_List
+
+	(properties
+		[semanticFrameworkOfContentAndSolutions_ProjectKB_Class105]
+		[semanticFrameworkOfContentAndSolutions_ProjectKB_Class108]
+		[semanticFrameworkOfContentAndSolutions_ProjectKB_Class111]
+		[semanticFrameworkOfContentAndSolutions_ProjectKB_Class114]
+		[semanticFrameworkOfContentAndSolutions_ProjectKB_Class116]
+		[semanticFrameworkOfContentAndSolutions_ProjectKB_Class118]
+		[semanticFrameworkOfContentAndSolutions_ProjectKB_Class120]
+		[semanticFrameworkOfContentAndSolutions_ProjectKB_Class122]
+		[semanticFrameworkOfContentAndSolutions_ProjectKB_Class124]
+		[semanticFrameworkOfContentAndSolutions_ProjectKB_Class126]
+		[semanticFrameworkOfContentAndSolutions_ProjectKB_Class128]
+		[semanticFrameworkOfContentAndSolutions_ProjectKB_Class130]
+		[semanticFrameworkOfContentAndSolutions_ProjectKB_Class132]
+		[semanticFrameworkOfContentAndSolutions_ProjectKB_Class134]
+		[semanticFrameworkOfContentAndSolutions_ProjectKB_Class136]
+		[semanticFrameworkOfContentAndSolutions_ProjectKB_Class138]
+		[semanticFrameworkOfContentAndSolutions_ProjectKB_Class140]
+		[semanticFrameworkOfContentAndSolutions_ProjectKB_Class142]
+		[semanticFrameworkOfContentAndSolutions_ProjectKB_Class144]
+		[semanticFrameworkOfContentAndSolutions_ProjectKB_Class146]
+		[semanticFrameworkOfContentAndSolutions_ProjectKB_Class148]
+		[semanticFrameworkOfContentAndSolutions_ProjectKB_Class150]
+		[semanticFrameworkOfContentAndSolutions_ProjectKB_Class152]
+		[semanticFrameworkOfContentAndSolutions_ProjectKB_Class154]
+		[semanticFrameworkOfContentAndSolutions_ProjectKB_Class156]
+		[semanticFrameworkOfContentAndSolutions_ProjectKB_Class158]
+		[semanticFrameworkOfContentAndSolutions_ProjectKB_Class160]
+		[semanticFrameworkOfContentAndSolutions_ProjectKB_Class162]
+		[semanticFrameworkOfContentAndSolutions_ProjectKB_Class164]
+		[semanticFrameworkOfContentAndSolutions_ProjectKB_Class166]
+		[semanticFrameworkOfContentAndSolutions_ProjectKB_Class168]
+		[semanticFrameworkOfContentAndSolutions_ProjectKB_Class170]
+		[semanticFrameworkOfContentAndSolutions_ProjectKB_Class172]
+		[semanticFrameworkOfContentAndSolutions_ProjectKB_Class174]
+		[semanticFrameworkOfContentAndSolutions_ProjectKB_Class176]
+		[semanticFrameworkOfContentAndSolutions_ProjectKB_Class178]
+		[semanticFrameworkOfContentAndSolutions_ProjectKB_Class180]
+		[semanticFrameworkOfContentAndSolutions_ProjectKB_Class182]
+		[semanticFrameworkOfContentAndSolutions_ProjectKB_Class184]
+		[semanticFrameworkOfContentAndSolutions_ProjectKB_Class186]
+		[semanticFrameworkOfContentAndSolutions_ProjectKB_Class188]
+		[semanticFrameworkOfContentAndSolutions_ProjectKB_Class190]
+		[semanticFrameworkOfContentAndSolutions_ProjectKB_Class192]
+		[semanticFrameworkOfContentAndSolutions_ProjectKB_Class194]
+		[semanticFrameworkOfContentAndSolutions_ProjectKB_Class196]
+		[semanticFrameworkOfContentAndSolutions_ProjectKB_Class198]
+		[semanticFrameworkOfContentAndSolutions_ProjectKB_Class200]
+		[semanticFrameworkOfContentAndSolutions_ProjectKB_Class202]
+		[semanticFrameworkOfContentAndSolutions_ProjectKB_Class204]
+		[semanticFrameworkOfContentAndSolutions_ProjectKB_Class206]
+		[semanticFrameworkOfContentAndSolutions_ProjectKB_Class208]
+		[semanticFrameworkOfContentAndSolutions_ProjectKB_Class210]
+		[semanticFrameworkOfContentAndSolutions_ProjectKB_Class212]
+		[semanticFrameworkOfContentAndSolutions_ProjectKB_Class214]
+		[semanticFrameworkOfContentAndSolutions_ProjectKB_Class216]
+		[semanticFrameworkOfContentAndSolutions_ProjectKB_Class218]
+		[semanticFrameworkOfContentAndSolutions_ProjectKB_Class220]
+		[semanticFrameworkOfContentAndSolutions_ProjectKB_Class222]
+		[semanticFrameworkOfContentAndSolutions_ProjectKB_Class224]
+		[semanticFrameworkOfContentAndSolutions_ProjectKB_Class226]
+		[semanticFrameworkOfContentAndSolutions_ProjectKB_Class228]
+		[semanticFrameworkOfContentAndSolutions_ProjectKB_Class230]
+		[semanticFrameworkOfContentAndSolutions_ProjectKB_Class232]
+		[semanticFrameworkOfContentAndSolutions_ProjectKB_Class234]
+		[semanticFrameworkOfContentAndSolutions_ProjectKB_Class236]
+		[semanticFrameworkOfContentAndSolutions_ProjectKB_Class238]
+		[semanticFrameworkOfContentAndSolutions_ProjectKB_Class240]
+		[semanticFrameworkOfContentAndSolutions_ProjectKB_Class242]
+		[semanticFrameworkOfContentAndSolutions_ProjectKB_Class244]
+		[semanticFrameworkOfContentAndSolutions_ProjectKB_Class246]
+		[semanticFrameworkOfContentAndSolutions_ProjectKB_Class248]
+		[semanticFrameworkOfContentAndSolutions_ProjectKB_Class250]
+		[semanticFrameworkOfContentAndSolutions_ProjectKB_Class252]))
+
+([semanticFrameworkOfContentAndSolutions_ProjectKB_Class105] of  Widget
+
+	(height 0)
+	(is_hidden FALSE)
+	(label "Name")
+	(name ":NAME")
+	(property_list [semanticFrameworkOfContentAndSolutions_ProjectKB_Class106])
+	(width 0)
+	(x 0)
+	(y 0))
+
+([semanticFrameworkOfContentAndSolutions_ProjectKB_Class106] of  Property_List
+
+	(properties [semanticFrameworkOfContentAndSolutions_ProjectKB_Class107]))
+
+([semanticFrameworkOfContentAndSolutions_ProjectKB_Class107] of  Boolean
+
+	(boolean_value TRUE)
+	(name "DisabledByUser"))
+
+([semanticFrameworkOfContentAndSolutions_ProjectKB_Class108] of  Property_List
+
+	(name "layout properties")
+	(properties
+		[semanticFrameworkOfContentAndSolutions_ProjectKB_Class109]
+		[semanticFrameworkOfContentAndSolutions_ProjectKB_Class110]))
+
+([semanticFrameworkOfContentAndSolutions_ProjectKB_Class109] of  String
+
+	(name "horizontal_stretcher")
+	(string_value "<<all>>"))
+
 ([semanticFrameworkOfContentAndSolutions_ProjectKB_Class11] of  Widget
 
 	(is_hidden TRUE)
 	(property_list [semanticFrameworkOfContentAndSolutions_ProjectKB_Class12])
 	(widget_class_name "edu.stanford.smi.RemoteKBTab.WordNetTab"))
 
+([semanticFrameworkOfContentAndSolutions_ProjectKB_Class110] of  String
+
+	(name "vertical_stretcher")
+	(string_value "<<none>>"))
+
+([semanticFrameworkOfContentAndSolutions_ProjectKB_Class111] of  Widget
+
+	(height 180)
+	(is_hidden FALSE)
+	(name "http://protege.stanford.edu/plugins/owl/protege#inferredType")
+	(property_list [semanticFrameworkOfContentAndSolutions_ProjectKB_Class112])
+	(widget_class_name "edu.stanford.smi.protegex.owl.ui.widget.HeaderWidget")
+	(width 550)
+	(x 0)
+	(y 0))
+
+([semanticFrameworkOfContentAndSolutions_ProjectKB_Class112] of  Property_List
+
+	(properties [semanticFrameworkOfContentAndSolutions_ProjectKB_Class113]))
+
+([semanticFrameworkOfContentAndSolutions_ProjectKB_Class113] of  Boolean
+
+	(boolean_value FALSE)
+	(name "DisabledByUser"))
+
+([semanticFrameworkOfContentAndSolutions_ProjectKB_Class114] of  Widget
+
+	(is_hidden FALSE)
+	(name "http://www.w3.org/2002/07/owl#versionInfo")
+	(property_list [semanticFrameworkOfContentAndSolutions_ProjectKB_Class115]))
+
+([semanticFrameworkOfContentAndSolutions_ProjectKB_Class115] of  Property_List
+)
+
+([semanticFrameworkOfContentAndSolutions_ProjectKB_Class116] of  Widget
+
+	(is_hidden FALSE)
+	(name "http://www.w3.org/2000/01/rdf-schema#isDefinedBy")
+	(property_list [semanticFrameworkOfContentAndSolutions_ProjectKB_Class117]))
+
+([semanticFrameworkOfContentAndSolutions_ProjectKB_Class117] of  Property_List
+)
+
+([semanticFrameworkOfContentAndSolutions_ProjectKB_Class118] of  Widget
+
+	(is_hidden FALSE)
+	(name "http://www.w3.org/2000/01/rdf-schema#comment")
+	(property_list [semanticFrameworkOfContentAndSolutions_ProjectKB_Class119]))
+
+([semanticFrameworkOfContentAndSolutions_ProjectKB_Class119] of  Property_List
+)
+
 ([semanticFrameworkOfContentAndSolutions_ProjectKB_Class12] of  Property_List
+)
+
+([semanticFrameworkOfContentAndSolutions_ProjectKB_Class120] of  Widget
+
+	(is_hidden FALSE)
+	(name "http://www.w3.org/2000/01/rdf-schema#seeAlso")
+	(property_list [semanticFrameworkOfContentAndSolutions_ProjectKB_Class121]))
+
+([semanticFrameworkOfContentAndSolutions_ProjectKB_Class121] of  Property_List
+)
+
+([semanticFrameworkOfContentAndSolutions_ProjectKB_Class122] of  Widget
+
+	(is_hidden FALSE)
+	(name "http://www.w3.org/2000/01/rdf-schema#label")
+	(property_list [semanticFrameworkOfContentAndSolutions_ProjectKB_Class123]))
+
+([semanticFrameworkOfContentAndSolutions_ProjectKB_Class123] of  Property_List
+)
+
+([semanticFrameworkOfContentAndSolutions_ProjectKB_Class124] of  Widget
+
+	(height 120)
+	(is_hidden FALSE)
+	(name "http://www.cloud4all.eu/SemanticFrameworkForContentAndSolutions.owl#EASTIN__NumberOfOutputChannelsDevicesMessages")
+	(property_list [semanticFrameworkOfContentAndSolutions_ProjectKB_Class125])
+	(widget_class_name "edu.stanford.smi.protegex.owl.ui.widget.MultiLiteralWidget")
+	(width 200)
+	(x 0)
+	(y 1380))
+
+([semanticFrameworkOfContentAndSolutions_ProjectKB_Class125] of  Property_List
+)
+
+([semanticFrameworkOfContentAndSolutions_ProjectKB_Class126] of  Widget
+
+	(height 120)
+	(is_hidden FALSE)
+	(name "http://www.cloud4all.eu/SemanticFrameworkForContentAndSolutions.owl#EASTIN__TRating")
+	(property_list [semanticFrameworkOfContentAndSolutions_ProjectKB_Class127])
+	(widget_class_name "edu.stanford.smi.protegex.owl.ui.widget.MultiLiteralWidget")
+	(width 200)
+	(x 0)
+	(y 1620))
+
+([semanticFrameworkOfContentAndSolutions_ProjectKB_Class127] of  Property_List
+)
+
+([semanticFrameworkOfContentAndSolutions_ProjectKB_Class128] of  Widget
+
+	(height 120)
+	(is_hidden FALSE)
+	(name "http://www.cloud4all.eu/SemanticFrameworkForContentAndSolutions.owl#fontsize_8204_isMappedToRegTerm")
+	(property_list [semanticFrameworkOfContentAndSolutions_ProjectKB_Class129])
+	(widget_class_name "edu.stanford.smi.protegex.owl.ui.widget.MultiResourceWidget")
+	(width 200)
+	(x 200)
+	(y 2460))
+
+([semanticFrameworkOfContentAndSolutions_ProjectKB_Class129] of  Property_List
 )
 
 ([semanticFrameworkOfContentAndSolutions_ProjectKB_Class13] of  Widget
@@ -5618,7 +5846,147 @@
 	(property_list [semanticFrameworkOfContentAndSolutions_ProjectKB_Class14])
 	(widget_class_name "org.protege.owl.mm.ssm.ui.MappingMasterTab"))
 
+([semanticFrameworkOfContentAndSolutions_ProjectKB_Class130] of  Widget
+
+	(height 120)
+	(is_hidden FALSE)
+	(name "http://www.cloud4all.eu/SemanticFrameworkForContentAndSolutions.owl#EASTIN__Magnification")
+	(property_list [semanticFrameworkOfContentAndSolutions_ProjectKB_Class131])
+	(widget_class_name "edu.stanford.smi.protegex.owl.ui.widget.MultiLiteralWidget")
+	(width 200)
+	(x 0)
+	(y 660))
+
+([semanticFrameworkOfContentAndSolutions_ProjectKB_Class131] of  Property_List
+)
+
+([semanticFrameworkOfContentAndSolutions_ProjectKB_Class132] of  Widget
+
+	(height 120)
+	(is_hidden FALSE)
+	(name "http://www.cloud4all.eu/SemanticFrameworkForContentAndSolutions.owl#adaptingSolution")
+	(property_list [semanticFrameworkOfContentAndSolutions_ProjectKB_Class133])
+	(widget_class_name "edu.stanford.smi.protegex.owl.ui.widget.MultiResourceWidget")
+	(width 200)
+	(x 0)
+	(y 2340))
+
+([semanticFrameworkOfContentAndSolutions_ProjectKB_Class133] of  Property_List
+)
+
+([semanticFrameworkOfContentAndSolutions_ProjectKB_Class134] of  Widget
+
+	(height 120)
+	(is_hidden FALSE)
+	(name "http://www.cloud4all.eu/SemanticFrameworkForContentAndSolutions.owl#Language_6918_isMappedToRegTerm")
+	(property_list [semanticFrameworkOfContentAndSolutions_ProjectKB_Class135])
+	(widget_class_name "edu.stanford.smi.protegex.owl.ui.widget.MultiResourceWidget")
+	(width 200)
+	(x 400)
+	(y 900))
+
+([semanticFrameworkOfContentAndSolutions_ProjectKB_Class135] of  Property_List
+)
+
+([semanticFrameworkOfContentAndSolutions_ProjectKB_Class136] of  Widget
+
+	(height 120)
+	(is_hidden FALSE)
+	(name "http://www.cloud4all.eu/SemanticFrameworkForContentAndSolutions.owl#Interpretername_isMappedToRegTerm")
+	(property_list [semanticFrameworkOfContentAndSolutions_ProjectKB_Class137])
+	(widget_class_name "edu.stanford.smi.protegex.owl.ui.widget.MultiResourceWidget")
+	(width 200)
+	(x 400)
+	(y 420))
+
+([semanticFrameworkOfContentAndSolutions_ProjectKB_Class137] of  Property_List
+)
+
+([semanticFrameworkOfContentAndSolutions_ProjectKB_Class138] of  Widget
+
+	(height 120)
+	(is_hidden FALSE)
+	(name "http://www.cloud4all.eu/SemanticFrameworkForContentAndSolutions.owl#highContrastEnabled_isMappedToRegTerm")
+	(property_list [semanticFrameworkOfContentAndSolutions_ProjectKB_Class139])
+	(widget_class_name "edu.stanford.smi.protegex.owl.ui.widget.MultiResourceWidget")
+	(width 200)
+	(x 400)
+	(y 300))
+
+([semanticFrameworkOfContentAndSolutions_ProjectKB_Class139] of  Property_List
+)
+
 ([semanticFrameworkOfContentAndSolutions_ProjectKB_Class14] of  Property_List
+)
+
+([semanticFrameworkOfContentAndSolutions_ProjectKB_Class140] of  Widget
+
+	(height 120)
+	(is_hidden FALSE)
+	(name "http://www.cloud4all.eu/SemanticFrameworkForContentAndSolutions.owl#EASTIN__SoftwareLicencePolicy")
+	(property_list [semanticFrameworkOfContentAndSolutions_ProjectKB_Class141])
+	(widget_class_name "edu.stanford.smi.protegex.owl.ui.widget.MultiResourceWidget")
+	(width 200)
+	(x 200)
+	(y 1980))
+
+([semanticFrameworkOfContentAndSolutions_ProjectKB_Class141] of  Property_List
+)
+
+([semanticFrameworkOfContentAndSolutions_ProjectKB_Class142] of  Widget
+
+	(height 120)
+	(is_hidden FALSE)
+	(name "http://www.cloud4all.eu/SemanticFrameworkForContentAndSolutions.owl#EASTIN__SignalRange")
+	(property_list [semanticFrameworkOfContentAndSolutions_ProjectKB_Class143])
+	(widget_class_name "edu.stanford.smi.protegex.owl.ui.widget.MultiLiteralWidget")
+	(width 200)
+	(x 0)
+	(y 1500))
+
+([semanticFrameworkOfContentAndSolutions_ProjectKB_Class143] of  Property_List
+)
+
+([semanticFrameworkOfContentAndSolutions_ProjectKB_Class144] of  Widget
+
+	(height 120)
+	(is_hidden FALSE)
+	(name "http://www.cloud4all.eu/SemanticFrameworkForContentAndSolutions.owl#EASTIN__MaxSoundSpeechVolume")
+	(property_list [semanticFrameworkOfContentAndSolutions_ProjectKB_Class145])
+	(widget_class_name "edu.stanford.smi.protegex.owl.ui.widget.MultiLiteralWidget")
+	(width 200)
+	(x 0)
+	(y 900))
+
+([semanticFrameworkOfContentAndSolutions_ProjectKB_Class145] of  Property_List
+)
+
+([semanticFrameworkOfContentAndSolutions_ProjectKB_Class146] of  Widget
+
+	(height 120)
+	(is_hidden FALSE)
+	(name "http://www.cloud4all.eu/SemanticFrameworkForContentAndSolutions.owl#theme_isMappedToRegTerm")
+	(property_list [semanticFrameworkOfContentAndSolutions_ProjectKB_Class147])
+	(widget_class_name "edu.stanford.smi.protegex.owl.ui.widget.MultiResourceWidget")
+	(width 200)
+	(x 400)
+	(y 2220))
+
+([semanticFrameworkOfContentAndSolutions_ProjectKB_Class147] of  Property_List
+)
+
+([semanticFrameworkOfContentAndSolutions_ProjectKB_Class148] of  Widget
+
+	(height 120)
+	(is_hidden FALSE)
+	(name "http://www.cloud4all.eu/SemanticFrameworkForContentAndSolutions.owl#EASTIN__Subdivision")
+	(property_list [semanticFrameworkOfContentAndSolutions_ProjectKB_Class149])
+	(widget_class_name "edu.stanford.smi.protegex.owl.ui.widget.MultiResourceWidget")
+	(width 200)
+	(x 200)
+	(y 2220))
+
+([semanticFrameworkOfContentAndSolutions_ProjectKB_Class149] of  Property_List
 )
 
 ([semanticFrameworkOfContentAndSolutions_ProjectKB_Class15] of  Widget
@@ -5627,7 +5995,147 @@
 	(property_list [semanticFrameworkOfContentAndSolutions_ProjectKB_Class16])
 	(widget_class_name "edu.stanford.smi.protegex.changes.ChangesTab"))
 
+([semanticFrameworkOfContentAndSolutions_ProjectKB_Class150] of  Widget
+
+	(height 120)
+	(is_hidden FALSE)
+	(name "http://www.cloud4all.eu/SemanticFrameworkForContentAndSolutions.owl#allowCascading")
+	(property_list [semanticFrameworkOfContentAndSolutions_ProjectKB_Class151])
+	(widget_class_name "edu.stanford.smi.protege.widget.BooleanListWidget")
+	(width 200)
+	(x 0)
+	(y 180))
+
+([semanticFrameworkOfContentAndSolutions_ProjectKB_Class151] of  Property_List
+)
+
+([semanticFrameworkOfContentAndSolutions_ProjectKB_Class152] of  Widget
+
+	(height 120)
+	(is_hidden FALSE)
+	(name "http://www.cloud4all.eu/SemanticFrameworkForContentAndSolutions.owl#EASTIN__Width")
+	(property_list [semanticFrameworkOfContentAndSolutions_ProjectKB_Class153])
+	(widget_class_name "edu.stanford.smi.protegex.owl.ui.widget.MultiLiteralWidget")
+	(width 200)
+	(x 0)
+	(y 1860))
+
+([semanticFrameworkOfContentAndSolutions_ProjectKB_Class153] of  Property_List
+)
+
+([semanticFrameworkOfContentAndSolutions_ProjectKB_Class154] of  Widget
+
+	(height 120)
+	(is_hidden FALSE)
+	(name "http://www.cloud4all.eu/SemanticFrameworkForContentAndSolutions.owl#SignLanguage_isMappedToRegTerm")
+	(property_list [semanticFrameworkOfContentAndSolutions_ProjectKB_Class155])
+	(widget_class_name "edu.stanford.smi.protegex.owl.ui.widget.MultiResourceWidget")
+	(width 200)
+	(x 400)
+	(y 1740))
+
+([semanticFrameworkOfContentAndSolutions_ProjectKB_Class155] of  Property_List
+)
+
+([semanticFrameworkOfContentAndSolutions_ProjectKB_Class156] of  Widget
+
+	(height 120)
+	(is_hidden FALSE)
+	(name "http://www.cloud4all.eu/SemanticFrameworkForContentAndSolutions.owl#audioDescription_isMappedToRegTerm")
+	(property_list [semanticFrameworkOfContentAndSolutions_ProjectKB_Class157])
+	(widget_class_name "edu.stanford.smi.protegex.owl.ui.widget.MultiResourceWidget")
+	(width 200)
+	(x 0)
+	(y 2460))
+
+([semanticFrameworkOfContentAndSolutions_ProjectKB_Class157] of  Property_List
+)
+
+([semanticFrameworkOfContentAndSolutions_ProjectKB_Class158] of  Widget
+
+	(height 120)
+	(is_hidden FALSE)
+	(name "http://www.cloud4all.eu/SemanticFrameworkForContentAndSolutions.owl#Interpretertype_isMappedToRegTerm")
+	(property_list [semanticFrameworkOfContentAndSolutions_ProjectKB_Class159])
+	(widget_class_name "edu.stanford.smi.protegex.owl.ui.widget.MultiResourceWidget")
+	(width 200)
+	(x 400)
+	(y 540))
+
+([semanticFrameworkOfContentAndSolutions_ProjectKB_Class159] of  Property_List
+)
+
 ([semanticFrameworkOfContentAndSolutions_ProjectKB_Class16] of  Property_List
+)
+
+([semanticFrameworkOfContentAndSolutions_ProjectKB_Class160] of  Widget
+
+	(height 120)
+	(is_hidden FALSE)
+	(name "http://www.cloud4all.eu/SemanticFrameworkForContentAndSolutions.owl#EASTIN__DisplayCharacteristics")
+	(property_list [semanticFrameworkOfContentAndSolutions_ProjectKB_Class161])
+	(widget_class_name "edu.stanford.smi.protegex.owl.ui.widget.MultiResourceWidget")
+	(width 200)
+	(x 200)
+	(y 780))
+
+([semanticFrameworkOfContentAndSolutions_ProjectKB_Class161] of  Property_List
+)
+
+([semanticFrameworkOfContentAndSolutions_ProjectKB_Class162] of  Widget
+
+	(height 120)
+	(is_hidden FALSE)
+	(name "http://www.cloud4all.eu/SemanticFrameworkForContentAndSolutions.owl#EASTIN__OutputDevices")
+	(property_list [semanticFrameworkOfContentAndSolutions_ProjectKB_Class163])
+	(widget_class_name "edu.stanford.smi.protegex.owl.ui.widget.MultiResourceWidget")
+	(width 200)
+	(x 200)
+	(y 1740))
+
+([semanticFrameworkOfContentAndSolutions_ProjectKB_Class163] of  Property_List
+)
+
+([semanticFrameworkOfContentAndSolutions_ProjectKB_Class164] of  Widget
+
+	(height 120)
+	(is_hidden FALSE)
+	(name "http://www.cloud4all.eu/SemanticFrameworkForContentAndSolutions.owl#boldfont_isMappedToRegTerm")
+	(property_list [semanticFrameworkOfContentAndSolutions_ProjectKB_Class165])
+	(widget_class_name "edu.stanford.smi.protegex.owl.ui.widget.MultiResourceWidget")
+	(width 200)
+	(x 0)
+	(y 2700))
+
+([semanticFrameworkOfContentAndSolutions_ProjectKB_Class165] of  Property_List
+)
+
+([semanticFrameworkOfContentAndSolutions_ProjectKB_Class166] of  Widget
+
+	(height 120)
+	(is_hidden FALSE)
+	(name "http://www.cloud4all.eu/SemanticFrameworkForContentAndSolutions.owl#EASTIN__InputAdjustments")
+	(property_list [semanticFrameworkOfContentAndSolutions_ProjectKB_Class167])
+	(widget_class_name "edu.stanford.smi.protegex.owl.ui.widget.MultiResourceWidget")
+	(width 200)
+	(x 200)
+	(y 1020))
+
+([semanticFrameworkOfContentAndSolutions_ProjectKB_Class167] of  Property_List
+)
+
+([semanticFrameworkOfContentAndSolutions_ProjectKB_Class168] of  Widget
+
+	(height 120)
+	(is_hidden FALSE)
+	(name "http://www.cloud4all.eu/SemanticFrameworkForContentAndSolutions.owl#EASTIN__NumberOfKeys")
+	(property_list [semanticFrameworkOfContentAndSolutions_ProjectKB_Class169])
+	(widget_class_name "edu.stanford.smi.protegex.owl.ui.widget.MultiLiteralWidget")
+	(width 200)
+	(x 0)
+	(y 1260))
+
+([semanticFrameworkOfContentAndSolutions_ProjectKB_Class169] of  Property_List
 )
 
 ([semanticFrameworkOfContentAndSolutions_ProjectKB_Class17] of  Widget
@@ -5636,7 +6144,147 @@
 	(property_list [semanticFrameworkOfContentAndSolutions_ProjectKB_Class18])
 	(widget_class_name "ezpal.EZPalTab"))
 
+([semanticFrameworkOfContentAndSolutions_ProjectKB_Class170] of  Widget
+
+	(height 120)
+	(is_hidden FALSE)
+	(name "http://www.cloud4all.eu/SemanticFrameworkForContentAndSolutions.owl#EmphasizeLinks_isMappedToRegTerm")
+	(property_list [semanticFrameworkOfContentAndSolutions_ProjectKB_Class171])
+	(widget_class_name "edu.stanford.smi.protegex.owl.ui.widget.MultiResourceWidget")
+	(width 200)
+	(x 200)
+	(y 2340))
+
+([semanticFrameworkOfContentAndSolutions_ProjectKB_Class171] of  Property_List
+)
+
+([semanticFrameworkOfContentAndSolutions_ProjectKB_Class172] of  Widget
+
+	(height 120)
+	(is_hidden FALSE)
+	(name "http://www.cloud4all.eu/SemanticFrameworkForContentAndSolutions.owl#EASTIN__ActivationMethods")
+	(property_list [semanticFrameworkOfContentAndSolutions_ProjectKB_Class173])
+	(widget_class_name "edu.stanford.smi.protegex.owl.ui.widget.MultiResourceWidget")
+	(width 200)
+	(x 200)
+	(y 420))
+
+([semanticFrameworkOfContentAndSolutions_ProjectKB_Class173] of  Property_List
+)
+
+([semanticFrameworkOfContentAndSolutions_ProjectKB_Class174] of  Widget
+
+	(height 120)
+	(is_hidden FALSE)
+	(name "http://www.cloud4all.eu/SemanticFrameworkForContentAndSolutions.owl#pictogramEnabled_isMappedToRegTerm")
+	(property_list [semanticFrameworkOfContentAndSolutions_ProjectKB_Class175])
+	(widget_class_name "edu.stanford.smi.protegex.owl.ui.widget.MultiResourceWidget")
+	(width 200)
+	(x 400)
+	(y 1260))
+
+([semanticFrameworkOfContentAndSolutions_ProjectKB_Class175] of  Property_List
+)
+
+([semanticFrameworkOfContentAndSolutions_ProjectKB_Class176] of  Widget
+
+	(height 120)
+	(is_hidden FALSE)
+	(name "http://www.cloud4all.eu/SemanticFrameworkForContentAndSolutions.owl#EASTIN__Connectivity")
+	(property_list [semanticFrameworkOfContentAndSolutions_ProjectKB_Class177])
+	(widget_class_name "edu.stanford.smi.protegex.owl.ui.widget.MultiResourceWidget")
+	(width 200)
+	(x 200)
+	(y 660))
+
+([semanticFrameworkOfContentAndSolutions_ProjectKB_Class177] of  Property_List
+)
+
+([semanticFrameworkOfContentAndSolutions_ProjectKB_Class178] of  Widget
+
+	(height 120)
+	(is_hidden FALSE)
+	(name "http://www.cloud4all.eu/SemanticFrameworkForContentAndSolutions.owl#invertColours_isMappedToRegTerm")
+	(property_list [semanticFrameworkOfContentAndSolutions_ProjectKB_Class179])
+	(widget_class_name "edu.stanford.smi.protegex.owl.ui.widget.MultiResourceWidget")
+	(width 200)
+	(x 400)
+	(y 660))
+
+([semanticFrameworkOfContentAndSolutions_ProjectKB_Class179] of  Property_List
+)
+
 ([semanticFrameworkOfContentAndSolutions_ProjectKB_Class18] of  Property_List
+)
+
+([semanticFrameworkOfContentAndSolutions_ProjectKB_Class180] of  Widget
+
+	(height 120)
+	(is_hidden FALSE)
+	(name "http://www.cloud4all.eu/SemanticFrameworkForContentAndSolutions.owl#fonttype_7099_isMappedToRegTerm")
+	(property_list [semanticFrameworkOfContentAndSolutions_ProjectKB_Class181])
+	(widget_class_name "edu.stanford.smi.protegex.owl.ui.widget.MultiResourceWidget")
+	(width 200)
+	(x 200)
+	(y 2700))
+
+([semanticFrameworkOfContentAndSolutions_ProjectKB_Class181] of  Property_List
+)
+
+([semanticFrameworkOfContentAndSolutions_ProjectKB_Class182] of  Widget
+
+	(height 120)
+	(is_hidden FALSE)
+	(name "http://www.cloud4all.eu/SemanticFrameworkForContentAndSolutions.owl#BackgroundColour_isMappedToRegTerm")
+	(property_list [semanticFrameworkOfContentAndSolutions_ProjectKB_Class183])
+	(widget_class_name "edu.stanford.smi.protegex.owl.ui.widget.MultiResourceWidget")
+	(width 200)
+	(x 0)
+	(y 2580))
+
+([semanticFrameworkOfContentAndSolutions_ProjectKB_Class183] of  Property_List
+)
+
+([semanticFrameworkOfContentAndSolutions_ProjectKB_Class184] of  Widget
+
+	(height 120)
+	(is_hidden FALSE)
+	(name "http://www.cloud4all.eu/SemanticFrameworkForContentAndSolutions.owl#linespacing_isMappedToRegTerm")
+	(property_list [semanticFrameworkOfContentAndSolutions_ProjectKB_Class185])
+	(widget_class_name "edu.stanford.smi.protegex.owl.ui.widget.MultiResourceWidget")
+	(width 200)
+	(x 400)
+	(y 1020))
+
+([semanticFrameworkOfContentAndSolutions_ProjectKB_Class185] of  Property_List
+)
+
+([semanticFrameworkOfContentAndSolutions_ProjectKB_Class186] of  Widget
+
+	(height 120)
+	(is_hidden FALSE)
+	(name "http://www.cloud4all.eu/SemanticFrameworkForContentAndSolutions.owl#adaptingDevice")
+	(property_list [semanticFrameworkOfContentAndSolutions_ProjectKB_Class187])
+	(widget_class_name "edu.stanford.smi.protegex.owl.ui.widget.MultiResourceWidget")
+	(width 200)
+	(x 0)
+	(y 2100))
+
+([semanticFrameworkOfContentAndSolutions_ProjectKB_Class187] of  Property_List
+)
+
+([semanticFrameworkOfContentAndSolutions_ProjectKB_Class188] of  Widget
+
+	(height 120)
+	(is_hidden FALSE)
+	(name "http://www.cloud4all.eu/SemanticFrameworkForContentAndSolutions.owl#regularfont_isMappedToRegTerm")
+	(property_list [semanticFrameworkOfContentAndSolutions_ProjectKB_Class189])
+	(widget_class_name "edu.stanford.smi.protegex.owl.ui.widget.MultiResourceWidget")
+	(width 200)
+	(x 400)
+	(y 1500))
+
+([semanticFrameworkOfContentAndSolutions_ProjectKB_Class189] of  Property_List
 )
 
 ([semanticFrameworkOfContentAndSolutions_ProjectKB_Class19] of  Widget
@@ -5645,10 +6293,150 @@
 	(property_list [semanticFrameworkOfContentAndSolutions_ProjectKB_Class20])
 	(widget_class_name "edu.stanford.smi.protegex.fctab.FacetConstraintsTab"))
 
+([semanticFrameworkOfContentAndSolutions_ProjectKB_Class190] of  Widget
+
+	(height 120)
+	(is_hidden FALSE)
+	(name "http://www.cloud4all.eu/SemanticFrameworkForContentAndSolutions.owl#Magnificationlevel_isMappedToRegTerm")
+	(property_list [semanticFrameworkOfContentAndSolutions_ProjectKB_Class191])
+	(widget_class_name "edu.stanford.smi.protegex.owl.ui.widget.MultiResourceWidget")
+	(width 200)
+	(x 400)
+	(y 1140))
+
+([semanticFrameworkOfContentAndSolutions_ProjectKB_Class191] of  Property_List
+)
+
+([semanticFrameworkOfContentAndSolutions_ProjectKB_Class192] of  Widget
+
+	(height 120)
+	(is_hidden FALSE)
+	(name "http://www.cloud4all.eu/SemanticFrameworkForContentAndSolutions.owl#contrast_6524_isMappedToRegTerm")
+	(property_list [semanticFrameworkOfContentAndSolutions_ProjectKB_Class193])
+	(widget_class_name "edu.stanford.smi.protegex.owl.ui.widget.MultiResourceWidget")
+	(width 200)
+	(x 200)
+	(y 300))
+
+([semanticFrameworkOfContentAndSolutions_ProjectKB_Class193] of  Property_List
+)
+
+([semanticFrameworkOfContentAndSolutions_ProjectKB_Class194] of  Widget
+
+	(height 120)
+	(is_hidden FALSE)
+	(name "http://www.cloud4all.eu/SemanticFrameworkForContentAndSolutions.owl#volume_5922_isMappedToRegTerm")
+	(property_list [semanticFrameworkOfContentAndSolutions_ProjectKB_Class195])
+	(widget_class_name "edu.stanford.smi.protegex.owl.ui.widget.MultiResourceWidget")
+	(width 200)
+	(x 400)
+	(y 2460))
+
+([semanticFrameworkOfContentAndSolutions_ProjectKB_Class195] of  Property_List
+)
+
+([semanticFrameworkOfContentAndSolutions_ProjectKB_Class196] of  Widget
+
+	(height 120)
+	(is_hidden FALSE)
+	(name "http://www.cloud4all.eu/SemanticFrameworkForContentAndSolutions.owl#adaptingPlatform")
+	(property_list [semanticFrameworkOfContentAndSolutions_ProjectKB_Class197])
+	(widget_class_name "edu.stanford.smi.protegex.owl.ui.widget.MultiResourceWidget")
+	(width 200)
+	(x 0)
+	(y 2220))
+
+([semanticFrameworkOfContentAndSolutions_ProjectKB_Class197] of  Property_List
+)
+
+([semanticFrameworkOfContentAndSolutions_ProjectKB_Class198] of  Widget
+
+	(height 240)
+	(is_hidden FALSE)
+	(name "http://www.cloud4all.eu/SemanticFrameworkForContentAndSolutions.owl#Zoom_isMappedToRegTerm")
+	(property_list [semanticFrameworkOfContentAndSolutions_ProjectKB_Class199])
+	(widget_class_name "edu.stanford.smi.protegex.owl.ui.widget.MultiResourceWidget")
+	(width 200)
+	(x 400)
+	(y 2580))
+
+([semanticFrameworkOfContentAndSolutions_ProjectKB_Class199] of  Property_List
+)
+
 ([semanticFrameworkOfContentAndSolutions_ProjectKB_Class2] of  Property_List
 )
 
 ([semanticFrameworkOfContentAndSolutions_ProjectKB_Class20] of  Property_List
+)
+
+([semanticFrameworkOfContentAndSolutions_ProjectKB_Class200] of  Widget
+
+	(height 120)
+	(is_hidden FALSE)
+	(name "http://www.cloud4all.eu/SemanticFrameworkForContentAndSolutions.owl#EASTIN__NumberOfInputChannelsDevicesMessages")
+	(property_list [semanticFrameworkOfContentAndSolutions_ProjectKB_Class201])
+	(widget_class_name "edu.stanford.smi.protegex.owl.ui.widget.MultiLiteralWidget")
+	(width 200)
+	(x 0)
+	(y 1140))
+
+([semanticFrameworkOfContentAndSolutions_ProjectKB_Class201] of  Property_List
+)
+
+([semanticFrameworkOfContentAndSolutions_ProjectKB_Class202] of  Widget
+
+	(height 120)
+	(is_hidden FALSE)
+	(name "http://www.cloud4all.eu/SemanticFrameworkForContentAndSolutions.owl#allowedSolutionsForCascading")
+	(property_list [semanticFrameworkOfContentAndSolutions_ProjectKB_Class203])
+	(widget_class_name "edu.stanford.smi.protegex.owl.ui.widget.MultiLiteralWidget")
+	(width 200)
+	(x 0)
+	(y 300))
+
+([semanticFrameworkOfContentAndSolutions_ProjectKB_Class203] of  Property_List
+)
+
+([semanticFrameworkOfContentAndSolutions_ProjectKB_Class204] of  Widget
+
+	(height 120)
+	(is_hidden FALSE)
+	(name "http://www.cloud4all.eu/SemanticFrameworkForContentAndSolutions.owl#italicfont_isMappedToRegTerm")
+	(property_list [semanticFrameworkOfContentAndSolutions_ProjectKB_Class205])
+	(widget_class_name "edu.stanford.smi.protegex.owl.ui.widget.MultiResourceWidget")
+	(width 200)
+	(x 400)
+	(y 780))
+
+([semanticFrameworkOfContentAndSolutions_ProjectKB_Class205] of  Property_List
+)
+
+([semanticFrameworkOfContentAndSolutions_ProjectKB_Class206] of  Widget
+
+	(height 120)
+	(is_hidden FALSE)
+	(name "http://www.cloud4all.eu/SemanticFrameworkForContentAndSolutions.owl#EASTIN__OutputAdjustments")
+	(property_list [semanticFrameworkOfContentAndSolutions_ProjectKB_Class207])
+	(widget_class_name "edu.stanford.smi.protegex.owl.ui.widget.MultiResourceWidget")
+	(width 200)
+	(x 200)
+	(y 1620))
+
+([semanticFrameworkOfContentAndSolutions_ProjectKB_Class207] of  Property_List
+)
+
+([semanticFrameworkOfContentAndSolutions_ProjectKB_Class208] of  Widget
+
+	(height 120)
+	(is_hidden FALSE)
+	(name "http://www.cloud4all.eu/SemanticFrameworkForContentAndSolutions.owl#EASTIN__Functionalities")
+	(property_list [semanticFrameworkOfContentAndSolutions_ProjectKB_Class209])
+	(widget_class_name "edu.stanford.smi.protegex.owl.ui.widget.MultiResourceWidget")
+	(width 200)
+	(x 200)
+	(y 900))
+
+([semanticFrameworkOfContentAndSolutions_ProjectKB_Class209] of  Property_List
 )
 
 ([semanticFrameworkOfContentAndSolutions_ProjectKB_Class21] of  Widget
@@ -5657,7 +6445,147 @@
 	(property_list [semanticFrameworkOfContentAndSolutions_ProjectKB_Class22])
 	(widget_class_name "edu.stanford.smi.protegex.changes.changesKBViewTab.ChangesKBViewTab"))
 
+([semanticFrameworkOfContentAndSolutions_ProjectKB_Class210] of  Widget
+
+	(height 120)
+	(is_hidden FALSE)
+	(name "http://www.cloud4all.eu/SemanticFrameworkForContentAndSolutions.owl#Textsize_isMappedToRegTerm")
+	(property_list [semanticFrameworkOfContentAndSolutions_ProjectKB_Class211])
+	(widget_class_name "edu.stanford.smi.protegex.owl.ui.widget.MultiResourceWidget")
+	(width 200)
+	(x 400)
+	(y 2100))
+
+([semanticFrameworkOfContentAndSolutions_ProjectKB_Class211] of  Property_List
+)
+
+([semanticFrameworkOfContentAndSolutions_ProjectKB_Class212] of  Widget
+
+	(height 120)
+	(is_hidden FALSE)
+	(name "http://www.cloud4all.eu/SemanticFrameworkForContentAndSolutions.owl#VoiceSpeed_isMappedToRegTerm")
+	(property_list [semanticFrameworkOfContentAndSolutions_ProjectKB_Class213])
+	(widget_class_name "edu.stanford.smi.protegex.owl.ui.widget.MultiResourceWidget")
+	(width 200)
+	(x 400)
+	(y 2340))
+
+([semanticFrameworkOfContentAndSolutions_ProjectKB_Class213] of  Property_List
+)
+
+([semanticFrameworkOfContentAndSolutions_ProjectKB_Class214] of  Widget
+
+	(height 120)
+	(is_hidden FALSE)
+	(name "http://www.cloud4all.eu/SemanticFrameworkForContentAndSolutions.owl#EASTIN__InputDevices")
+	(property_list [semanticFrameworkOfContentAndSolutions_ProjectKB_Class215])
+	(widget_class_name "edu.stanford.smi.protegex.owl.ui.widget.MultiResourceWidget")
+	(width 200)
+	(x 200)
+	(y 1140))
+
+([semanticFrameworkOfContentAndSolutions_ProjectKB_Class215] of  Property_List
+)
+
+([semanticFrameworkOfContentAndSolutions_ProjectKB_Class216] of  Widget
+
+	(height 120)
+	(is_hidden FALSE)
+	(name "http://www.cloud4all.eu/SemanticFrameworkForContentAndSolutions.owl#EASTIN__LinguisticRepresentations")
+	(property_list [semanticFrameworkOfContentAndSolutions_ProjectKB_Class217])
+	(widget_class_name "edu.stanford.smi.protegex.owl.ui.widget.MultiResourceWidget")
+	(width 200)
+	(x 200)
+	(y 1380))
+
+([semanticFrameworkOfContentAndSolutions_ProjectKB_Class217] of  Property_List
+)
+
+([semanticFrameworkOfContentAndSolutions_ProjectKB_Class218] of  Widget
+
+	(height 120)
+	(is_hidden FALSE)
+	(name "http://www.cloud4all.eu/SemanticFrameworkForContentAndSolutions.owl#EASTIN__Browsers")
+	(property_list [semanticFrameworkOfContentAndSolutions_ProjectKB_Class219])
+	(widget_class_name "edu.stanford.smi.protegex.owl.ui.widget.MultiResourceWidget")
+	(width 200)
+	(x 200)
+	(y 540))
+
+([semanticFrameworkOfContentAndSolutions_ProjectKB_Class219] of  Property_List
+)
+
 ([semanticFrameworkOfContentAndSolutions_ProjectKB_Class22] of  Property_List
+)
+
+([semanticFrameworkOfContentAndSolutions_ProjectKB_Class220] of  Widget
+
+	(height 120)
+	(is_hidden FALSE)
+	(name "http://www.cloud4all.eu/SemanticFrameworkForContentAndSolutions.owl#EASTIN__Length")
+	(property_list [semanticFrameworkOfContentAndSolutions_ProjectKB_Class221])
+	(widget_class_name "edu.stanford.smi.protegex.owl.ui.widget.MultiLiteralWidget")
+	(width 200)
+	(x 0)
+	(y 540))
+
+([semanticFrameworkOfContentAndSolutions_ProjectKB_Class221] of  Property_List
+)
+
+([semanticFrameworkOfContentAndSolutions_ProjectKB_Class222] of  Widget
+
+	(height 120)
+	(is_hidden FALSE)
+	(name "http://www.cloud4all.eu/SemanticFrameworkForContentAndSolutions.owl#EASTIN__Height")
+	(property_list [semanticFrameworkOfContentAndSolutions_ProjectKB_Class223])
+	(widget_class_name "edu.stanford.smi.protegex.owl.ui.widget.MultiLiteralWidget")
+	(width 200)
+	(x 0)
+	(y 420))
+
+([semanticFrameworkOfContentAndSolutions_ProjectKB_Class223] of  Property_List
+)
+
+([semanticFrameworkOfContentAndSolutions_ProjectKB_Class224] of  Widget
+
+	(height 120)
+	(is_hidden FALSE)
+	(name "http://www.cloud4all.eu/SemanticFrameworkForContentAndSolutions.owl#HighContrast_isMappedToRegTerm")
+	(property_list [semanticFrameworkOfContentAndSolutions_ProjectKB_Class225])
+	(widget_class_name "edu.stanford.smi.protegex.owl.ui.widget.MultiResourceWidget")
+	(width 200)
+	(x 400)
+	(y 180))
+
+([semanticFrameworkOfContentAndSolutions_ProjectKB_Class225] of  Property_List
+)
+
+([semanticFrameworkOfContentAndSolutions_ProjectKB_Class226] of  Widget
+
+	(height 120)
+	(is_hidden FALSE)
+	(name "http://www.cloud4all.eu/SemanticFrameworkForContentAndSolutions.owl#FontSize_8268_isMappedToRegTerm")
+	(property_list [semanticFrameworkOfContentAndSolutions_ProjectKB_Class227])
+	(widget_class_name "edu.stanford.smi.protegex.owl.ui.widget.MultiResourceWidget")
+	(width 200)
+	(x 200)
+	(y 2580))
+
+([semanticFrameworkOfContentAndSolutions_ProjectKB_Class227] of  Property_List
+)
+
+([semanticFrameworkOfContentAndSolutions_ProjectKB_Class228] of  Widget
+
+	(height 120)
+	(is_hidden FALSE)
+	(name "http://www.cloud4all.eu/SemanticFrameworkForContentAndSolutions.owl#EASTIN__Languages")
+	(property_list [semanticFrameworkOfContentAndSolutions_ProjectKB_Class229])
+	(widget_class_name "edu.stanford.smi.protegex.owl.ui.widget.MultiResourceWidget")
+	(width 200)
+	(x 200)
+	(y 1260))
+
+([semanticFrameworkOfContentAndSolutions_ProjectKB_Class229] of  Property_List
 )
 
 ([semanticFrameworkOfContentAndSolutions_ProjectKB_Class23] of  Widget
@@ -5666,7 +6594,147 @@
 	(property_list [semanticFrameworkOfContentAndSolutions_ProjectKB_Class24])
 	(widget_class_name "edu.stanford.smi.protegex.xml.tab.XMLTab"))
 
+([semanticFrameworkOfContentAndSolutions_ProjectKB_Class230] of  Widget
+
+	(height 120)
+	(is_hidden FALSE)
+	(name "http://www.cloud4all.eu/SemanticFrameworkForContentAndSolutions.owl#EASTIN__MaxRingerAlarmVolume")
+	(property_list [semanticFrameworkOfContentAndSolutions_ProjectKB_Class231])
+	(widget_class_name "edu.stanford.smi.protegex.owl.ui.widget.MultiLiteralWidget")
+	(width 200)
+	(x 0)
+	(y 780))
+
+([semanticFrameworkOfContentAndSolutions_ProjectKB_Class231] of  Property_List
+)
+
+([semanticFrameworkOfContentAndSolutions_ProjectKB_Class232] of  Widget
+
+	(height 120)
+	(is_hidden FALSE)
+	(name "http://www.cloud4all.eu/SemanticFrameworkForContentAndSolutions.owl#screenOff_isMappedToRegTerm")
+	(property_list [semanticFrameworkOfContentAndSolutions_ProjectKB_Class233])
+	(widget_class_name "edu.stanford.smi.protegex.owl.ui.widget.MultiResourceWidget")
+	(width 200)
+	(x 400)
+	(y 1620))
+
+([semanticFrameworkOfContentAndSolutions_ProjectKB_Class233] of  Property_List
+)
+
+([semanticFrameworkOfContentAndSolutions_ProjectKB_Class234] of  Widget
+
+	(height 120)
+	(is_hidden FALSE)
+	(name "http://www.cloud4all.eu/SemanticFrameworkForContentAndSolutions.owl#Tableofcontents_isMappedToRegTerm")
+	(property_list [semanticFrameworkOfContentAndSolutions_ProjectKB_Class235])
+	(widget_class_name "edu.stanford.smi.protegex.owl.ui.widget.MultiResourceWidget")
+	(width 200)
+	(x 400)
+	(y 1860))
+
+([semanticFrameworkOfContentAndSolutions_ProjectKB_Class235] of  Property_List
+)
+
+([semanticFrameworkOfContentAndSolutions_ProjectKB_Class236] of  Widget
+
+	(height 120)
+	(is_hidden FALSE)
+	(name "http://www.cloud4all.eu/SemanticFrameworkForContentAndSolutions.owl#pictogramMode_isMappedToRegTerm")
+	(property_list [semanticFrameworkOfContentAndSolutions_ProjectKB_Class237])
+	(widget_class_name "edu.stanford.smi.protegex.owl.ui.widget.MultiResourceWidget")
+	(width 200)
+	(x 400)
+	(y 1380))
+
+([semanticFrameworkOfContentAndSolutions_ProjectKB_Class237] of  Property_List
+)
+
+([semanticFrameworkOfContentAndSolutions_ProjectKB_Class238] of  Widget
+
+	(height 120)
+	(is_hidden FALSE)
+	(name "http://www.cloud4all.eu/SemanticFrameworkForContentAndSolutions.owl#EASTIN__PowerSources")
+	(property_list [semanticFrameworkOfContentAndSolutions_ProjectKB_Class239])
+	(widget_class_name "edu.stanford.smi.protegex.owl.ui.widget.MultiResourceWidget")
+	(width 200)
+	(x 200)
+	(y 1860))
+
+([semanticFrameworkOfContentAndSolutions_ProjectKB_Class239] of  Property_List
+)
+
 ([semanticFrameworkOfContentAndSolutions_ProjectKB_Class24] of  Property_List
+)
+
+([semanticFrameworkOfContentAndSolutions_ProjectKB_Class240] of  Widget
+
+	(height 120)
+	(is_hidden FALSE)
+	(name "http://www.cloud4all.eu/SemanticFrameworkForContentAndSolutions.owl#TextColour_isMappedToRegTerm")
+	(property_list [semanticFrameworkOfContentAndSolutions_ProjectKB_Class241])
+	(widget_class_name "edu.stanford.smi.protegex.owl.ui.widget.MultiResourceWidget")
+	(width 200)
+	(x 400)
+	(y 1980))
+
+([semanticFrameworkOfContentAndSolutions_ProjectKB_Class241] of  Property_List
+)
+
+([semanticFrameworkOfContentAndSolutions_ProjectKB_Class242] of  Widget
+
+	(height 120)
+	(is_hidden FALSE)
+	(name "http://www.cloud4all.eu/SemanticFrameworkForContentAndSolutions.owl#Colourcontrast_isMappedToRegTerm")
+	(property_list [semanticFrameworkOfContentAndSolutions_ProjectKB_Class243])
+	(widget_class_name "edu.stanford.smi.protegex.owl.ui.widget.MultiResourceWidget")
+	(width 200)
+	(x 200)
+	(y 180))
+
+([semanticFrameworkOfContentAndSolutions_ProjectKB_Class243] of  Property_List
+)
+
+([semanticFrameworkOfContentAndSolutions_ProjectKB_Class244] of  Widget
+
+	(height 120)
+	(is_hidden FALSE)
+	(name "http://www.cloud4all.eu/SemanticFrameworkForContentAndSolutions.owl#EASTIN__MRating")
+	(property_list [semanticFrameworkOfContentAndSolutions_ProjectKB_Class245])
+	(widget_class_name "edu.stanford.smi.protegex.owl.ui.widget.MultiLiteralWidget")
+	(width 200)
+	(x 0)
+	(y 1020))
+
+([semanticFrameworkOfContentAndSolutions_ProjectKB_Class245] of  Property_List
+)
+
+([semanticFrameworkOfContentAndSolutions_ProjectKB_Class246] of  Widget
+
+	(height 120)
+	(is_hidden FALSE)
+	(name "http://www.cloud4all.eu/SemanticFrameworkForContentAndSolutions.owl#freeAllowedDaysOfInvocation")
+	(property_list [semanticFrameworkOfContentAndSolutions_ProjectKB_Class247])
+	(widget_class_name "edu.stanford.smi.protegex.owl.ui.widget.MultiLiteralWidget")
+	(width 200)
+	(x 0)
+	(y 1980))
+
+([semanticFrameworkOfContentAndSolutions_ProjectKB_Class247] of  Property_List
+)
+
+([semanticFrameworkOfContentAndSolutions_ProjectKB_Class248] of  Widget
+
+	(height 120)
+	(is_hidden FALSE)
+	(name "http://www.cloud4all.eu/SemanticFrameworkForContentAndSolutions.owl#EASTIN__OperatingSystems")
+	(property_list [semanticFrameworkOfContentAndSolutions_ProjectKB_Class249])
+	(widget_class_name "edu.stanford.smi.protegex.owl.ui.widget.MultiResourceWidget")
+	(width 200)
+	(x 200)
+	(y 1500))
+
+([semanticFrameworkOfContentAndSolutions_ProjectKB_Class249] of  Property_List
 )
 
 ([semanticFrameworkOfContentAndSolutions_ProjectKB_Class25] of  Widget
@@ -5674,6 +6742,59 @@
 	(is_hidden TRUE)
 	(property_list [semanticFrameworkOfContentAndSolutions_ProjectKB_Class26])
 	(widget_class_name "edu.stanford.smi.protegex.prompt.PromptTab"))
+
+([semanticFrameworkOfContentAndSolutions_ProjectKB_Class250] of  Widget
+
+	(height 120)
+	(is_hidden FALSE)
+	(name "http://www.cloud4all.eu/SemanticFrameworkForContentAndSolutions.owl#EASTIN__Weight")
+	(property_list [semanticFrameworkOfContentAndSolutions_ProjectKB_Class251])
+	(widget_class_name "edu.stanford.smi.protegex.owl.ui.widget.MultiLiteralWidget")
+	(width 200)
+	(x 0)
+	(y 1740))
+
+([semanticFrameworkOfContentAndSolutions_ProjectKB_Class251] of  Property_List
+)
+
+([semanticFrameworkOfContentAndSolutions_ProjectKB_Class252] of  Widget
+
+	(height 120)
+	(is_hidden FALSE)
+	(name "http://www.cloud4all.eu/SemanticFrameworkForContentAndSolutions.owl#EASTIN__SoftwarePricePolicy")
+	(property_list [semanticFrameworkOfContentAndSolutions_ProjectKB_Class253])
+	(widget_class_name "edu.stanford.smi.protegex.owl.ui.widget.MultiResourceWidget")
+	(width 200)
+	(x 200)
+	(y 2100))
+
+([semanticFrameworkOfContentAndSolutions_ProjectKB_Class253] of  Property_List
+)
+
+([semanticFrameworkOfContentAndSolutions_ProjectKB_Class254] of  String
+
+	(name "http://www.w3.org/2002/07/owl#Class")
+	(string_value "%3ANAME"))
+
+([semanticFrameworkOfContentAndSolutions_ProjectKB_Class255] of  String
+
+	(name ":INSTANCE-ANNOTATION")
+	(string_value "%3AANNOTATION-TEXT"))
+
+([semanticFrameworkOfContentAndSolutions_ProjectKB_Class256] of  String
+
+	(name ":META-CLASS")
+	(string_value "%3ANAME"))
+
+([semanticFrameworkOfContentAndSolutions_ProjectKB_Class257] of  String
+
+	(name "http://www.w3.org/2002/07/owl#Thing")
+	(string_value "%3ANAME"))
+
+([semanticFrameworkOfContentAndSolutions_ProjectKB_Class258] of  String
+
+	(name ":PAL-CONSTRAINT")
+	(string_value "%3APAL-NAME"))
 
 ([semanticFrameworkOfContentAndSolutions_ProjectKB_Class26] of  Property_List
 )
@@ -5849,36 +6970,11 @@
 ([semanticFrameworkOfContentAndSolutions_ProjectKB_Class60] of  Property_List
 )
 
-([semanticFrameworkOfContentAndSolutions_ProjectKB_Class66] of  String
-
-	(name "http://www.w3.org/2002/07/owl#Class")
-	(string_value "%3ANAME"))
-
-([semanticFrameworkOfContentAndSolutions_ProjectKB_Class67] of  String
-
-	(name ":INSTANCE-ANNOTATION")
-	(string_value "%3AANNOTATION-TEXT"))
-
-([semanticFrameworkOfContentAndSolutions_ProjectKB_Class68] of  String
-
-	(name ":META-CLASS")
-	(string_value "%3ANAME"))
-
-([semanticFrameworkOfContentAndSolutions_ProjectKB_Class69] of  String
-
-	(name "http://www.w3.org/2002/07/owl#Thing")
-	(string_value "%3ANAME"))
-
 ([semanticFrameworkOfContentAndSolutions_ProjectKB_Class7] of  Widget
 
 	(is_hidden TRUE)
 	(property_list [semanticFrameworkOfContentAndSolutions_ProjectKB_Class8])
 	(widget_class_name "edu.stanford.smi.protegex.evaluation.MetaAnalysis"))
-
-([semanticFrameworkOfContentAndSolutions_ProjectKB_Class70] of  String
-
-	(name ":PAL-CONSTRAINT")
-	(string_value "%3APAL-NAME"))
 
 ([semanticFrameworkOfContentAndSolutions_ProjectKB_Class8] of  Property_List
 )
