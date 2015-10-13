@@ -2,6 +2,7 @@ package org.ruleEditor.utils;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -19,6 +20,9 @@ public class RuleCreationUtilities {
 
 	public static String prefix_c4a = "@prefix c4a: <http://rbmm.org/schemas/cloud4all/0.1/>.";
 	public static String prefix_rdfs = "@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>.";
+	public static String description = "// C4A_DESCRIPTION : ";
+	public static String creation_date = "// C4A_CREATION_DATE : ";
+	public static String last_modified_date = "// C4A_LAST_MODIFIED_DATE : ";
 
 	public static List<String> categoryOfMethods_1 = Arrays.asList("isLiteral",
 			"notLiteral", "isFunctor", "notFunctor", "isBNode", "notBNode");
@@ -48,10 +52,12 @@ public class RuleCreationUtilities {
 			ArrayList<PointElement> conclusions, boolean flag,
 			boolean createNewFile, String feedbackClass, String feedbackScope,
 			String feedbackId, ArrayList<Rule> existingRules,
-			InputStream fileStream) throws IOException {
+			InputStream fileStream, Timestamp creationDate, Timestamp lastModifiedDate,
+			String ruleDescription) throws IOException {
 
 		// create the rule string
 		String rule = "";
+		String ruleInfo = "";
 		if (feedbackClass.isEmpty())
 			rule = createRule(conditions, conclusions, ruleName);
 		else
@@ -67,10 +73,24 @@ public class RuleCreationUtilities {
 				for (Rule temp : existingRules) {
 					allRuleString = allRuleString.concat(temp.getBody()) + "\n";
 				}
-				allRuleString = allRuleString.concat(rule
-						.replace(Utils.prefix_c4a, "")
-						.replace(Utils.prefix_rdfs, "").trim());
+				ruleInfo = ruleInfo
+						.concat(description + ruleDescription + "\n");
+				ruleInfo = ruleInfo.concat(creation_date + creationDate + "\n");
+				ruleInfo = ruleInfo.concat(last_modified_date + lastModifiedDate
+						+ "\n");
+
+				allRuleString = allRuleString.concat("\n" + ruleInfo
+						+ rule.trim());
+
 				rule = allRuleString;
+			} else {
+				ruleInfo = prefix_c4a + "\n" + prefix_rdfs + "\n\n";
+				ruleInfo = ruleInfo
+						.concat(description + ruleDescription + "\n");
+				ruleInfo = ruleInfo.concat(creation_date + creationDate + "\n");
+				ruleInfo = ruleInfo.concat(last_modified_date + creationDate
+						+ "\n");
+				rule = ruleInfo + rule;
 			}
 
 			FileDownloadController.writeGsonAndExportFile(fileName, rule);
@@ -84,7 +104,7 @@ public class RuleCreationUtilities {
 		declaredClassVariables = new ArrayList<String>();
 		declaredObjectVariables = new ArrayList<String>();
 
-		String rule = prefix_c4a + "\n" + prefix_rdfs + "\n\n" + "[" + ruleName
+		String rule = "[" + ruleName
 				+ "\n";
 
 		rule = rule + convertListToRule(conditions);

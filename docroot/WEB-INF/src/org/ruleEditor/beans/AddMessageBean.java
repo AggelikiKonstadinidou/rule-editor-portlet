@@ -2,6 +2,7 @@ package org.ruleEditor.beans;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -32,14 +33,16 @@ public class AddMessageBean {
 	private String feedbackId = "";
 	private List<Message> messages = null;
 	private Message messageForRemove = null;
-	private String feedbackFile="";
+	private String feedbackFile = "";
 	private InputStream fileStream;
-	private boolean isFeedback = false; //false if the bean is called for a default rule
-	private String ruleName = "";       //true if the bean is called for a feedback rule
-    private String oldFileName = "";
-    private String newFileName = "";
-    private String previousStep = "";
-	 
+	private boolean isFeedback = false; // false if the bean is called for a
+										// default rule
+	private String ruleName = ""; // true if the bean is called for a feedback
+									// rule
+	private String oldFileName = "";
+	private String newFileName = "";
+	private String previousStep = "";
+
 	public AddMessageBean() {
 		super();
 		FacesContext context = FacesContext.getCurrentInstance();
@@ -67,69 +70,35 @@ public class AddMessageBean {
 		messageForRemove = new Message();
 		previousStep = step;
 	}
-	
-	public void moveToPreviousStep() throws IOException{
+
+	public void moveToPreviousStep() throws IOException {
 		ExternalContext externalContext = FacesContext.getCurrentInstance()
 				.getExternalContext();
 		externalContext.redirect(previousStep);
 	}
-	
+
 	public void onFileUpload(FileUploadEvent event) throws IOException {
 
 		feedbackFile = event.getFile().getFileName();
 
 		fileStream = event.getFile().getInputstream();
-		
+
 		System.out.println(feedbackFile);
 
 	}
-	
-	public void exportJsonLdFile() throws IOException{
+
+	public void exportJsonLdFile() throws IOException {
 		if (!feedbackFile.isEmpty())
 			jsonString = Utils.writeMessagesInJsonLdFile(fileStream, messages);
 
 		FileDownloadController.writeGsonAndExportFile(feedbackFile, jsonString);
 	}
-	
-	public void uploadFileForSaveAs(FileUploadEvent event) throws IOException{
+
+	public void uploadFileForSaveAs(FileUploadEvent event) throws IOException {
 		oldFileName = event.getFile().getFileName();
 		fileStream = event.getFile().getInputstream();
 	}
-	
-	
-	public void saveRule() throws IOException {
 
-		if (ruleName.trim().equals("")) {
-			FacesContext.getCurrentInstance().addMessage(
-					"msgs",
-					new FacesMessage(FacesMessage.SEVERITY_ERROR,
-							"Please provide a rule name", ""));
-
-			return;
-		}
-
-		String finalFileName = newFileName.trim();
-		boolean createNewFile = true;
-		if (newFileName.isEmpty() && !oldFileName.trim().isEmpty()) {
-			createNewFile = false;
-			finalFileName = oldFileName;
-		}
-		if (finalFileName.trim().equals("")) {
-			FacesContext.getCurrentInstance().addMessage(
-					"msgs",
-					new FacesMessage(FacesMessage.SEVERITY_ERROR,
-							"Please create a new file or select an existing",
-							""));
-			return;
-		}
-
-		RuleCreationUtilities.saveRule(ruleName, finalFileName,
-				addNewRuleBean.getConditions(), addNewRuleBean.getConclusions(),
-				isFeedback, createNewFile, feedbackClass, feedbackScope,
-				feedbackId, addNewRuleBean.getExistingRules(), fileStream);
-
-	}
-	
 	public void removeMessageFromList() {
 		messages.remove(messageForRemove);
 	}
@@ -234,6 +203,5 @@ public class AddMessageBean {
 	public void setPreviousStep(String previousStep) {
 		this.previousStep = previousStep;
 	}
-	
 
 }

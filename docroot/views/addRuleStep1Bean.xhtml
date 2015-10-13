@@ -9,26 +9,43 @@
 	<h:head />
 	<h:body>
 		<h:form id="form">
-		<p:panel id="informationPanel">
+			<p:panel id="informationPanel">
 				<f:facet name="header">
-					<h:outputText value="Step 1: Select the type of the rule" />
+					<h:outputText
+						value="Step 1: Fill in general information for the new rule" />
 				</f:facet>
-			<h:outputLabel for="name" value="This rule" />
-			<br />
-			<br />
 
-				<p:selectOneRadio id="options"
-					value="#{addRuleStep1Bean.selectedOption}" layout="pageDirection">
-					<f:selectItem itemLabel=" will resolve a conflict situation."
-						itemValue="/views/addConflictResolRule.xhtml?javax.portlet.faces.PortletMode=view&amp;javax.portlet.faces.WindowState=normal" />
-					<f:selectItem itemLabel=" will send a message to the user."
-						itemValue="/views/addFeedbackRule.xhtml?javax.portlet.faces.PortletMode=view&amp;javax.portlet.faces.WindowState=normal" />
-					<f:selectItem itemLabel=" has no specific scope."
-						itemValue="/views/addGeneralRule.xhtml?javax.portlet.faces.PortletMode=view&amp;javax.portlet.faces.WindowState=normal" />
-					<p:ajax listener="#{addRuleStep1Bean.handleChange}"
-						update=":#{p:component('nextBut')}" />
-				</p:selectOneRadio>
+				<p:panel id="step1a">
+					<f:facet name="header">
+						<h:outputText value="Step 1a: Select the type of the rule" />
+					</f:facet>
+					<h:outputLabel for="name" value="This rule" />
+					<br />
+					<br />
 
+					<p:selectOneRadio id="options"
+						value="#{addRuleStep1Bean.selectedOption}" layout="pageDirection">
+						<f:selectItem itemLabel=" will resolve a conflict situation."
+							itemValue="/views/addConflictResolRule.xhtml?javax.portlet.faces.PortletMode=view&amp;javax.portlet.faces.WindowState=normal" />
+						<f:selectItem itemLabel=" will send a message to the user."
+							itemValue="/views/addFeedbackRule.xhtml?javax.portlet.faces.PortletMode=view&amp;javax.portlet.faces.WindowState=normal" />
+						<f:selectItem itemLabel=" has no specific scope."
+							itemValue="/views/addGeneralRule.xhtml?javax.portlet.faces.PortletMode=view&amp;javax.portlet.faces.WindowState=normal" />
+						<p:ajax listener="#{addRuleStep1Bean.handleChange}"
+							update=":#{p:component('nextBut')}" />
+					</p:selectOneRadio>
+				</p:panel>
+				<p:panel id="step1b">
+					<f:facet name="header">
+						<h:outputText value="Step 1b: Give a description for the new rule" />
+					</f:facet>
+					<p:messages for="msgs" showDetail="true" autoUpdate="true"
+					closable="true" />
+					<h:inputTextarea label="ruleDescription"
+						id="ruleDescription" style="width: 500px;" autocomplete="off"
+						value="#{addRuleStep1Bean.description}">
+					</h:inputTextarea>
+				</p:panel>
 
 				<div align="right">
 					<p:commandButton

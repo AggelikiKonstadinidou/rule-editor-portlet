@@ -11,7 +11,7 @@
 		<h:form id="form" enctype="multipart/form-data">
 			<p:panel id="informationPanel">
 				<f:facet name="header">
-					<h:outputText value="Step2: Create a Feedback Rule" />
+					<h:outputText value="Step2: Create a feedback Rule" />
 				</f:facet>
 
 				<h:panelGrid columns="2" id="grid1">
@@ -27,7 +27,6 @@
 							</p:treeNode>
 						</p:tree>
 					</p:scrollPanel>
-
 					<h:panelGrid rows="4" id="grid2" style="width:535px;">
 
 						<p:dataTable id="dataProperties" var="data"
@@ -70,7 +69,7 @@
 							value="#{addNewRuleBean.instances}" rowKey="#{data}"
 							selectionMode="single"
 							selection="#{addNewRuleBean.selectedInstance}" scrollable="true"
-							scrollHeight="50">
+							scrollHeight="100">
 
 							<p:column headerText="Instances">
 								<h:outputText value="#{data.instanceName}" />
@@ -96,9 +95,6 @@
 						<p:menuitem value="Move to conditions"
 							update=":#{p:component('pan1')}"
 							actionListener="#{addNewRuleBean.createClassElement('pan1')}" />
-						<p:menuitem value="Move to conclusions"
-							update=":#{p:component('pan2')}"
-							actionListener="#{addNewRuleBean.createClassElement('pan2')}" />
 					</p:contextMenu>
 
 					<p:contextMenu for="methods">
@@ -127,17 +123,21 @@
 
 				</h:panelGrid>
 
-				<p:panel header="conditions" id="pan1" style="height:700px;">
-					<f:facet name="header">
-						<h:outputText value="Conditions" />
-					</f:facet>
-					<p:diagram value="#{addNewRuleBean.conditionsModel}"
-						id="conditionsDiagram" style="height:650px;"
-						styleClass="ui-widget-content" var="item">
 
-						<f:facet name="element">
-							<p:panel id="pnl1" header="#{item.label}: #{item.elementName}">
-								<h:panelGrid columns="2">
+				<h:panelGrid columns="2" id="panelsgrid">
+
+					<p:panel header="conditions" id="pan1"
+						style="height:700px;width:650px;">
+						<f:facet name="header">
+							<h:outputText value="Conditions" />
+						</f:facet>
+						<p:diagram value="#{addNewRuleBean.conditionsModel}"
+							id="conditionsDiagram" style="height:650px;width:620px;"
+							styleClass="ui-widget-content" var="item">
+
+							<f:facet name="element">
+								<p:panel id="pnl1" header="#{item.label}: #{item.elementName}">
+									<h:panelGrid columns="2">
 										<p:panelGrid columns="2" columnClasses="label,value"
 											id="elementGrid1">
 
@@ -187,26 +187,23 @@
 											<f:param name="panel" value="conditions" />
 										</p:commandButton>
 									</h:panelGrid>
-								<p:commandButton oncomplete="PF('editDialog').show()"
-									actionListener="#{addNewRuleBean.editNode}" title="View"
-									icon="ui-icon-search" update=":#{p:component('editDialog')}">
-									<f:param name="id" value="#{item.id}" />
-									<f:param name="panel" value="conditions" />
-								</p:commandButton>
-							</p:panel>
-						</f:facet>
+								</p:panel>
+							</f:facet>
 
-						<p:ajax event="connect" listener="#{addNewRuleBean.onConnect}"
-							update=":#{p:component('conditionsDiagram')}" />
-						<p:ajax event="disconnect"
-							listener="#{addNewRuleBean.onDisconnect}" />
-						<p:ajax event="connectionChange"
-							listener="#{addNewRuleBean.onConnectionChange}"
-							update=":#{p:component('conditionsDiagram')}" />
-					</p:diagram>
-				</p:panel>
+							<p:ajax event="connect" listener="#{addNewRuleBean.onConnect}"
+								update=":#{p:component('conditionsDiagram')}" />
+							<p:ajax event="disconnect"
+								listener="#{addNewRuleBean.onDisconnect}" />
+							<p:ajax event="connectionChange"
+								listener="#{addNewRuleBean.onConnectionChange}"
+								update=":#{p:component('conditionsDiagram')}" />
+						</p:diagram>
+					</p:panel>
 
-				<p:commandButton actionListener="#{addRuleStep1Bean.init}"
+				</h:panelGrid>
+
+
+				<p:commandButton
 					action="/views/addRuleStep1Bean.xhtml?javax.portlet.faces.PortletMode=view&amp;javax.portlet.faces.WindowState=normal"
 					title="Go to initial menu" id="prevBut" ajax="false"
 					value="Previous step">
@@ -216,15 +213,28 @@
 					actionListener="#{addNewRuleBean.clearPanel('pan1')}" ajax="false"
 					value="Clear conditions" title="Clear conditions panel">
 				</p:commandButton>
-				<p:commandButton actionListener="#{addMessageBean.init(true)}"
-					action="/views/addMessage.xhtml?javax.portlet.faces.PortletMode=view&amp;javax.portlet.faces.WindowState=normal"
-					title="Move to the next step of the creation of the rule"
-					id="nextBut" ajax="false" value="Next step">
+				<p:commandButton id="clearConclusions"
+					update=":#{p:component('pan2')}"
+					actionListener="#{addNewRuleBean.clearPanel('pan2')}" ajax="false"
+					value="Clear conclusions" title="Clear conclusions panel">
 				</p:commandButton>
-
-
+				<p:commandButton ajax = "false"
+				    action="/views/addMessage.xhtml?javax.portlet.faces.PortletMode=view&amp;javax.portlet.faces.WindowState=normal"
+					title="Go to next step of the creation of the rule"
+					value="Next step">
+				</p:commandButton>
+				<p:commandButton id="preview"
+					actionListener="#{addNewRuleBean.previewRule}"
+					update=":#{p:component('previewPanel')}"
+					title="View the body of the rule"
+					value="Preview Rule Body" icon="ui-icon-search">
+				</p:commandButton>
+				<p:panel header="Preview Panel" id="previewPanel"
+					style="height:400px;width:400px;">
+					<h:outputText value="#{addNewRuleBean.preview}" styleClass="preformatted"  />
+				</p:panel>
 			</p:panel>
-
+			
 			<p:dialog widgetVar="editDialog" id="editDialog" modal="true"
 				header="Edit node" resizable="false" showEffect="clip"
 				dynamic="true" hideEffect="fold" position="center,center">
@@ -980,29 +990,6 @@ Classes
 					</h:panelGrid>
 				</h:panelGrid>
 			</p:dialog>
-
-			<p:dialog widgetVar="addMessageDialog" id="addMessageDialog"
-				modal="true"
-				header="Do you want this rule send a message to the user?"
-				resizable="false" showEffect="clip" dynamic="true" hideEffect="fold"
-				position="center,center">
-				<h:panelGrid columns="2" columnClasses="label,value"
-					styleClass="grid">
-					<p:commandButton actionListener="#{addMessageBean.init(false)}"
-						icon="ui-icon-save" title="Move to next step to add a message"
-						ajax="false"
-						action="/views/addMessage.xhtml?javax.portlet.faces.PortletMode=view&amp;javax.portlet.faces.WindowState=normal"
-						value="Yes">
-					</p:commandButton>
-					<p:commandButton icon="ui-icon-close" ajax="false"
-						title="Save the rule withount adding a message" value="No"
-						actionListener="#{addNewRuleBean.getPreviousStep('/views/addConflictResolRule.xhtml?javax.portlet.faces.PortletMode=view&amp;javax.portlet.faces.WindowState=normal')}"
-						action="/views/saveRule.xhtml?javax.portlet.faces.PortletMode=view&amp;javax.portlet.faces.WindowState=normal">
-					</p:commandButton>
-				</h:panelGrid>
-			</p:dialog>
 		</h:form>
-
-
 	</h:body>
 </f:view>

@@ -4,8 +4,10 @@ import java.awt.MenuItem;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Serializable;
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -58,6 +60,7 @@ import org.primefaces.model.diagram.overlay.LabelOverlay;
 import org.primefaces.model.mindmap.DefaultMindmapNode;
 import org.primefaces.model.mindmap.MindmapNode;
 import org.ruleEditor.ontology.BuiltinMethod;
+import org.ruleEditor.ontology.ElementComparator;
 import org.ruleEditor.ontology.Instance;
 import org.ruleEditor.ontology.Main;
 import org.ruleEditor.ontology.Message;
@@ -119,8 +122,7 @@ public class AddNewRuleBean {
 	private ArrayList<Rule> existingRules = new ArrayList<Rule>();
 	private boolean feedback = true;
 	private int counterOfConnections = 0;
-	private int orderConditionsCounter = 1;
-	private int orderConclusionsCounter = 1;
+	
 	private ArrayList<String> usedVariablesForClasses = new ArrayList<String>();
 
 	private ArrayList<String> usedVariablesForValues = new ArrayList<String>();
@@ -145,6 +147,8 @@ public class AddNewRuleBean {
 	private ArrayList<String> tempInstancesForClasses = null;
 	private ArrayList<String> tempInstancesForValues = null;
 	private String option = "";
+	private String ruleDescription = "";
+	private String preview = "";
 
 	public AddNewRuleBean() {
 		super();
@@ -181,15 +185,16 @@ public class AddNewRuleBean {
 		oldFileName = "";
 		newFileName = "";
 		counterOfConnections = 0;
-		orderConditionsCounter = 1;
-		orderConclusionsCounter = 1;
 		filesToCompare = new HashMap<String, InputStream>();
 		correlatedFiles = new ArrayList<Message>();
 		Message msg = new Message();
 		msg.setLanguage("fileName");
 		msg.setText("rule");
-		correlatedFiles.add(msg);
+	//	correlatedFiles.add(msg);
 		option = "class";
+		ruleDescription = "";
+	//	rule = null;
+		preview = "";
 
 		usedVariablesForClasses = new ArrayList<String>();
 		usedVariablesForClasses.add("-");
@@ -637,6 +642,39 @@ public class AddNewRuleBean {
 		previousStep = step;
 	}
 
+	public void previewRule() {
+		preview = RuleCreationUtilities.createRule(conditions, conclusions, "");
+		preview = preview.replace(RuleCreationUtilities.prefix_c4a, "").trim();
+		preview = preview.replace(RuleCreationUtilities.prefix_rdfs, "").trim();
+		addOrderToRulePreview();
+	}
+
+	public void addOrderToRulePreview() {
+		String s = preview;
+		s = s.replace("[\n", "").replace("]", "").trim();
+		//String[] splitted = s.split("\\(");
+		String[] splitted = s.split("\n");
+		String orderPreview = "[\n";
+		int counter = 1;
+		for (int i = 0; i < splitted.length; i++) {
+			if (!splitted[i].isEmpty()) {
+
+				if (!splitted[i].equalsIgnoreCase("->")) {
+					orderPreview = orderPreview.concat(counter + ": "
+							+ splitted[i]+"\n");
+					counter++;
+				} else {
+					orderPreview = orderPreview.concat(splitted[i]+"\n");
+					counter = 1;
+				}
+
+			}
+		
+		}
+
+		preview = orderPreview.concat("\n]");
+	}
+
 	public void saveRule() throws IOException {
 
 		if (ruleName.trim().equals("")) {
@@ -663,9 +701,17 @@ public class AddNewRuleBean {
 			return;
 		}
 
+		java.util.Date date = new java.util.Date();
+		Timestamp creationDate = new Timestamp(date.getTime());
+		Timestamp lastModifiedDate = new Timestamp(date.getTime());
+
+		if (rule != null)
+			creationDate = rule.getCreationDate();
+
 		RuleCreationUtilities.saveRule(ruleName.replace(" ", "").trim(),
 				finalFileName, conditions, conclusions, false, createNewFile,
-				"", "", "", existingRules, fileStream);
+				"", "", "", existingRules, fileStream, creationDate,
+				lastModifiedDate, ruleDescription);
 
 	}
 
@@ -858,28 +904,7 @@ public class AddNewRuleBean {
 				}
 			}
 		}
-		// int pos = -1;
-		// if (cloneSelectedNode.getType() == Type.CLASS)
-		// for (PointElement el : clonedList) {
-		// if (el.getType() == Type.DATA_PROPERTY
-		// || el.getType() == Type.OBJECT_PROPERTY) {
-		// for (PointElement connEl : el.getConnections()) {
-		// if (connEl.getId().equalsIgnoreCase(
-		// cloneSelectedNode.getId())) {
-		// pos = el.getConnections().indexOf(connEl);
-		// break;
-		// }
-		// }
-		//
-		// if (pos != -1) {
-		// el.getConnections().remove(pos);
-		// el.getConnections().add(pos, cloneSelectedNode);
-		// }
-		//
-		// pos = -1;
-		// }
-		// }
-
+		
 		// update the corresponding list
 		if (cloneSelectedNode.getPanel().equals("conditions"))
 			conditions = (ArrayList<PointElement>) clonedList.clone();
@@ -902,6 +927,10 @@ public class AddNewRuleBean {
 			el.setData(cloneSelectedNode);
 			conclusionsModel.getElements().add(index, el);
 		}
+		
+		//sort the collections according to the order comparator
+		Collections.sort(conditions,new ElementComparator());
+		Collections.sort(conclusions,new ElementComparator());
 
 	}
 
@@ -1537,11 +1566,9 @@ public class AddNewRuleBean {
 		// define the order
 		int order = -1;
 		if (panelID.equalsIgnoreCase("pan1")) {
-			order = orderConditionsCounter;
-			orderConditionsCounter++;
+			order = conditions.size()+1;
 		} else {
-			order = orderConclusionsCounter;
-			orderConclusionsCounter++;
+			order = conclusions.size()+1;
 		}
 		classEl.setOrder(order);
 		Element element = new Element(classEl, String.valueOf(classEl.getX()
@@ -1564,11 +1591,9 @@ public class AddNewRuleBean {
 		// define the order
 		int order = -1;
 		if (panelID.equalsIgnoreCase("pan1")) {
-			order = orderConditionsCounter;
-			orderConditionsCounter++;
+			order = conditions.size()+1;
 		} else {
-			order = orderConclusionsCounter;
-			orderConclusionsCounter++;
+			order = conclusions.size()+1;
 		}
 
 		methodEl.setOrder(order);
@@ -1634,11 +1659,9 @@ public class AddNewRuleBean {
 		// define the order
 		int order = -1;
 		if (panelID.equalsIgnoreCase("pan1")) {
-			order = orderConditionsCounter;
-			orderConditionsCounter++;
+			order = conditions.size()+1;
 		} else {
-			order = orderConclusionsCounter;
-			orderConclusionsCounter++;
+			order = conclusions.size()+1;
 		}
 
 		propElement.setOrder(order);
@@ -2051,6 +2074,22 @@ public class AddNewRuleBean {
 	public void setTempInstancesForValues(
 			ArrayList<String> tempInstancesForValues) {
 		this.tempInstancesForValues = tempInstancesForValues;
+	}
+
+	public String getRuleDescription() {
+		return ruleDescription;
+	}
+
+	public void setRuleDescription(String ruleDescription) {
+		this.ruleDescription = ruleDescription;
+	}
+
+	public String getPreview() {
+		return preview;
+	}
+
+	public void setPreview(String preview) {
+		this.preview = preview;
 	}
 
 }

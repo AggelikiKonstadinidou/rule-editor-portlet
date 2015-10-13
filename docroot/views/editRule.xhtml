@@ -299,9 +299,20 @@
 					actionListener="#{addNewRuleBean.clearPanel('pan2')}" ajax="false"
 					value="Clear conclusions" title="Clear conclusions panel">
 				</p:commandButton>
-				<p:commandButton oncomplete="PF('newRuleDialog').show()"
-					value="Save Changes" title="Save the rule">
+				<p:commandButton oncomplete="PF('addMessageDialog').show()"
+					title="Go to next step of the creation of the rule"
+					value="Next step">
 				</p:commandButton>
+				<p:commandButton id="preview"
+					actionListener="#{addNewRuleBean.previewRule}"
+					update=":#{p:component('previewPanel')}"
+					title="View the body of the rule"
+					value="Preview Rule Body" icon="ui-icon-search">
+				</p:commandButton>
+				<p:panel header="Preview Panel" id="previewPanel"
+					style="height:700px;width:400px;">
+					<h:outputText value="#{addNewRuleBean.preview}" styleClass="preformatted"  />
+				</p:panel>
 
 
 			</p:panel>

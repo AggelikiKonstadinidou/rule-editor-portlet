@@ -47,7 +47,7 @@ public class EditRuleStep1Bean {
 		fileStream = null;
 		counter = 0;
 		rulesList = new ArrayList<Rule>();
-		selectedRule = new Rule("", "", null, -1);
+		selectedRule = new Rule();
 	}
 
 	public void onFileUpload(FileUploadEvent event) throws IOException {
@@ -63,9 +63,13 @@ public class EditRuleStep1Bean {
 		rulesList = Utils.getRulesFromFile(fileStream);
 
 	}
+	
+	public void previewRule(){
+		
+	}
 
 	public void reload() {
-		this.selectedRule = new Rule("", "", null, -1);
+		this.selectedRule = new Rule();
 		this.formCompleted = true;
 	}
 

@@ -19,9 +19,9 @@
 
 				<p:selectOneRadio id="options" value="#{configurationStep1Bean.selectedOption}"
 					layout="pageDirection">
-					<f:selectItem itemLabel="Configurate the rule sets"
+					<f:selectItem itemLabel="Configure the rule sets"
 						itemValue="/views/orderRules.xhtml?javax.portlet.faces.PortletMode=view&amp;javax.portlet.faces.WindowState=normal" />
-					<f:selectItem itemLabel="Configurate the knowledge base"
+					<f:selectItem itemLabel="Configure the knowledge base"
 						itemValue="/views/editViewJSONLD.xhtml?javax.portlet.faces.PortletMode=view&amp;javax.portlet.faces.WindowState=normal" />
 					<!--  <f:selectItem itemLabel=" both options." itemValue="both options" /> -->
 					<p:ajax listener="#{configurationStep1Bean.handleChange}" update=":#{p:component('nextBut')}" />

@@ -2,6 +2,7 @@ package org.ruleEditor.beans;
 
 import java.io.IOException;
 
+import javax.faces.application.FacesMessage;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.SessionScoped;
 import javax.faces.context.ExternalContext;
@@ -19,6 +20,7 @@ public class AddRuleStep1Bean {
 	private Main main;
 	private AddNewRuleBean addNewRuleBean;
 	private String selectedOption;
+	private String description;
 	
 	public AddRuleStep1Bean() {
 		super();
@@ -30,8 +32,10 @@ public class AddRuleStep1Bean {
 	
 	public void init(){
 		selectedOption = "";
+		description = "";
 		formCompleted = true;
 	}
+	
 
 	public CommandLink getButton() {
 		return button;
@@ -59,6 +63,15 @@ public class AddRuleStep1Bean {
 	
 	public void submitOption() throws IOException{
 		
+		if (description.trim().equals("")) {
+			FacesContext.getCurrentInstance().addMessage(
+					"msgs",
+					new FacesMessage(FacesMessage.SEVERITY_ERROR,
+							"Please provide a description for the rule", ""));
+
+			return;
+		}
+		
 		FacesContext context = FacesContext.getCurrentInstance();
 		addNewRuleBean = (AddNewRuleBean) context.getApplication()
 				.evaluateExpressionGet(context, "#{addNewRuleBean}",
@@ -68,14 +81,23 @@ public class AddRuleStep1Bean {
 			flag = true;
 
 		addNewRuleBean.init(flag);
-
+		addNewRuleBean.setRuleDescription(description);
 		ExternalContext externalContext = FacesContext.getCurrentInstance()
 				.getExternalContext();
 		externalContext.redirect(selectedOption);
+	
 		
 		
 	}
     
+	public String getDescription() {
+		return description;
+	}
+
+	public void setDescription(String description) {
+		this.description = description;
+	}
+
 	public void handleChange(){
 	     formCompleted = false;
 	}

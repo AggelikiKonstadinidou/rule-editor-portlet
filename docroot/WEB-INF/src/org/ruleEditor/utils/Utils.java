@@ -14,6 +14,9 @@ import java.lang.reflect.Type;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.nio.charset.Charset;
+import java.sql.Date;
+import java.sql.Timestamp;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -206,10 +209,9 @@ public class Utils {
 
 					className = el.getProperty().getClassName();
 
+				} else if (el.getType() == PointElement.Type.CLASS) {
+					className = el.getElementName();
 				}
-				// else if (el.getType() == PointElement.Type.CLASS) {
-				// className = el.getElementName();
-				// }
 
 				if (!ruleUsedClasses.contains(className))
 					ruleUsedClasses.add(className);
@@ -224,6 +226,8 @@ public class Utils {
 			ArrayList<String> usedClassesFromCreatedRule) {
 		ArrayList<Message> list = new ArrayList<Message>();
 		ArrayList<String> tempList = new ArrayList<String>();
+		ArrayList<String> relatedClassesList = new ArrayList<String>();
+		String relatedClassesString = "";
 
 		int numberOfUsedClasses = usedClassesFromCreatedRule.size();
 		int numberOfCommonClasses = 0;
@@ -234,24 +238,40 @@ public class Utils {
 			Map.Entry pair = (Map.Entry) it.next();
 			tempList = (ArrayList<String>) pair.getValue();
 			for (String s : usedClassesFromCreatedRule) {
-				if (tempList.contains(s))
+				if (tempList.contains(s)) {
 					numberOfCommonClasses++;
+					if (!relatedClassesList.contains(s))
+						relatedClassesList.add(s);
+				}
 			}
 
 			System.out
 					.println("correlation "
 							+ (double) ((double) numberOfCommonClasses / (double) numberOfUsedClasses));
 
-			if ((double) ((double) numberOfCommonClasses / (double) numberOfUsedClasses) > 0.5) {
-				msg = new Message();
-				String[] splitted = pair.getKey().toString().split("__");
-				msg.setLanguage(splitted[0]);
-				msg.setText(splitted[1]);
-				list.add(msg);
+			// if ((double) ((double) numberOfCommonClasses / (double)
+			// numberOfUsedClasses) > 0.5) {
+			msg = new Message();
+			String[] splitted = pair.getKey().toString().split("__");
+			msg.setLanguage(splitted[0]);
+			msg.setText(splitted[1]);
+			msg.setRelatedClasses(relatedClassesList);
+			int length = relatedClassesList.size() - 1;
+			for (String s : relatedClassesList) {
+				if (relatedClassesList.indexOf(s) != length)
+					relatedClassesString = relatedClassesString.concat(s + ",");
+				else
+					relatedClassesString = relatedClassesString.concat(s);
 			}
+			if (relatedClassesString.isEmpty())
+				relatedClassesString = "-";
+			msg.setRelatedClassesString(relatedClassesString);
+			list.add(msg);
+			// }
 
 			numberOfCommonClasses = 0;
-
+			relatedClassesString = "";
+			relatedClassesList = new ArrayList<String>();
 		}
 
 		return list;
@@ -608,7 +628,7 @@ public class Utils {
 							usedVariablesForClasses.put(el.getProperty()
 									.getValue(), objProp.getRangeOfClasses()
 									.get(0));
-						
+
 						objProp.setValue(el.getProperty().getValue());
 						objProp.setClassVar(varName);
 
@@ -1020,6 +1040,10 @@ public class Utils {
 		Rule rule = null;
 		String name = "";
 		String body = "";
+		String description = "";
+		Timestamp creationDate = null;
+		Timestamp lastModifiedDate = null;
+
 		RuleType ruleType = RuleType.CONFLICT;
 		String feedbackClass = "";
 		String feedbackScope = "";
@@ -1031,6 +1055,28 @@ public class Utils {
 			if (line.contains("//") && !line.contains("//registry.gpii.net"))
 				flag = false;
 
+			if (line.contains("C4A_DESCRIPTION"))
+				description = line.replace("// C4A_DESCRIPTION : ", "").trim();
+			if (line.contains("C4A_LAST_MODIFIED_DATE"))
+				lastModifiedDate = convertStringToTimeStamp(line.replace(
+						"// C4A_LAST_MODIFIED_DATE : ", "").trim());
+
+			if (line.contains("C4A_CREATION_DATE"))
+				creationDate = convertStringToTimeStamp(line.replace(
+						"// C4A_CREATION_DATE : ", "").trim());
+
+			if (line.contains("[")) {
+				counter++;
+				rule = new Rule();
+				rule.setDescription(description);
+				rule.setCreationDate(creationDate);
+				rule.setLastModifiedDate(lastModifiedDate);
+				list.add(rule);
+				description = "";
+				creationDate = null;
+				lastModifiedDate = null;
+			}
+
 			if (!line.equalsIgnoreCase(prefix_c4a)
 					&& !line.equalsIgnoreCase(prefix_rdfs) && !line.isEmpty()
 					&& flag)
@@ -1038,6 +1084,8 @@ public class Utils {
 
 			flag = true;
 		}
+
+		counter = 0;
 
 		String stringFile = out.toString().trim();
 		String[] splitted = stringFile.split("]");
@@ -1050,7 +1098,7 @@ public class Utils {
 
 			// TODO check if its both conflict and feedback rule
 			if (body.contains("Metadata")) {
-				ruleType = RuleType.FEEDBACK;
+				ruleType = RuleType.GENERAL;
 
 				String[] splitted2 = null;
 				String[] lines = body.split(">")[1].split("\n");
@@ -1068,22 +1116,44 @@ public class Utils {
 						splitted2 = lines[j].split(" ");
 						feedbackID = splitted2[2].replace("c4a:", "").replace(
 								")", "");
+						ruleType = RuleType.FEEDBACK;
 					}
 				}
 
 			} else
 				ruleType = RuleType.CONFLICT;
 
-			rule = new Rule(name, body, ruleType, counter);
-			rule.setFeedbackClass(feedbackClass);
-			rule.setFeedbackScope(feedbackScope);
-			rule.setFeedbackID(feedbackID);
+			Rule tempRule = list.get(counter).clone();
+
+			tempRule.setName(name);
+			tempRule.setBody(body);
+			tempRule.setRuleType(ruleType);
+			tempRule.setUniqueID(counter);
+			tempRule.setFeedbackClass(feedbackClass);
+			tempRule.setFeedbackScope(feedbackScope);
+			tempRule.setFeedbackID(feedbackID);
+
+			list.remove(counter);
+			list.add(counter, tempRule);
 			counter++;
 
-			list.add(rule);
 		}
 
 		return list;
+	}
+
+	public static Timestamp convertStringToTimeStamp(String s) {
+		Timestamp timestamp = null;
+		try {
+			SimpleDateFormat dateFormat = new SimpleDateFormat(
+					"yyyy-MM-dd hh:mm:ss.SSS");
+			java.util.Date parsedDate = dateFormat.parse(s);
+			timestamp = new java.sql.Timestamp(parsedDate.getTime());
+		} catch (Exception e) {
+
+		}
+
+		return timestamp;
 	}
 
 	public static String showPrettyBodyRule(String body) {

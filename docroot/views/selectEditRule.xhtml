@@ -16,10 +16,12 @@
 
 				<br />
 
-				<p:fileUpload style="width: 600px;" mode="advanced" label="Select rule file (e.g.testData\rules\example.rules)"
+				<p:fileUpload style="width: 600px;" mode="advanced"
+					label="Select rule file (e.g.testData\rules\example.rules)"
 					value="#{editRuleStep1Bean.fileName}" auto="true"
 					fileUploadListener="#{editRuleStep1Bean.onFileUpload}"
-					allowTypes="/(\.|\/)(rules)$/" update=":#{p:component('rulesList')}">
+					allowTypes="/(\.|\/)(rules)$/"
+					update=":#{p:component('rulesList')}">
 				</p:fileUpload>
 
 				<p:dataTable id="rulesList" var="rule"
@@ -27,16 +29,22 @@
 					selectionMode="single"
 					selection="#{editRuleStep1Bean.selectedRule}" scrollable="true"
 					scrollHeight="300">
-					<p:ajax event="rowSelect" update=":#{p:component('nextBut')}" />
+					<p:ajax event="rowSelect" update=":#{p:component('nextBut')},:#{p:component('preview')}" />
 					<f:facet name="header">
 						<h:outputText value="Rules of #{editRuleStep1Bean.fileName} file" />
 					</f:facet>
 
-					<p:column headerText="Name">
+					<p:column headerText="Rule Name">
 						<h:outputText value="#{rule.name}" />
 					</p:column>
-					<p:column headerText="Rule body">
-						<h:outputText value="#{rule.body}" />
+					<p:column headerText="Rule Description">
+						<h:outputText value="#{rule.description}" />
+					</p:column>
+					<p:column headerText="Creation Date">
+						<h:outputText value="#{rule.creationDate}" />
+					</p:column>
+					<p:column headerText="Last Modified Date">
+						<h:outputText value="#{rule.lastModifiedDate}" />
 					</p:column>
 
 				</p:dataTable>
@@ -47,6 +55,14 @@
 						title="Go to initial menu" id="prevBut" style="align: right"
 						ajax="false" value="Initial menu">
 					</p:commandButton>
+					<p:commandButton id="preview"
+						disabled="#{editRuleStep1Bean.formCompleted}"
+						actionListener="#{editRuleStep1Bean.previewRule}"
+						update=":#{p:component('ruleBodyDialog')}"
+						oncomplete="PF('ruleBodyDialog').show()" title="View the body of the selected rule before editing"
+						value="Preview Rule Body" icon="ui-icon-search">
+					</p:commandButton>
+
 					<p:commandButton
 						action="/views/editRule.xhtml?javax.portlet.faces.PortletMode=view&amp;javax.portlet.faces.WindowState=normal"
 						title="Go to the next step" id="nextBut"
@@ -56,6 +72,16 @@
 					</p:commandButton>
 				</div>
 			</p:panel>
+
+			<p:dialog widgetVar="ruleBodyDialog" id="ruleBodyDialog" modal="true"
+				header="Rule Body" resizable="false" showEffect="clip"
+				dynamic="true" hideEffect="fold" position="center,center">
+				<p:scrollPanel style="width:500px;height:500px;" mode="native">
+					<h:outputText value="#{editRuleStep1Bean.selectedRule.body}"
+						styleClass="preformatted" />
+				</p:scrollPanel>
+
+			</p:dialog>
 		</h:form>
 
 	</h:body>

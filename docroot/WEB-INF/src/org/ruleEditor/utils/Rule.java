@@ -1,5 +1,7 @@
 package org.ruleEditor.utils;
 
+import java.sql.Timestamp;
+
 public class Rule {
 
 	private String name;
@@ -9,18 +11,48 @@ public class Rule {
 	private String feedbackClass;
 	private String feedbackScope;
 	private String feedbackID;
+	private String description;
+	private Timestamp creationDate;
+	private Timestamp lastModifiedDate;
 	
-	public Rule(String name, String body, RuleType ruleType,int uniqueID) {
+	public Rule() {
 		super();
-		this.name = name;
-		this.body = body;
-		this.ruleType = ruleType;
+		this.name = "";
+		this.body = "";
+		this.ruleType = RuleType.CONFLICT;
 		this.feedbackClass ="";
 		this.feedbackScope ="";
 		this.feedbackID = "";
-		this.uniqueID = uniqueID;
+		this.uniqueID = -1;
 	}
 	
+
+	public Timestamp getCreationDate() {
+		return creationDate;
+	}
+
+	public void setCreationDate(Timestamp creationDate) {
+		this.creationDate = creationDate;
+	}
+
+	public Timestamp getLastModifiedDate() {
+		return lastModifiedDate;
+	}
+
+	public void setLastModifiedDate(Timestamp lastModifiedDate) {
+		this.lastModifiedDate = lastModifiedDate;
+	}
+
+	public String getDescription() {
+		return description;
+	}
+
+
+	public void setDescription(String description) {
+		this.description = description;
+	}
+
+
 	public int getUniqueID() {
 		return uniqueID;
 	}
@@ -38,6 +70,7 @@ public class Rule {
 	}
 
 	public String getBody() {
+		
 		return body;
 	}
 
@@ -84,6 +117,31 @@ public class Rule {
 	}
 
 	public enum RuleType {
-		CONFLICT, FEEDBACK, BOTH;
+		CONFLICT, FEEDBACK, GENERAL;
+	}
+	
+	@Override
+	public boolean equals(Object obj) {
+		if (this.getName().equals(((Rule) obj).getName())
+				&& this.getUniqueID() == (((Rule) obj).getUniqueID())
+				&& this.getBody().equals(((Rule) obj).getBody())) {
+			return true;
+		} else
+			return false;
+	}
+	
+	public Rule clone() {
+		Rule rule = new Rule();
+		rule.setName(this.name);
+		rule.setDescription(this.description);
+		rule.setBody(this.body);
+		rule.setCreationDate(this.creationDate);
+		rule.setLastModifiedDate(this.lastModifiedDate);
+		rule.setFeedbackClass(this.feedbackClass);
+		rule.setFeedbackID(this.feedbackID);
+		rule.setFeedbackScope(this.feedbackScope);
+		rule.setRuleType(this.ruleType);
+		
+		return rule;
 	}
 }
