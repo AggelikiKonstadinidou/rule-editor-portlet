@@ -43,9 +43,9 @@ public class RuleCreationUtilities {
 	public static List<String> categoryOfMethods_9 = Arrays.asList("makeTemp");
 	public static List<String> categoryOfMethods_10 = Arrays
 			.asList("makeInstance");
-
 	public static ArrayList<String> declaredClassVariables;
 	public static ArrayList<String> declaredObjectVariables;
+	private static String PATH = "C:\\Users\\konstadinidou\\Desktop\\rules\\testRules\\";
 
 	public static void saveRule(String ruleName, String fileName,
 			ArrayList<PointElement> conditions,
@@ -53,7 +53,7 @@ public class RuleCreationUtilities {
 			boolean createNewFile, String feedbackClass, String feedbackScope,
 			String feedbackId, ArrayList<Rule> existingRules,
 			InputStream fileStream, Timestamp creationDate, Timestamp lastModifiedDate,
-			String ruleDescription) throws IOException {
+			String ruleDescription, String typeOfUser) throws IOException {
 
 		// create the rule string
 		String rule = "";
@@ -92,6 +92,9 @@ public class RuleCreationUtilities {
 						+ "\n");
 				rule = ruleInfo + rule;
 			}
+
+			if (!typeOfUser.equals("user"))
+				fileName = PATH + fileName;
 
 			FileDownloadController.writeGsonAndExportFile(fileName, rule);
 		}

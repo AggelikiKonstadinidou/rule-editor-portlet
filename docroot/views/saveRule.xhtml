@@ -46,7 +46,7 @@
 				<p:commandButton value="Save" id="okBut" ajax="false"
 					actionListener="#{addNewRuleBean.saveRule}" />
 				<p:commandButton value="Check Correlation" id="correlation"
-					oncomplete="PF('correlationDialog').show()" />
+					oncomplete="PF('correlationDialog').show()"  rendered="#{userBean.admin}"/>
 			</p:panel>
 
 

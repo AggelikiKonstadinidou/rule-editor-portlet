@@ -21,6 +21,7 @@ public class Main {
 	private List<String> languages = new ArrayList<String>();
 	private ArrayList<Solution> allSolutions = new ArrayList<Solution>();
 	private ArrayList<Setting> allSettings = new ArrayList<Setting>();
+	private String typeOfUser = "";
 
 	public Main() {
 		System.gc();
@@ -628,5 +629,15 @@ public class Main {
 	public void setAllSolutions(ArrayList<Solution> allSolutions) {
 		this.allSolutions = allSolutions;
 	}
+
+	public String getTypeOfUser() {
+		return typeOfUser;
+	}
+
+	public void setTypeOfUser(String typeOfUser) {
+		this.typeOfUser = typeOfUser;
+	}
+	
+	
 
 }

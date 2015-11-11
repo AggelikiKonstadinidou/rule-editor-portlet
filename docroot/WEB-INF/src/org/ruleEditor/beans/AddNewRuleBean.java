@@ -150,6 +150,7 @@ public class AddNewRuleBean {
 	private String ruleDescription = "";
 	private String preview = "";
 
+
 	public AddNewRuleBean() {
 		super();
 
@@ -707,11 +708,12 @@ public class AddNewRuleBean {
 
 		if (rule != null)
 			creationDate = rule.getCreationDate();
+		
 
 		RuleCreationUtilities.saveRule(ruleName.replace(" ", "").trim(),
 				finalFileName, conditions, conclusions, false, createNewFile,
 				"", "", "", existingRules, fileStream, creationDate,
-				lastModifiedDate, ruleDescription);
+				lastModifiedDate, ruleDescription,main.getTypeOfUser());
 
 	}
 
