@@ -43,10 +43,13 @@
 				</h:panelGrid>
 				<p:commandButton value="Previous Step" id="previousStep"
 					actionListener="#{addNewRuleBean.goToPreviousStep}" ajax="false" />
-				<p:commandButton value="Save" id="okBut" ajax="false"
-					actionListener="#{addNewRuleBean.saveRule}" />
+				<p:commandButton value="Save and export locally" id="saveButton1" ajax="false"
+					actionListener="#{addNewRuleBean.saveRuleLocally}" />
+				<p:commandButton value="Save and export to server" id="saveButton2" ajax="false"
+				    rendered="#{userBean.admin}"
+					actionListener="#{addNewRuleBean.saveRuleInServer}" />
 				<p:commandButton value="Check Correlation" id="correlation"
-					oncomplete="PF('correlationDialog').show()"  rendered="#{userBean.admin}"/>
+					oncomplete="PF('correlationDialog').show()"/>
 			</p:panel>
 
 

@@ -1190,6 +1190,47 @@ public class Utils {
 		return "X_" + counter++;
 	}
 
+	public static String createOrderOfFilesForConfigFile(String inputString,
+			ArrayList<String> ruleSets) {
+		String newRuleString = "rules=";
+		for (String s : ruleSets) {
+			newRuleString = newRuleString.concat("testData/rules/" + s
+					+ ".rules;");
+		}
+
+		String[] splitted = inputString.split("\n");
+		int startPosOfRules = -1;
+
+		for (int i = 0; i < splitted.length; i++) {
+			if (splitted[i].contains("rules=")) {
+				startPosOfRules = i;
+				break;
+			}
+		}
+
+		int j = -1;
+		for (int i = startPosOfRules + 1; i < splitted.length; i++) {
+			if (splitted[i].contains("queries="))
+				break;
+			else if (splitted[i].contains("testData/rules/"))
+				j++;
+		}
+
+		if (j != -1)
+			for (int i = startPosOfRules; i < j; i++) {
+				splitted[i] = "";
+			}
+
+		splitted[startPosOfRules] = newRuleString;
+
+		String s = "";
+		for (int i = 0; i < splitted.length; i++) {
+			s = s.concat(splitted[i] + "\n");
+		}
+
+		return s;
+	}
+
 	public static ArrayList<String> getRuleArray(InputStream inputStream)
 			throws IOException {
 		ArrayList<String> rules = new ArrayList<String>();

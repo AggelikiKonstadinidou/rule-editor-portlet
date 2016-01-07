@@ -18,7 +18,7 @@ public class ConfigurationStep1Bean {
 	private boolean formCompleted = true;
 	private Main main;
 	private String selectedOption;
-	
+
 	public ConfigurationStep1Bean() {
 		super();
 		FacesContext context = FacesContext.getCurrentInstance();
@@ -26,8 +26,8 @@ public class ConfigurationStep1Bean {
 				"#{main}", Main.class);
 
 	}
-	
-	public void init(){
+
+	public void init() {
 		selectedOption = "";
 		formCompleted = true;
 	}
@@ -55,29 +55,29 @@ public class ConfigurationStep1Bean {
 	public void setSelectedOption(String selectedOption) {
 		this.selectedOption = selectedOption;
 	}
-	
-	public void submitOption() throws IOException{
-		
+
+	public void submitOption() throws IOException {
+
 		FacesContext context = FacesContext.getCurrentInstance();
-		EditKnowledgeBean editKnowledgeBean = (EditKnowledgeBean) context.getApplication()
-				.evaluateExpressionGet(context, "#{editKnowledgeBean}",
-						EditKnowledgeBean.class);
-		editKnowledgeBean.setRoot(new DefaultTreeNode("Json-ld",null));
+		EditKnowledgeBean editKnowledgeBean = (EditKnowledgeBean) context
+				.getApplication().evaluateExpressionGet(context,
+						"#{editKnowledgeBean}", EditKnowledgeBean.class);
+		editKnowledgeBean.setRoot(new DefaultTreeNode("Json-ld", null));
 		editKnowledgeBean.init();
-//		if (selectedOption.contains("Feedback"))
-//			flag = true;
-//
-//		addNewRuleBean.init(flag);
+
+		ConfigurateOrderBean configurateOrderBean = (ConfigurateOrderBean) context
+				.getApplication().evaluateExpressionGet(context,
+						"#{configurateOrderBean}", ConfigurateOrderBean.class);
+		configurateOrderBean.init();
 
 		ExternalContext externalContext = FacesContext.getCurrentInstance()
 				.getExternalContext();
 		externalContext.redirect(selectedOption);
-		
-		
+
 	}
-    
-	public void handleChange(){
-	     formCompleted = false;
+
+	public void handleChange() {
+		formCompleted = false;
 	}
 
 }

@@ -45,15 +45,20 @@ public class RuleCreationUtilities {
 			.asList("makeInstance");
 	public static ArrayList<String> declaredClassVariables;
 	public static ArrayList<String> declaredObjectVariables;
-	private static String PATH = "C:\\Users\\konstadinidou\\Desktop\\rules\\testRules\\";
+	public static String TEST_RULES_DIRECTORY_PATH = "C:\\Users\\konstadinidou\\Desktop\\rules\\testRules\\";
+	public static String SERVER_RULES_DIRECTORY_PATH = "";
+	public static String TEST_CONFIGFILE_PATH = "C:\\Users\\konstadinidou\\Desktop\\rules\\testRules\\config.properties";
+	public static String SERVER_CONFIFFILE_PATH = "";
+	
 
 	public static void saveRule(String ruleName, String fileName,
 			ArrayList<PointElement> conditions,
 			ArrayList<PointElement> conclusions, boolean flag,
 			boolean createNewFile, String feedbackClass, String feedbackScope,
 			String feedbackId, ArrayList<Rule> existingRules,
-			InputStream fileStream, Timestamp creationDate, Timestamp lastModifiedDate,
-			String ruleDescription, String typeOfUser) throws IOException {
+			InputStream fileStream, Timestamp creationDate,
+			Timestamp lastModifiedDate, String ruleDescription,
+			String typeOfUser, boolean automaticUpdate) throws IOException {
 
 		// create the rule string
 		String rule = "";
@@ -76,8 +81,8 @@ public class RuleCreationUtilities {
 				ruleInfo = ruleInfo
 						.concat(description + ruleDescription + "\n");
 				ruleInfo = ruleInfo.concat(creation_date + creationDate + "\n");
-				ruleInfo = ruleInfo.concat(last_modified_date + lastModifiedDate
-						+ "\n");
+				ruleInfo = ruleInfo.concat(last_modified_date
+						+ lastModifiedDate + "\n");
 
 				allRuleString = allRuleString.concat("\n" + ruleInfo
 						+ rule.trim());
@@ -93,10 +98,19 @@ public class RuleCreationUtilities {
 				rule = ruleInfo + rule;
 			}
 
-			if (!typeOfUser.equals("user"))
-				fileName = PATH + fileName;
+			// if (!typeOfUser.equals("user"))
+			// fileName = PATH + fileName;
 
-			FileDownloadController.writeGsonAndExportFile(fileName, rule);
+			// just export the file, do not update
+			// the original files that exist on server
+			if (!automaticUpdate)
+				FileDownloadController.writeGsonAndExportFile(fileName, rule);
+			else {
+
+				fileName = TEST_RULES_DIRECTORY_PATH + fileName;
+				FileDownloadController.writeGsonAndExportInServer(TEST_RULES_DIRECTORY_PATH,fileName,
+						rule);
+			}
 		}
 
 	}
@@ -107,8 +121,7 @@ public class RuleCreationUtilities {
 		declaredClassVariables = new ArrayList<String>();
 		declaredObjectVariables = new ArrayList<String>();
 
-		String rule = "[" + ruleName
-				+ "\n";
+		String rule = "[" + ruleName + "\n";
 
 		rule = rule + convertListToRule(conditions);
 

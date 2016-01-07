@@ -99,6 +99,7 @@ public class EditRuleStep1Bean {
 				.getUsedVariablesForClassesList());
 		addNewRuleBean.setUsedVariablesForValues(Utils
 				.getUsedVariablesForValuesList());
+		addNewRuleBean.setPreview("");
 
 		boolean flag = false;
 		if (rule.contains("message"))

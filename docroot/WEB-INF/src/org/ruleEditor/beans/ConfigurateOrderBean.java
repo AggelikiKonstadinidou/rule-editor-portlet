@@ -42,7 +42,7 @@ public class ConfigurateOrderBean {
 	}
 
 	public void init() {
-		
+
 		ruleSets = new ArrayList<String>();
 		objectRules = new ArrayList<Rule>();
 		propertiesFileName = "";
@@ -51,12 +51,12 @@ public class ConfigurateOrderBean {
 		inputString = "";
 
 	}
-	
+
 	public void onRowReorder(ReorderEvent event) {
-		
+
 	}
-	
-	public void exportRuleFile() throws IOException{
+
+	public void exportRuleFile() throws IOException {
 		String allRuleString = Utils.prefix_c4a + "\n" + Utils.prefix_rdfs
 				+ "\n\n";
 		for (Rule temp : objectRules) {
@@ -66,64 +66,32 @@ public class ConfigurateOrderBean {
 		FileDownloadController.writeGsonAndExportFile(ruleFileName,
 				allRuleString);
 	}
-	
+
 	public void exportPropertyFile() throws IOException {
-		String newRuleString = "rules=";
-		for (String s : ruleSets) {
-			newRuleString = newRuleString.concat("testData/rules/" + s
-					+ ".rules;");
-		}
 
-		String[] splitted = inputString.split("\n");
-		int startPosOfRules = -1;
-
-		for (int i = 0; i < splitted.length; i++) {
-			if (splitted[i].contains("rules=")) {
-				startPosOfRules = i;
-				break;
-			}
-		}
-
-		int j = -1;
-		for (int i = startPosOfRules + 1; i < splitted.length; i++) {
-			if (splitted[i].contains("queries="))
-				break;
-			else if (splitted[i].contains("testData/rules/"))
-				j++;
-		}
-
-		if(j!=-1)
-		for (int i = startPosOfRules; i < j; i++) {
-			splitted[i] = "";
-		}
-
-		splitted[startPosOfRules] = newRuleString;
-
-		String s = "";
-		for (int i = 0; i < splitted.length; i++) {
-			s = s.concat(splitted[i] + "\n");
-		}
+		String s = Utils.createOrderOfFilesForConfigFile(inputString, ruleSets);
 
 		FileDownloadController.writeGsonAndExportFile(propertiesFileName, s);
 	}
-	
-	public void onPropertiesFileUpload(FileUploadEvent event) throws IOException{
-		
+
+	public void onPropertiesFileUpload(FileUploadEvent event)
+			throws IOException {
+
 		propertiesFileName = event.getFile().getFileName();
 		inputStream = event.getFile().getInputstream();
 		ruleSets = Utils.getRuleArray(inputStream);
-		inputString = ruleSets.get(ruleSets.size()-1);
-		ruleSets.remove(ruleSets.size()-1);
-		
+		inputString = ruleSets.get(ruleSets.size() - 1);
+		ruleSets.remove(ruleSets.size() - 1);
+
 	}
-	
-	public void onRuleFileUpload(FileUploadEvent event) throws IOException{
+
+	public void onRuleFileUpload(FileUploadEvent event) throws IOException {
 		this.ruleFileName = event.getFile().getFileName().replace(".rules", "");
 
 		this.rulesInputStream = event.getFile().getInputstream();
 
 		System.out.println(ruleFileName);
-		
+
 		objectRules = Utils.getRulesFromFile(rulesInputStream);
 	}
 
@@ -134,7 +102,7 @@ public class ConfigurateOrderBean {
 	public void setPropertiesFileName(String propertiesFileName) {
 		this.propertiesFileName = propertiesFileName;
 	}
-	
+
 	public ArrayList<String> getRuleSets() {
 		return ruleSets;
 	}

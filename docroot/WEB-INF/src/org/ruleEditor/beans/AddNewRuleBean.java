@@ -641,6 +641,9 @@ public class AddNewRuleBean {
 
 	public void getPreviousStep(String step) {
 		previousStep = step;
+		ruleName = "";
+		newFileName = "";
+		oldFileName = "";
 	}
 
 	public void previewRule() {
@@ -675,8 +678,52 @@ public class AddNewRuleBean {
 
 		preview = orderPreview.concat("\n]");
 	}
+	
+	
+	public void saveRuleInServer() throws IOException{
+		if (ruleName.trim().equals("")) {
+			FacesContext.getCurrentInstance().addMessage(
+					"msgs",
+					new FacesMessage(FacesMessage.SEVERITY_ERROR,
+							"Please provide a rule name", ""));
 
-	public void saveRule() throws IOException {
+			return;
+		}
+
+		String finalFileName = newFileName.replace(" ", "_").trim();
+		boolean createNewFile = true;
+		if (newFileName.isEmpty() && !oldFileName.trim().isEmpty()) {
+			createNewFile = false;
+			finalFileName = oldFileName;
+		}
+		if (finalFileName.trim().equals("")) {
+			FacesContext.getCurrentInstance().addMessage(
+					"msgs",
+					new FacesMessage(FacesMessage.SEVERITY_ERROR,
+							"Please create a new file or select an existing",
+							""));
+			return;
+		}
+		
+		java.util.Date date = new java.util.Date();
+		Timestamp creationDate = new Timestamp(date.getTime());
+		Timestamp lastModifiedDate = new Timestamp(date.getTime());
+
+		if (rule != null)
+			creationDate = rule.getCreationDate();
+		
+        //flag for automatic deployment
+		boolean automaticUpdate = true;
+		
+		RuleCreationUtilities.saveRule(ruleName.replace(" ", "").trim(),
+				finalFileName, conditions, conclusions, false, createNewFile,
+				"", "", "", existingRules, fileStream, creationDate,
+				lastModifiedDate, ruleDescription,main.getTypeOfUser(), automaticUpdate);
+		
+		
+	}
+
+	public void saveRuleLocally() throws IOException {
 
 		if (ruleName.trim().equals("")) {
 			FacesContext.getCurrentInstance().addMessage(
@@ -709,11 +756,13 @@ public class AddNewRuleBean {
 		if (rule != null)
 			creationDate = rule.getCreationDate();
 		
-
+        //flag for automatic deployment
+		boolean automaticUpdate = false;
+		
 		RuleCreationUtilities.saveRule(ruleName.replace(" ", "").trim(),
 				finalFileName, conditions, conclusions, false, createNewFile,
 				"", "", "", existingRules, fileStream, creationDate,
-				lastModifiedDate, ruleDescription,main.getTypeOfUser());
+				lastModifiedDate, ruleDescription,main.getTypeOfUser(), automaticUpdate);
 
 	}
 
