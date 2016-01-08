@@ -45,11 +45,19 @@ public class RuleCreationUtilities {
 			.asList("makeInstance");
 	public static ArrayList<String> declaredClassVariables;
 	public static ArrayList<String> declaredObjectVariables;
-	public static String TEST_RULES_DIRECTORY_PATH = "C:\\Users\\konstadinidou\\Desktop\\rules\\testRules\\";
-	public static String SERVER_RULES_DIRECTORY_PATH = "";
-	public static String TEST_CONFIGFILE_PATH = "C:\\Users\\konstadinidou\\Desktop\\rules\\testRules\\config.properties";
-	public static String SERVER_CONFIFFILE_PATH = "";
 	
+	//paths for server and for local testing
+	public static String testRulesDirectoryPath = "C:\\Users\\konstadinidou\\Desktop\\rules\\testRules\\";
+	public static String serverRulesDirectoryPath = "D:\\liferay-portal-6.1.2-ce-ga3\\tomcat-7.0.40\\webapps\\CLOUD4All_RBMM_Restful_WS\\WEB-INF\\testData\\rules\\";
+	public static String testConfigFilePath = "C:\\Users\\konstadinidou\\Desktop\\rules\\testRules\\config.properties";
+	public static String serverConfigFilePath = "D:\\liferay-portal-6.1.2-ce-ga3\\tomcat-7.0.40\\webapps\\CLOUD4All_RBMM_Restful_WS\\WEB-INF\\";
+	public static String testJsonLdPath = "C:\\Users\\konstadinidou\\Desktop\\rules\\testRules\\";
+	public static String serverJsonLdPath = "D:\\liferay-portal-6.1.2-ce-ga3\\tomcat-7.0.40\\webapps\\CLOUD4All_RBMM_Restful_WS\\WEB-INF\\semantics\\";
+	
+	//working paths
+	public static String WORKING_JSONLD_PATH = serverJsonLdPath;
+	public static String WORKING_CONFIGFILE_PATH = serverConfigFilePath;
+	public static String WORKING_RULES_DIRECTORY_PATH = serverRulesDirectoryPath;
 
 	public static void saveRule(String ruleName, String fileName,
 			ArrayList<PointElement> conditions,
@@ -107,9 +115,9 @@ public class RuleCreationUtilities {
 				FileDownloadController.writeGsonAndExportFile(fileName, rule);
 			else {
 
-				fileName = TEST_RULES_DIRECTORY_PATH + fileName;
-				FileDownloadController.writeGsonAndExportInServer(TEST_RULES_DIRECTORY_PATH,fileName,
-						rule);
+				fileName = WORKING_RULES_DIRECTORY_PATH + fileName;
+				FileDownloadController.writeGsonForRuleAndExportToServer(
+						fileName, rule);
 			}
 		}
 

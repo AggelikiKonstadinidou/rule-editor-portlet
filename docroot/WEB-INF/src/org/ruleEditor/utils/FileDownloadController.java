@@ -3,6 +3,7 @@ package org.ruleEditor.utils;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -23,15 +24,21 @@ import com.liferay.portal.util.PortalUtil;
 
 public class FileDownloadController {
 
-	public static void writeGsonAndExportInServer(String directoryName,
-			String fileName, String json) throws IOException {
+	public static void simpleWriteGsonAndExportToServer(String fileName,
+			String json) throws IOException {
+		File myFile = new File(fileName);
+		FileWriter fileWriter;
+		fileWriter = new FileWriter(myFile, false);
+		fileWriter.write(json);
+		fileWriter.close();
+
+	}
+
+	public static void writeGsonForRuleAndExportToServer(String fileName,
+			String json) throws IOException {
 
 		File myFile = new File(fileName);
-		File configFile;
 		FileWriter fileWriter;
-		FileInputStream fis;
-		ArrayList<String> ruleSets;
-		String inputString = "", newString = "";
 
 		// true to append (if the file does not exist)
 		// false to overwrite (if the file exists)
@@ -41,19 +48,8 @@ public class FileDownloadController {
 			myFile = new File(fileName);
 			System.out.println("file does not exist");
 			// update the configuration file
-			configFile = new File(RuleCreationUtilities.TEST_CONFIGFILE_PATH);
-			fis = new FileInputStream(configFile);
-			ruleSets = Utils.getRuleArray(fis);
-			inputString = ruleSets.get(ruleSets.size() - 1);
-			ruleSets.remove(ruleSets.size() - 1);
-			ruleSets.add(myFile.getName());
-
-			newString = Utils.createOrderOfFilesForConfigFile(inputString,
-					ruleSets);
-
-			fileWriter = new FileWriter(configFile, false);
-			fileWriter.write(newString);
-			fileWriter.close();
+			addRuleFileToServerConfigFile(
+					RuleCreationUtilities.WORKING_CONFIGFILE_PATH, myFile);
 
 			System.out.println("update configuration file");
 
@@ -67,6 +63,27 @@ public class FileDownloadController {
 
 	}
 
+	public static void addRuleFileToServerConfigFile(String configFilePath,
+			File newFile) throws IOException {
+
+		// load the string that contains the names of the rule files
+		// add the new file name and update the config file
+		File configFile = new File(configFilePath);
+		FileInputStream fis = new FileInputStream(configFile);
+		ArrayList<String> ruleSets = Utils.getRuleArray(fis);
+		String inputString = ruleSets.get(ruleSets.size() - 1);
+		ruleSets.remove(ruleSets.size() - 1);
+		ruleSets.add(newFile.getName());
+
+		String newString = Utils.createOrderOfFilesForConfigFile(inputString,
+				ruleSets);
+
+		FileWriter fileWriter = new FileWriter(configFile, false);
+		fileWriter.write(newString);
+		fileWriter.close();
+
+	}
+
 	public static void writeGsonAndExportFile(String fileName, String json)
 			throws IOException {
 
@@ -75,12 +92,6 @@ public class FileDownloadController {
 				fileName, "UTF-8"));
 		out.write(json);
 		out.close();
-
-		// File fil = new File(fileName);
-
-		// InputStream stream = new FileInputStream(fil);
-		// StreamedContent file = new DefaultStreamedContent(stream, "text/txt",
-		// fileName);
 
 		File localfile = new File(fileName);
 		FileInputStream fis = new FileInputStream(localfile);

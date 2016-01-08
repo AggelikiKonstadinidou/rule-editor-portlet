@@ -88,9 +88,10 @@ import org.ruleEditor.ontology.BuiltinMethod.HelpObject;
 public class AddNewRuleBean {
 
 	private Main main;
+	private AddRuleStep1Bean addRuleStep1Bean;
 	private DefaultTreeNode root;
 	private TreeNode selectedNode = null;
-	private String ruleName = "", newFileName = "", oldFileName = "";
+	private String oldFileName = "";
 	private InputStream fileStream;
 	private DefaultDiagramModel conditionsModel;
 	private DefaultDiagramModel conclusionsModel;
@@ -122,7 +123,7 @@ public class AddNewRuleBean {
 	private ArrayList<Rule> existingRules = new ArrayList<Rule>();
 	private boolean feedback = true;
 	private int counterOfConnections = 0;
-	
+
 	private ArrayList<String> usedVariablesForClasses = new ArrayList<String>();
 
 	private ArrayList<String> usedVariablesForValues = new ArrayList<String>();
@@ -150,13 +151,15 @@ public class AddNewRuleBean {
 	private String ruleDescription = "";
 	private String preview = "";
 
-
 	public AddNewRuleBean() {
 		super();
 
 		FacesContext context = FacesContext.getCurrentInstance();
 		main = (Main) context.getApplication().evaluateExpressionGet(context,
 				"#{main}", Main.class);
+		addRuleStep1Bean = (AddRuleStep1Bean) context.getApplication()
+				.evaluateExpressionGet(context, "#{addRuleStep1Bean}",
+						AddRuleStep1Bean.class);
 		createOntologyTree(main.getOntology());
 
 	}
@@ -182,19 +185,17 @@ public class AddNewRuleBean {
 		sourceElement = new PointElement();
 		originalTargetElement = new PointElement();
 		clonedOriginalTargetElement = new PointElement();
-		ruleName = "";
 		oldFileName = "";
-		newFileName = "";
 		counterOfConnections = 0;
 		filesToCompare = new HashMap<String, InputStream>();
 		correlatedFiles = new ArrayList<Message>();
 		Message msg = new Message();
 		msg.setLanguage("fileName");
 		msg.setText("rule");
-	//	correlatedFiles.add(msg);
+		// correlatedFiles.add(msg);
 		option = "class";
 		ruleDescription = "";
-	//	rule = null;
+		// rule = null;
 		preview = "";
 
 		usedVariablesForClasses = new ArrayList<String>();
@@ -641,8 +642,6 @@ public class AddNewRuleBean {
 
 	public void getPreviousStep(String step) {
 		previousStep = step;
-		ruleName = "";
-		newFileName = "";
 		oldFileName = "";
 	}
 
@@ -656,7 +655,7 @@ public class AddNewRuleBean {
 	public void addOrderToRulePreview() {
 		String s = preview;
 		s = s.replace("[\n", "").replace("]", "").trim();
-		//String[] splitted = s.split("\\(");
+		// String[] splitted = s.split("\\(");
 		String[] splitted = s.split("\n");
 		String orderPreview = "[\n";
 		int counter = 1;
@@ -665,44 +664,27 @@ public class AddNewRuleBean {
 
 				if (!splitted[i].equalsIgnoreCase("->")) {
 					orderPreview = orderPreview.concat(counter + ": "
-							+ splitted[i]+"\n");
+							+ splitted[i] + "\n");
 					counter++;
 				} else {
-					orderPreview = orderPreview.concat(splitted[i]+"\n");
+					orderPreview = orderPreview.concat(splitted[i] + "\n");
 					counter = 1;
 				}
 
 			}
-		
+
 		}
 
 		preview = orderPreview.concat("\n]");
 	}
-	
-	
-	public void saveRuleInServer() throws IOException{
-		if (ruleName.trim().equals("")) {
-			FacesContext.getCurrentInstance().addMessage(
-					"msgs",
-					new FacesMessage(FacesMessage.SEVERITY_ERROR,
-							"Please provide a rule name", ""));
 
-			return;
-		}
+	public void saveRuleInServer() throws IOException {
 
-		String finalFileName = newFileName.replace(" ", "_").trim();
+		String finalFileName = "cloud4All_RuleFile";
 		boolean createNewFile = true;
-		if (newFileName.isEmpty() && !oldFileName.trim().isEmpty()) {
+		if (!oldFileName.trim().isEmpty()) {
 			createNewFile = false;
 			finalFileName = oldFileName;
-		}
-		if (finalFileName.trim().equals("")) {
-			FacesContext.getCurrentInstance().addMessage(
-					"msgs",
-					new FacesMessage(FacesMessage.SEVERITY_ERROR,
-							"Please create a new file or select an existing",
-							""));
-			return;
 		}
 		
 		java.util.Date date = new java.util.Date();
@@ -711,42 +693,25 @@ public class AddNewRuleBean {
 
 		if (rule != null)
 			creationDate = rule.getCreationDate();
-		
-        //flag for automatic deployment
+
+		// flag for automatic deployment
 		boolean automaticUpdate = true;
-		
-		RuleCreationUtilities.saveRule(ruleName.replace(" ", "").trim(),
+
+		RuleCreationUtilities.saveRule(addRuleStep1Bean.getRuleName().replace(" ", "").trim(),
 				finalFileName, conditions, conclusions, false, createNewFile,
 				"", "", "", existingRules, fileStream, creationDate,
-				lastModifiedDate, ruleDescription,main.getTypeOfUser(), automaticUpdate);
-		
-		
+				lastModifiedDate, ruleDescription, main.getTypeOfUser(),
+				automaticUpdate);
+
 	}
 
 	public void saveRuleLocally() throws IOException {
 
-		if (ruleName.trim().equals("")) {
-			FacesContext.getCurrentInstance().addMessage(
-					"msgs",
-					new FacesMessage(FacesMessage.SEVERITY_ERROR,
-							"Please provide a rule name", ""));
-
-			return;
-		}
-
-		String finalFileName = newFileName.replace(" ", "_").trim();
+		String finalFileName = "cloud4All_RuleFile";
 		boolean createNewFile = true;
-		if (newFileName.isEmpty() && !oldFileName.trim().isEmpty()) {
+		if (!oldFileName.trim().isEmpty()) {
 			createNewFile = false;
 			finalFileName = oldFileName;
-		}
-		if (finalFileName.trim().equals("")) {
-			FacesContext.getCurrentInstance().addMessage(
-					"msgs",
-					new FacesMessage(FacesMessage.SEVERITY_ERROR,
-							"Please create a new file or select an existing",
-							""));
-			return;
 		}
 
 		java.util.Date date = new java.util.Date();
@@ -755,14 +720,15 @@ public class AddNewRuleBean {
 
 		if (rule != null)
 			creationDate = rule.getCreationDate();
-		
-        //flag for automatic deployment
+
+		// flag for automatic deployment
 		boolean automaticUpdate = false;
-		
-		RuleCreationUtilities.saveRule(ruleName.replace(" ", "").trim(),
+
+		RuleCreationUtilities.saveRule(addRuleStep1Bean.getRuleName().replace(" ", "").trim(),
 				finalFileName, conditions, conclusions, false, createNewFile,
 				"", "", "", existingRules, fileStream, creationDate,
-				lastModifiedDate, ruleDescription,main.getTypeOfUser(), automaticUpdate);
+				lastModifiedDate, ruleDescription, main.getTypeOfUser(),
+				automaticUpdate);
 
 	}
 
@@ -955,7 +921,7 @@ public class AddNewRuleBean {
 				}
 			}
 		}
-		
+
 		// update the corresponding list
 		if (cloneSelectedNode.getPanel().equals("conditions"))
 			conditions = (ArrayList<PointElement>) clonedList.clone();
@@ -978,10 +944,10 @@ public class AddNewRuleBean {
 			el.setData(cloneSelectedNode);
 			conclusionsModel.getElements().add(index, el);
 		}
-		
-		//sort the collections according to the order comparator
-		Collections.sort(conditions,new ElementComparator());
-		Collections.sort(conclusions,new ElementComparator());
+
+		// sort the collections according to the order comparator
+		Collections.sort(conditions, new ElementComparator());
+		Collections.sort(conclusions, new ElementComparator());
 
 	}
 
@@ -1617,9 +1583,9 @@ public class AddNewRuleBean {
 		// define the order
 		int order = -1;
 		if (panelID.equalsIgnoreCase("pan1")) {
-			order = conditions.size()+1;
+			order = conditions.size() + 1;
 		} else {
-			order = conclusions.size()+1;
+			order = conclusions.size() + 1;
 		}
 		classEl.setOrder(order);
 		Element element = new Element(classEl, String.valueOf(classEl.getX()
@@ -1642,9 +1608,9 @@ public class AddNewRuleBean {
 		// define the order
 		int order = -1;
 		if (panelID.equalsIgnoreCase("pan1")) {
-			order = conditions.size()+1;
+			order = conditions.size() + 1;
 		} else {
-			order = conclusions.size()+1;
+			order = conclusions.size() + 1;
 		}
 
 		methodEl.setOrder(order);
@@ -1710,9 +1676,9 @@ public class AddNewRuleBean {
 		// define the order
 		int order = -1;
 		if (panelID.equalsIgnoreCase("pan1")) {
-			order = conditions.size()+1;
+			order = conditions.size() + 1;
 		} else {
-			order = conclusions.size()+1;
+			order = conclusions.size() + 1;
 		}
 
 		propElement.setOrder(order);
@@ -1967,22 +1933,6 @@ public class AddNewRuleBean {
 
 	public void setConclusions(ArrayList<PointElement> conclusions) {
 		this.conclusions = conclusions;
-	}
-
-	public String getRuleName() {
-		return ruleName;
-	}
-
-	public void setRuleName(String ruleName) {
-		this.ruleName = ruleName;
-	}
-
-	public String getNewFileName() {
-		return newFileName;
-	}
-
-	public void setNewFileName(String newFileName) {
-		this.newFileName = newFileName;
 	}
 
 	public String getOldFileName() {

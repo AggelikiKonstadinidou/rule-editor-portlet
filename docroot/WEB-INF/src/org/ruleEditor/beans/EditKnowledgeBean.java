@@ -5,6 +5,7 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.faces.application.FacesMessage;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.SessionScoped;
 import javax.faces.context.FacesContext;
@@ -18,6 +19,7 @@ import org.ruleEditor.ontology.OntologyClass;
 import org.ruleEditor.utils.RecommendationForJson;
 import org.ruleEditor.utils.RecommendationForJson.Recommendation;
 import org.ruleEditor.utils.FileDownloadController;
+import org.ruleEditor.utils.RuleCreationUtilities;
 import org.ruleEditor.utils.Term;
 import org.ruleEditor.utils.Utils;
 
@@ -111,10 +113,11 @@ public class EditKnowledgeBean {
 
 		if (clonedSelectedTerm.getType().equalsIgnoreCase("AbstractTerm")) {
 
-			if (!clonedSelectedTerm.equals(selectedTerm) || 
-					(newRecommendations.size()>=1 && !newRecommendations.contains(testRec) )) {
+			if (!clonedSelectedTerm.equals(selectedTerm)
+					|| (newRecommendations.size() >= 1 && !newRecommendations
+							.contains(testRec))) {
 
-			//make any updates in the original term
+				// make any updates in the original term
 				for (RecommendationForJson temp : terms) {
 					if (temp.getId().equalsIgnoreCase(selectedTerm.getId())
 							&& temp.getRating() == Integer
@@ -122,12 +125,13 @@ public class EditKnowledgeBean {
 							&& temp.isValue() == Boolean
 									.parseBoolean(selectedTerm.getValue())) {
 						temp.setId(clonedSelectedTerm.getId());
-						temp.setValue(Boolean.parseBoolean(clonedSelectedTerm.getValue()));
+						temp.setValue(Boolean.parseBoolean(clonedSelectedTerm
+								.getValue()));
 						temp.setRating(Integer.parseInt(clonedSelectedTerm
 								.getRating()));
 
-						//add new recommendation to the list of recommendations
-						//of the abstract term
+						// add new recommendation to the list of recommendations
+						// of the abstract term
 						if (newRecommendations.size() >= 1) {
 							for (Recommendation rec : newRecommendations) {
 								if (!rec.getId().isEmpty()
@@ -137,7 +141,7 @@ public class EditKnowledgeBean {
 								}
 							}
 						}
-						
+
 						// clear list of new recommendations
 						newRecommendations = new ArrayList<Recommendation>();
 						newRecommendations.add(testRec);
@@ -146,7 +150,7 @@ public class EditKnowledgeBean {
 				}
 			}
 
-		//make any updates in the original recommendation term
+			// make any updates in the original recommendation term
 		} else if (clonedSelectedTerm.getType().equalsIgnoreCase(
 				"Recommendation")) {
 
@@ -231,13 +235,37 @@ public class EditKnowledgeBean {
 
 	public void exportJsonLdFile() throws IOException {
 
+		if (terms.isEmpty()) {
+			FacesContext.getCurrentInstance().addMessage(
+					"msgs",
+					new FacesMessage(FacesMessage.SEVERITY_ERROR,
+							"Please load a jsonld file", ""));
+
+			return;
+		}
+
 		String jsonString = Utils.createJsonLdKnowledge(terms);
-		FileDownloadController.writeGsonAndExportFile(
-				"explodePreferenceTerms.jsonld", jsonString);
+		FileDownloadController.writeGsonAndExportFile(fileName, jsonString);
+	}
+
+	public void exportJsonLdFileToServer() throws IOException {
+
+		if (terms.isEmpty()) {
+			FacesContext.getCurrentInstance().addMessage(
+					"msgs",
+					new FacesMessage(FacesMessage.SEVERITY_ERROR,
+							"Please load a jsonld file", ""));
+
+			return;
+		}
+
+		String jsonString = Utils.createJsonLdKnowledge(terms);
+		FileDownloadController.simpleWriteGsonAndExportToServer(
+				RuleCreationUtilities.WORKING_JSONLD_PATH + "\\" + fileName, jsonString);
 	}
 
 	public void saveNewAbstractTerm() throws IOException {
-		
+
 		ArrayList<String> emptyRecomm = new ArrayList<String>();
 		for (int i = 0; i < abstractTerm.getHasRecommendation().size(); i++) {
 

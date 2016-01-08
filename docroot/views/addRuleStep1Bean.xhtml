@@ -37,14 +37,33 @@
 				</p:panel>
 				<p:panel id="step1b">
 					<f:facet name="header">
-						<h:outputText value="Step 1b: Give a description for the new rule" />
+						<h:outputText value="Step 1b: Name and describe the new rule" />
 					</f:facet>
 					<p:messages for="msgs" showDetail="true" autoUpdate="true"
 					closable="true" />
-					<h:inputTextarea label="ruleDescription"
-						id="ruleDescription" style="width: 500px;" autocomplete="off"
+					<h:panelGrid columns="2" columnClasses="label,value"
+						styleClass="grid">
+
+						<p:column headerText="ruleName" width="100" styleClass="wrap">
+							<h:outputText value="Rule Name: *" id="ruleName" required="true"
+								title="The name of the new rule" />
+						</p:column>
+
+						<p:inputText label="Rule Name" style="width: 300px;"
+							id="ruleName1" autocomplete="off"
+							value="#{addRuleStep1Bean.ruleName}">
+						</p:inputText>
+						
+						<p:column headerText="ruleDescription" width="100" styleClass="wrap">
+							<h:outputText value="Rule Description: *" id="ruleDescr" required="true"
+								title="The description of the new rule" />
+						</p:column>
+
+						<h:inputTextarea label="ruleDescription"
+						id="ruleDescription" style="width: 300px;" autocomplete="off"
 						value="#{addRuleStep1Bean.description}">
 					</h:inputTextarea>
+					</h:panelGrid>
 				</p:panel>
 
 				<div align="right">

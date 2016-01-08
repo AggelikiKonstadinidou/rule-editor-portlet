@@ -20,7 +20,7 @@ public class AddRuleStep1Bean {
 	private Main main;
 	private AddNewRuleBean addNewRuleBean;
 	private String selectedOption;
-	private String description;
+	private String description, ruleName;
 	
 	public AddRuleStep1Bean() {
 		super();
@@ -33,6 +33,7 @@ public class AddRuleStep1Bean {
 	public void init(){
 		selectedOption = "";
 		description = "";
+		ruleName = "";
 		formCompleted = true;
 	}
 	
@@ -63,6 +64,15 @@ public class AddRuleStep1Bean {
 	
 	public void submitOption() throws IOException{
 		
+		if (ruleName.trim().equals("")) {
+			FacesContext.getCurrentInstance().addMessage(
+					"msgs",
+					new FacesMessage(FacesMessage.SEVERITY_ERROR,
+							"Please provide a name for the rule", ""));
+
+			return;
+		}
+		
 		if (description.trim().equals("")) {
 			FacesContext.getCurrentInstance().addMessage(
 					"msgs",
@@ -89,7 +99,17 @@ public class AddRuleStep1Bean {
 		
 		
 	}
+	
+	
     
+	public String getRuleName() {
+		return ruleName;
+	}
+
+	public void setRuleName(String ruleName) {
+		this.ruleName = ruleName;
+	}
+
 	public String getDescription() {
 		return description;
 	}

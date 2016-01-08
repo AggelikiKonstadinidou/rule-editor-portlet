@@ -13,6 +13,9 @@
 				<f:facet name="header">
 					<h:outputText value="Edit/View Knowledge base" />
 				</f:facet>
+				<p:messages for="msgs" showDetail="true" autoUpdate="true"
+					closable="true" />
+
 				<p:fileUpload style="width: 600px;" mode="advanced"
 					label="Select a knowledge base file of RBMM (e.g. webapp/WEB-INF/semantics/explodePreferenceTerms.jsonld)"
 					value="#{editKnowledgeBean.fileName}" auto="true" multiple="true"
@@ -54,10 +57,15 @@
 				<p:commandButton value="Add new Abstract Term" id="addNode"
 					oncomplete="PF('addNewTermDialog').show()"
 					update=":#{p:component('treeTable')}" />
-				<p:commandButton value="Export changes" id="export" ajax="false"
-					actionListener="#{editKnowledgeBean.exportJsonLdFile}"
-					title="Export the changes in a new file" />
-				<p:commandButton value="Previous step" id="previousStep" ajax="false"
+				<p:commandButton value="Save locally" id="export"
+					ajax="false" actionListener="#{editKnowledgeBean.exportJsonLdFile}"
+					title="Export changes to a new local file" />
+				<p:commandButton value="Deploy to Server" id="exportToServer"
+					ajax="false" rendered="#{userBean.admin}"
+					actionListener="#{editKnowledgeBean.exportJsonLdFileToServer}"
+					title="Export changes to server" />
+				<p:commandButton value="Previous step" id="previousStep"
+					ajax="false"
 					action="/views/configurationStep1.xhtml?javax.portlet.faces.PortletMode=view&amp;javax.portlet.faces.WindowState=normal"
 					title="Go to previous step" />
 				<p:commandButton value="Initial Menu" id="initialMenu" ajax="false"
@@ -234,8 +242,8 @@
 
 					</p:outputPanel>
 				</p:dialog>
-				
-				
+
+
 
 
 			</p:panel>

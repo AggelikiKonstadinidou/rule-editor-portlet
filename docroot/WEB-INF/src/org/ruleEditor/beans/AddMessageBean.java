@@ -88,10 +88,38 @@ public class AddMessageBean {
 	}
 
 	public void exportJsonLdFile() throws IOException {
+		if (feedbackFile.isEmpty()) {
+			FacesContext.getCurrentInstance().addMessage(
+					"msgs",
+					new FacesMessage(FacesMessage.SEVERITY_ERROR,
+							"Please load feedback Messages file", ""));
+
+			return;
+		}
 		if (!feedbackFile.isEmpty())
 			jsonString = Utils.writeMessagesInJsonLdFile(fileStream, messages);
 
 		FileDownloadController.writeGsonAndExportFile(feedbackFile, jsonString);
+	}
+
+	public void exportJsonLdFileToServer() throws IOException {
+
+		if (feedbackFile.isEmpty()) {
+			FacesContext.getCurrentInstance().addMessage(
+					"msgs",
+					new FacesMessage(FacesMessage.SEVERITY_ERROR,
+							"Please load feedback Messages file", ""));
+
+			return;
+		}
+
+		if (!feedbackFile.isEmpty())
+			jsonString = Utils.writeMessagesInJsonLdFile(fileStream, messages);
+
+		FileDownloadController
+				.simpleWriteGsonAndExportToServer(
+						RuleCreationUtilities.WORKING_JSONLD_PATH + "\\"
+								+ feedbackFile, jsonString);
 	}
 
 	public void uploadFileForSaveAs(FileUploadEvent event) throws IOException {

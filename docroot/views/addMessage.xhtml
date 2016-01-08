@@ -14,6 +14,9 @@
 					<h:outputText value="Step3: Add Message to Rule" />
 				</f:facet>
 
+				<p:messages for="msgs" showDetail="true" autoUpdate="true"
+					closable="true" />
+
 				<p:panel id="feedbackMessages" style="margin-top:10px">
 
 					<f:facet name="header">
@@ -86,18 +89,21 @@
 							fileUploadListener="#{addMessageBean.onFileUpload}"
 							allowTypes="/(\.|\/)(jsonld)$/">
 						</p:fileUpload>
-						<p:commandButton value="Export Messages" id="export" ajax="false"
-							actionListener="#{addMessageBean.exportJsonLdFile}" />
+						<p:commandButton value="Save locally" id="export"
+							ajax="false" actionListener="#{addMessageBean.exportJsonLdFile}" />
+						<p:commandButton value="Deploy to Server"
+							id="exportToServer" ajax="false" rendered="#{userBean.admin}"
+							actionListener="#{addMessageBean.exportJsonLdFileToServer}" />
 					</h:panelGrid>
 				</p:panel>
 
 
-				<p:commandButton actionListener="#{addMessageBean.moveToPreviousStep}"
-					title="Go to previous step of the creation of the rule" id="prevBut" ajax="false"
-					value="Previous step">
+				<p:commandButton
+					actionListener="#{addMessageBean.moveToPreviousStep}"
+					title="Go to previous step of the creation of the rule"
+					id="prevBut" ajax="false" value="Previous step">
 				</p:commandButton>
-				<p:commandButton ajax="false"
-					value="Next step"
+				<p:commandButton ajax="false" value="Next step"
 					actionListener="#{addNewRuleBean.getPreviousStep('/views/addMessage.xhtml?javax.portlet.faces.PortletMode=view&amp;javax.portlet.faces.WindowState=normal')}"
 					action="/views/saveRule.xhtml?javax.portlet.faces.PortletMode=view&amp;javax.portlet.faces.WindowState=normal">
 				</p:commandButton>

@@ -17,13 +17,8 @@
 					closable="true" />
 				<h:panelGrid columns="2" columnClasses="label,value"
 					styleClass="grid">
-					<h:outputText value="Rule name: *" id="ruleName" />
-					<p:inputText label="Rule name" style="width: 300px;"
-						id="newRuleName" autocomplete="off"
-						value="#{addNewRuleBean.ruleName}">
-					</p:inputText>
-					<h:outputText value="Upload an existing file or create a new file " id="FileName"
-						required="false" />
+					<h:outputText value="Upload an existing file to save the rule (optional)"
+						id="FileName" required="false" />
 					<h:panelGrid columns="2" columnClasses="label,value"
 						styleClass="grid">
 						<p:fileUpload style="width: 500px;" mode="advanced"
@@ -32,24 +27,19 @@
 							fileUploadListener="#{addNewRuleBean.uploadFileForSaveAs}"
 							allowTypes="/(\.|\/)(rules)$/">
 						</p:fileUpload>
-
-
-						<p:inputText label="File Name" style="width: 300px;"
-							id="newFileName" autocomplete="off"
-							value="#{addNewRuleBean.newFileName}">
-						</p:inputText>
-
 					</h:panelGrid>
 				</h:panelGrid>
-				<p:commandButton value="Previous Step" id="previousStep"
-					actionListener="#{addNewRuleBean.goToPreviousStep}" ajax="false" />
-				<p:commandButton value="Save and export locally" id="saveButton1" ajax="false"
+
+				<p:commandButton value="Save locally" id="saveButton1" ajax="false"
 					actionListener="#{addNewRuleBean.saveRuleLocally}" />
-				<p:commandButton value="Save and export to server" id="saveButton2" ajax="false"
-				    rendered="#{userBean.admin}"
+				<p:commandButton value="Deploy to Server" id="saveButton2"
+					ajax="false" rendered="#{userBean.admin}"
 					actionListener="#{addNewRuleBean.saveRuleInServer}" />
 				<p:commandButton value="Check Correlation" id="correlation"
-					oncomplete="PF('correlationDialog').show()"/>
+					oncomplete="PF('correlationDialog').show()" />
+				<br />
+				<p:commandButton value="Previous Step" id="previousStep"
+					actionListener="#{addNewRuleBean.goToPreviousStep}" ajax="false" />
 			</p:panel>
 
 
