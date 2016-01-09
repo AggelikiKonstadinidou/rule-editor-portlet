@@ -292,11 +292,6 @@
 				</h:panelGrid>
 
 
-				<p:commandButton
-					action="/views/addRuleStep1Bean.xhtml?javax.portlet.faces.PortletMode=view&amp;javax.portlet.faces.WindowState=normal"
-					title="Go to initial menu" id="prevBut" ajax="false"
-					value="Previous step">
-				</p:commandButton>
 				<p:commandButton id="clearConditions"
 					update=":#{p:component('pan1')}"
 					actionListener="#{addNewRuleBean.clearPanel('pan1')}" ajax="false"
@@ -307,20 +302,26 @@
 					actionListener="#{addNewRuleBean.clearPanel('pan2')}" ajax="false"
 					value="Clear conclusions" title="Clear conclusions panel">
 				</p:commandButton>
+				<p:commandButton id="preview"
+					actionListener="#{addNewRuleBean.previewRule}"
+					update=":#{p:component('previewPanel')}"
+					title="View the body of the rule" value="Preview Rule Body"
+					icon="ui-icon-search">
+				</p:commandButton>
+				<p:panel header="Preview Panel" id="previewPanel"
+					style="height:400px;width:400px;">
+					<h:outputText value="#{addNewRuleBean.preview}"
+						styleClass="preformatted" />
+				</p:panel>
+				<p:commandButton
+					action="/views/addRuleStep1Bean.xhtml?javax.portlet.faces.PortletMode=view&amp;javax.portlet.faces.WindowState=normal"
+					title="Go to initial menu" id="prevBut" ajax="false"
+					value="Previous step">
+				</p:commandButton>
 				<p:commandButton oncomplete="PF('addMessageDialog').show()"
 					title="Go to next step of the creation of the rule"
 					value="Next step">
 				</p:commandButton>
-				<p:commandButton id="preview"
-					actionListener="#{addNewRuleBean.previewRule}"
-					update=":#{p:component('previewPanel')}"
-					title="View the body of the rule"
-					value="Preview Rule Body" icon="ui-icon-search">
-				</p:commandButton>
-				<p:panel header="Preview Panel" id="previewPanel"
-					style="height:400px;width:400px;">
-					<h:outputText value="#{addNewRuleBean.preview}" styleClass="preformatted"  />
-				</p:panel>
 
 			</p:panel>
 
@@ -1087,7 +1088,8 @@ Classes
 				position="center,center">
 				<h:panelGrid columns="2" columnClasses="label,value"
 					styleClass="grid">
-					<p:commandButton actionListener="#{addMessageBean.init(false,'/views/addGeneralRule.xhtml?javax.portlet.faces.PortletMode=view&amp;javax.portlet.faces.WindowState=normal')}"
+					<p:commandButton
+						actionListener="#{addMessageBean.init(false,'/views/addGeneralRule.xhtml?javax.portlet.faces.PortletMode=view&amp;javax.portlet.faces.WindowState=normal')}"
 						icon="ui-icon-save" title="Move to next step to add a message"
 						ajax="false"
 						action="/views/addMessage.xhtml?javax.portlet.faces.PortletMode=view&amp;javax.portlet.faces.WindowState=normal"

@@ -801,8 +801,9 @@ public class Utils {
 						argumentsSplitted[0].replace(" ", ""));
 				method.getValue2().setValue(
 						argumentsSplitted[1].replace(" ", ""));
-				method.getValue3().setValue(
-						argumentsSplitted[2].replace(" ", ""));
+				if (argumentsSplitted.length > 2)
+					method.getValue3().setValue(
+							argumentsSplitted[2].replace(" ", ""));
 
 			} // case of noValue method
 			else if (method.getCategory().equals("6")) {
@@ -1194,8 +1195,10 @@ public class Utils {
 			ArrayList<String> ruleSets) {
 		String newRuleString = "rules=";
 		for (String s : ruleSets) {
-			newRuleString = newRuleString.concat("testData/rules/" + s
-					+ ".rules;");
+
+			if (!s.contains(".rules"))
+				s = s + ".rules";
+			newRuleString = newRuleString.concat("testData/rules/" + s + ";");
 		}
 
 		String[] splitted = inputString.split("\n");

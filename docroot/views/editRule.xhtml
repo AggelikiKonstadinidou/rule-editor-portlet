@@ -284,11 +284,7 @@
 					</p:panel>
 				</h:panelGrid>
 
-				<p:commandButton actionListener="#{editRuleStep1Bean.reload}"
-					action="/views/selectEditRule.xhtml?javax.portlet.faces.PortletMode=view&amp;javax.portlet.faces.WindowState=normal"
-					title="Go to initial menu" id="prevBut" ajax="false"
-					value="Previous step">
-				</p:commandButton>
+				
 				<p:commandButton id="clearConditions"
 					update=":#{p:component('pan1')}"
 					actionListener="#{addNewRuleBean.clearPanel('pan1')}" ajax="false"
@@ -299,10 +295,7 @@
 					actionListener="#{addNewRuleBean.clearPanel('pan2')}" ajax="false"
 					value="Clear conclusions" title="Clear conclusions panel">
 				</p:commandButton>
-				<p:commandButton oncomplete="PF('addMessageDialog').show()"
-					title="Go to next step of the creation of the rule"
-					value="Next step">
-				</p:commandButton>
+				
 				<p:commandButton id="preview"
 					actionListener="#{addNewRuleBean.previewRule}"
 					update=":#{p:component('previewPanel')}"
@@ -313,6 +306,15 @@
 					style="height:700px;width:400px;">
 					<h:outputText value="#{addNewRuleBean.preview}" styleClass="preformatted"  />
 				</p:panel>
+				<p:commandButton actionListener="#{editRuleStep1Bean.reload}"
+					action="/views/selectEditRule.xhtml?javax.portlet.faces.PortletMode=view&amp;javax.portlet.faces.WindowState=normal"
+					title="Go to initial menu" id="prevBut" ajax="false"
+					value="Previous step">
+				</p:commandButton>
+				<p:commandButton oncomplete="PF('addMessageDialog').show()"
+					title="Go to next step of the creation of the rule"
+					value="Next step">
+				</p:commandButton>
 
 
 			</p:panel>

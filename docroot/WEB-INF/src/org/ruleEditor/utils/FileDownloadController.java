@@ -44,7 +44,9 @@ public class FileDownloadController {
 		// false to overwrite (if the file exists)
 		if (!myFile.exists()) {
 
-			fileName = fileName + ".rules";
+			if (!fileName.contains(".rules"))
+				fileName = fileName + ".rules";
+
 			myFile = new File(fileName);
 			System.out.println("file does not exist");
 			// update the configuration file

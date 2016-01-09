@@ -50,7 +50,7 @@ public class RuleCreationUtilities {
 	public static String testRulesDirectoryPath = "C:\\Users\\konstadinidou\\Desktop\\rules\\testRules\\";
 	public static String serverRulesDirectoryPath = "D:\\liferay-portal-6.1.2-ce-ga3\\tomcat-7.0.40\\webapps\\CLOUD4All_RBMM_Restful_WS\\WEB-INF\\testData\\rules\\";
 	public static String testConfigFilePath = "C:\\Users\\konstadinidou\\Desktop\\rules\\testRules\\config.properties";
-	public static String serverConfigFilePath = "D:\\liferay-portal-6.1.2-ce-ga3\\tomcat-7.0.40\\webapps\\CLOUD4All_RBMM_Restful_WS\\WEB-INF\\";
+	public static String serverConfigFilePath = "D:\\liferay-portal-6.1.2-ce-ga3\\tomcat-7.0.40\\webapps\\CLOUD4All_RBMM_Restful_WS\\WEB-INF\\config.properties";
 	public static String testJsonLdPath = "C:\\Users\\konstadinidou\\Desktop\\rules\\testRules\\";
 	public static String serverJsonLdPath = "D:\\liferay-portal-6.1.2-ce-ga3\\tomcat-7.0.40\\webapps\\CLOUD4All_RBMM_Restful_WS\\WEB-INF\\semantics\\";
 	

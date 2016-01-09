@@ -150,6 +150,7 @@ public class AddNewRuleBean {
 	private String option = "";
 	private String ruleDescription = "";
 	private String preview = "";
+	private EditRuleStep1Bean editRuleStep1Bean;
 
 	public AddNewRuleBean() {
 		super();
@@ -160,6 +161,9 @@ public class AddNewRuleBean {
 		addRuleStep1Bean = (AddRuleStep1Bean) context.getApplication()
 				.evaluateExpressionGet(context, "#{addRuleStep1Bean}",
 						AddRuleStep1Bean.class);
+		editRuleStep1Bean = (EditRuleStep1Bean) context.getApplication()
+				.evaluateExpressionGet(context, "#{editRuleStep1Bean}",
+						EditRuleStep1Bean.class);
 		createOntologyTree(main.getOntology());
 
 	}
@@ -682,11 +686,14 @@ public class AddNewRuleBean {
 
 		String finalFileName = "cloud4All_RuleFile";
 		boolean createNewFile = true;
-		if (!oldFileName.trim().isEmpty()) {
+
+		if (previousStep.contains("addRule") && !oldFileName.trim().isEmpty()) {
 			createNewFile = false;
 			finalFileName = oldFileName;
+		} else {
+			finalFileName = editRuleStep1Bean.getFileName();
 		}
-		
+
 		java.util.Date date = new java.util.Date();
 		Timestamp creationDate = new Timestamp(date.getTime());
 		Timestamp lastModifiedDate = new Timestamp(date.getTime());
@@ -696,12 +703,14 @@ public class AddNewRuleBean {
 
 		// flag for automatic deployment
 		boolean automaticUpdate = true;
+		String ruleName = addRuleStep1Bean.getRuleName();
+		if (rule.getName() != null && !rule.getName().isEmpty())
+			ruleName = rule.getName();
 
-		RuleCreationUtilities.saveRule(addRuleStep1Bean.getRuleName().replace(" ", "").trim(),
-				finalFileName, conditions, conclusions, false, createNewFile,
-				"", "", "", existingRules, fileStream, creationDate,
-				lastModifiedDate, ruleDescription, main.getTypeOfUser(),
-				automaticUpdate);
+		RuleCreationUtilities.saveRule(ruleName.trim(), finalFileName,
+				conditions, conclusions, false, createNewFile, "", "", "",
+				existingRules, fileStream, creationDate, lastModifiedDate,
+				ruleDescription, main.getTypeOfUser(), automaticUpdate);
 
 	}
 
@@ -709,9 +718,11 @@ public class AddNewRuleBean {
 
 		String finalFileName = "cloud4All_RuleFile";
 		boolean createNewFile = true;
-		if (!oldFileName.trim().isEmpty()) {
+		if (previousStep.contains("addRule") && !oldFileName.trim().isEmpty()) {
 			createNewFile = false;
 			finalFileName = oldFileName;
+		} else {
+			finalFileName = editRuleStep1Bean.getFileName();
 		}
 
 		java.util.Date date = new java.util.Date();
@@ -723,12 +734,14 @@ public class AddNewRuleBean {
 
 		// flag for automatic deployment
 		boolean automaticUpdate = false;
+		String ruleName = addRuleStep1Bean.getRuleName();
+		if (rule.getName() != null && !rule.getName().isEmpty())
+			ruleName = rule.getName();
 
-		RuleCreationUtilities.saveRule(addRuleStep1Bean.getRuleName().replace(" ", "").trim(),
-				finalFileName, conditions, conclusions, false, createNewFile,
-				"", "", "", existingRules, fileStream, creationDate,
-				lastModifiedDate, ruleDescription, main.getTypeOfUser(),
-				automaticUpdate);
+		RuleCreationUtilities.saveRule(ruleName.trim(), finalFileName,
+				conditions, conclusions, false, createNewFile, "", "", "",
+				existingRules, fileStream, creationDate, lastModifiedDate,
+				ruleDescription, main.getTypeOfUser(), automaticUpdate);
 
 	}
 
